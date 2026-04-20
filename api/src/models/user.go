@@ -6,8 +6,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username 	string `json:"username"`
+	Email    string `json:"email" gorm:"uniqueIndex"`
+	HashedPassword string `json:"password"`
 }
 
 func (user *User) Save() (*User, error) {

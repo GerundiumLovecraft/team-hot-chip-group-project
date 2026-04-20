@@ -28,7 +28,7 @@ func CreateToken(ctx *gin.Context) {
 		SendInternalError(ctx, err)
 	}
 
-	if user.Password != input.Password {
+	if user.HashedPassword != input.Password {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Password incorrect"})
 		return
 	}
