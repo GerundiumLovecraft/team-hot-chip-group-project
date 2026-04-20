@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/env"
@@ -33,7 +34,23 @@ func TestFindUser(t *testing.T) {
 	AutoMigrateModels()
 	defer Database.Exec("TRUNCATE TABLE users;")
 
-	
+	user := User{
+		Username: "JohnDoe",
+		Email: "johndoe@ntlworld.com",
+		HashedPassword: "th15154t3st",
+	}
+
+	savedUser, err := user.Save()
+	assert.Nil(t, err)
+	assert.NotZero(t, savedUser.ID)
+
+	idAsString := strconv.Itoa(int(savedUser.ID))
+	foundUser, err := FindUser(idAsString)
+	assert.Nil(t, err)
+
+	assert.Equal(t, savedUser.ID, foundUser.ID)
+	assert.Equal(t, "johndoe@ntlworld.com", foundUser.Email)
+	assert.Equal(t, "JohnDoe", foundUser.Username)
 }
 
 
