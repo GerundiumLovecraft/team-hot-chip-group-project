@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/auth"
+	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
 	"github.com/gin-gonic/gin"
-	"github.com/makersacademy/go-react-acebook-template/api/src/auth"
-	"github.com/makersacademy/go-react-acebook-template/api/src/models"
 )
 
 type JSONPost struct {
