@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/auth"
 	"github.com/gin-gonic/gin"
-	"github.com/makersacademy/go-react-acebook-template/api/src/auth"
 )
 
 func AuthenticationMiddleware(ctx *gin.Context) {
