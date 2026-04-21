@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/auth"
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
@@ -44,7 +45,6 @@ func GetAllSpots(ctx *gin.Context) {
 	} 
 
 	ctx.JSON(http.StatusOK, gin.H{"spots": jsonSpots, "token": token})
-
 
 }
 
