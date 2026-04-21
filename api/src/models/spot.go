@@ -48,7 +48,7 @@ func FilterSpotsByFeature(id uint, value *int8) (*[]Spot, error) {
 
 	// add additional filter if value is not nil
 	if value != nil {
-		query = query.Where("spots_to_feats.value = ?", value)
+		query = query.Where("spots_to_feats.value = ?", *value)
 	}
 
 	// send query to DB
