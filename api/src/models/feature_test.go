@@ -42,6 +42,7 @@ func (suite *TestFeatureModelSuiteEnv) TestSaveNewFeature() {
 
 	assert.Nil(suite.T(), err, "Error should be nil")
 	assert.NotEmpty(suite.T(), savedFeature, "Saved feature should not be empty")
+	assert.NotZero(suite.T(), savedFeature.ID, "Saved feature ID should not be empty")
 }
 
 func (suite *TestFeatureModelSuiteEnv) TestFetchAllFeatures() {
@@ -59,5 +60,5 @@ func (suite *TestFeatureModelSuiteEnv) TestFetchAllFeatures() {
 
 	assert.Nil(suite.T(), err, "Error should be nil")
 	assert.Len(suite.T(), *features, 2, "Number of features should be 2")
-
+	assert.Equal(suite.T(), "test-1", (*features)[0].FeatName, "FeatName should be equal to test-1")
 }
