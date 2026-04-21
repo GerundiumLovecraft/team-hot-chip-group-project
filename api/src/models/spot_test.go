@@ -22,7 +22,7 @@ func cleanupSpots() {
 func TestSpot_Save(t *testing.T) {
 	cleanupSpots()
 	spot := Spot{
-		Name: "Test Cafe",
+		Name:    "Test Cafe",
 		Address: "1 Test Street",
 	}
 
@@ -56,4 +56,3 @@ func TestFindSpot(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "Find This Cafe", foundSpot.Name)
 }
-
