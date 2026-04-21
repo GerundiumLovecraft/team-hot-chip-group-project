@@ -28,4 +28,6 @@ func AutoMigrateModels() {
 	Database.AutoMigrate(&User{})
 	Database.AutoMigrate(&Post{})
 	Database.AutoMigrate(&Spot{})
+	Database.AutoMigrate(&Feature{})
+	Database.AutoMigrate(&SpotsToFeats{})
 }
