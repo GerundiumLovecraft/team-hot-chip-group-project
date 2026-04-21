@@ -2,17 +2,18 @@ package models
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-//func TestMain(m *testing.M) {
-//	os.Setenv("POSTGRES_URL", "postgresql://localhost:5432/hot-chip_test")
-//	OpenDatabaseConnection()
-//	AutoMigrateModels()
-//	os.Exit(m.Run())
-//}
+func TestMain(m *testing.M) {
+	os.Setenv("POSTGRES_URL", "postgresql://localhost:5432/hot-chip_test")
+	OpenDatabaseConnection()
+	AutoMigrateModels()
+	os.Exit(m.Run())
+}
 
 func cleanupSpots() {
 	Database.Exec("TRUNCATE TABLE spots;")
