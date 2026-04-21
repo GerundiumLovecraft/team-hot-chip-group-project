@@ -7,6 +7,7 @@ import (
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/auth"
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type CreateTokenRequestBody struct {
@@ -19,6 +20,7 @@ func CreateToken(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&input)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
 	}
 
 	fmt.Println(input)
@@ -26,9 +28,11 @@ func CreateToken(ctx *gin.Context) {
 	user, err := models.FindUserByEmail(input.Email)
 	if err != nil {
 		SendInternalError(ctx, err)
+		return
 	}
 
-	if user.HashedPassword != input.Password {
+	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(input.Password))
+	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Password incorrect"})
 		return
 	}
