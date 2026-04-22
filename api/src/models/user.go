@@ -31,9 +31,9 @@ func FindUser(id string) (*User, error) {
 	return &user, nil
 }
 
-func FindUserByEmail(email string) (*User, error) {
+func FindUserByUsernameOrEmail(usernameOrEmail string) (*User, error) {
 	var user User
-	err := Database.Where("email = ?", email).First(&user).Error
+	err := Database.Where("email = ? OR username = ?", usernameOrEmail, usernameOrEmail).First(&user).Error
 
 	if err != nil {
 		return &User{}, err
