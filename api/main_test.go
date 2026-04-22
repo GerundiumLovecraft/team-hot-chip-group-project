@@ -140,8 +140,29 @@ func (suite *TestSuiteEnv) Test_SignupUser_DuplicateEmail() {
 	app.ServeHTTP(suite.res, req)
 
 	// second signup with same email
+	var jsonStr2 = []byte(`{"email":"test@example.com", "password":"password123", "username":"differentuser"}`)
 	suite.res = httptest.NewRecorder()
-	req, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr))
+	req, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr2))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
+	app.ServeHTTP(suite.res, req)
+
+	assert.Equal(suite.T(), 409, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_SignupUser_DuplicateUsername() {
+	// duplicate username should return 409
+	app, token := suite.app, suite.token
+
+	// first signup 
+	var jsonStr = []byte(`{"email":"test@example.com", "password":"password123", "username":"sameuser"}`)
+	req, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
+	app.ServeHTTP(suite.res, req)
+
+	// second signup with same email
+	var jsonStr2 = []byte(`{"email":"different@example.com", "password":"password123", "username":"sameuser"}`)
+	suite.res = httptest.NewRecorder()
+	req, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr2))
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
 	app.ServeHTTP(suite.res, req)
 
