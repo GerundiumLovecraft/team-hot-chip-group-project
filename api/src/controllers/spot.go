@@ -9,6 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type JSONFeature struct {
+	FeatName string `json:"feat_name"`
+	Value *int8 `json:"value"`
+}
+
 type JSONSpot struct {
 	ID      uint   `json:"_id"`
 	UserId uint `json:"user_id"`
@@ -17,6 +22,7 @@ type JSONSpot struct {
 	Description string `json:"description"`
 	OpenFrom string `json:"open_from"`
 	OpenTo string `json:"open_to"`
+	Features []JSONFeature `json:"features"`
 }
 
 func GetAllSpots(ctx *gin.Context) {
@@ -33,6 +39,13 @@ func GetAllSpots(ctx *gin.Context) {
 
 	jsonSpots := make([]JSONSpot, 0)
 	for _, spot := range *spots {
+		jsonFeature := make([]JSONFeature, 0)
+		for _, feature := range spot.Features {
+			jsonFeature = append(jsonFeature, JSONFeature{
+				FeatName: feature.Feature.FeatName,
+				Value: feature.Value,
+			})
+		}
 		jsonSpots = append(jsonSpots, JSONSpot{
 			ID: spot.ID,
 			UserId: spot.UserId,
@@ -41,6 +54,7 @@ func GetAllSpots(ctx *gin.Context) {
 			Description: spot.Description,
 			OpenFrom: spot.OpenFrom,
 			OpenTo: spot.OpenTo,
+			Features: jsonFeature,
 		})
 	} 
 
@@ -57,8 +71,15 @@ func GetSpotById(ctx *gin.Context) {
 		SendInternalError(ctx, errorMessage)
 		return
 	}
-
-	result := JSONSpot{
+	
+	jsonFeature := make([]JSONFeature, 0)
+	for _, feature := range spotFound.Features {
+		jsonFeature = append(jsonFeature, JSONFeature{
+			FeatName: feature.Feature.FeatName,
+			Value: feature.Value,
+		})
+	}
+	spotResult := JSONSpot{
 		ID: spotFound.ID,
 		UserId: spotFound.UserId,
 		Name: spotFound.Name,
@@ -66,13 +87,14 @@ func GetSpotById(ctx *gin.Context) {
 		Description: spotFound.Description,
 		OpenFrom: spotFound.OpenFrom,
 		OpenTo: spotFound.OpenTo,
+		Features: jsonFeature,
 	}
 
 	value, _ := ctx.Get("userID")
 	userID := value.(string)
 	token, _ := auth.GenerateToken(userID)
 
-	ctx.JSON(http.StatusOK, gin.H{"Spot": result, "token": token})
+	ctx.JSON(http.StatusOK, gin.H{"Spot": spotResult, "token": token})
 
 }
 
@@ -92,8 +114,8 @@ func CreateSpot(ctx *gin.Context) {
 	
 	newSpot.UserId = uint(userIdUint)
 
-	if newSpot.UserId == 0 || newSpot.Name == "" || newSpot.Address == "" || newSpot.Description == "" || newSpot.OpenFrom == "" || newSpot.OpenTo == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "The new spot's name, address, description, and opening hours must be supply"})
+	if newSpot.UserId == 0 || newSpot.Name == "" || newSpot.Address == "" || newSpot.Description == "" || newSpot.OpenFrom == "" || newSpot.OpenTo == "" || len(newSpot.Features) == 0{
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "The new spot's name, address, description, opening hours, and features must be supply"})
 		return
 	}
 	
@@ -105,5 +127,5 @@ func CreateSpot(ctx *gin.Context) {
 	
 	token, _ := auth.GenerateToken(userID)
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "OK", "token": token})
+	ctx.JSON(http.StatusCreated, gin.H{"spotID": newSpot.ID, "token": token})
 }
