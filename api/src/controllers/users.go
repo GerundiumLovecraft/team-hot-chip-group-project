@@ -37,3 +37,15 @@ func CreateUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"message": "OK"})
 }
+
+func GetUserById(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	user, err := models.FindUser(id)
+	
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
+		return
+	}
+	ctx.JSON(http.StatusOK, user)
+}
