@@ -33,6 +33,7 @@ func (suite *TestSuiteEnv) SetupSuite() {
 	env.LoadEnv(".test.env")
 	models.OpenDatabaseConnection()
 	models.AutoMigrateModels()
+	models.SeedFeatures()
 	suite.db = models.Database
 	suite.app = setupApp()
 	suite.token, _ = auth.GenerateToken("test-user")
