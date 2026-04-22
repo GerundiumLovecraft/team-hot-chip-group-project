@@ -103,12 +103,58 @@ func (suite *TestSuiteEnv) Test_GetPosts() {
 }
 
 // =============================================
+// SIGNUP INTEGRATION TESTS
+
+func (suite *TestSuiteEnv) Test_SignupUser_CorrectCredentials() {
+	// valid signup should return 201
+	app, token := suite.app, suite.token
+
+	var jsonStr = []byte(`{"email":"test@example.com", "password":"password123", "username":"testuser"}`)
+	req, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
+	app.ServeHTTP(suite.res, req)
+
+	assert.Equal(suite.T(), 201, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_SignupUser_MissingCredentials() {
+	// missing email and password should return 400
+	app, token := suite.app, suite.token
+
+	var jsonStr = []byte(`{"email":"", "password":"", "username":"testuser"}`)
+	req, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
+	app.ServeHTTP(suite.res, req)
+
+	assert.Equal(suite.T(), 400, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_SignupUser_DuplicateEmail() {
+	// duplicate email should return 409
+	app, token := suite.app, suite.token
+
+	// first signup 
+	var jsonStr = []byte(`{"email":"test@example.com", "password":"password123", "username":"testuser"}`)
+	req, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
+	app.ServeHTTP(suite.res, req)
+
+	// second signup with same email
+	suite.res = httptest.NewRecorder()
+	req, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
+	app.ServeHTTP(suite.res, req)
+
+	assert.Equal(suite.T(), 409, suite.res.Code)
+}
+
+
+// =============================================
 // LOGIN INTEGRATION TESTS
 
 func (suite *TestSuiteEnv) Test_LoginUser_CorrectCredentials() {
 	// create a user first so we have someone to log in as
 	app := suite.app
-	suite.res = httptest.NewRecorder()
 	var signupJson = []byte(`{"email":"test@example.com", "password":"password123", "username":"testuser"}`)
 	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
 	app.ServeHTTP(suite.res, signupReq)
@@ -130,7 +176,6 @@ func (suite *TestSuiteEnv) Test_LoginUser_CorrectCredentials() {
 
 func (suite *TestSuiteEnv) Test_LoginUser_WrongPassword() {
 	app := suite.app
-	suite.res = httptest.NewRecorder()
 	var signupJson = []byte(`{"email":"test@example.com", "password":"password123", "username":"testuser"}`)
 	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
 	app.ServeHTTP(suite.res, signupReq)
@@ -145,9 +190,7 @@ func (suite *TestSuiteEnv) Test_LoginUser_WrongPassword() {
 
 func (suite *TestSuiteEnv) Test_LoginUser_EmailNotFound() {
 	app := suite.app
-	suite.res = httptest.NewRecorder()
 
-	
 	var loginJson = []byte(`{"usernameOrEmail":"notregistered@example.com", "password":"password123"}`)
 	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
 	app.ServeHTTP(suite.res, loginReq)
