@@ -2,10 +2,13 @@ package controllers
 
 import (
 	"net/http"
+	"errors"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgconn"
 	"golang.org/x/crypto/bcrypt"
+	
 )
 
 func CreateUser(ctx *gin.Context) {
@@ -31,6 +34,11 @@ func CreateUser(ctx *gin.Context) {
 
 	_, err = newUser.Save()
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // if error code is 23505 (duplicate), return 409 otherwise 500
+			ctx.JSON(http.StatusConflict, gin.H{"message": "Email or username already exists"})
+			return
+		}
 		SendInternalError(ctx, err)
 		return
 	}
