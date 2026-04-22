@@ -27,7 +27,7 @@ func CreateToken(ctx *gin.Context) {
 
 	user, err := models.FindUserByEmail(input.Email)
 	if err != nil {
-		SendInternalError(ctx, err)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid credentials"})
 		return
 	}
 
