@@ -11,8 +11,8 @@ import (
 )
 
 type CreateTokenRequestBody struct {
-	Email    string
-	Password string
+	UsernameOrEmail    string `gorm:"usernameOrEmail"`
+	Password 		string `gorm:"password"`
 }
 
 func CreateToken(ctx *gin.Context) {
@@ -25,7 +25,7 @@ func CreateToken(ctx *gin.Context) {
 
 	fmt.Println(input)
 
-	user, err := models.FindUserByEmail(input.Email)
+	user, err := models.FindUserByUsernameOrEmail(input.UsernameOrEmail)
 	if err != nil {
 		SendInternalError(ctx, err)
 		return

@@ -61,28 +61,50 @@ func TestFindUserByEmail(t *testing.T) {
 	defer Database.Exec("TRUNCATE TABLE users;")
 
 	user := User{
-		Username: "JohnDoe",
-		Email: "johndoe@ntlworld.com",
+		Username:       "JohnDoe",
+		Email:          "johndoe@ntlworld.com",
 		HashedPassword: "th15154t3st",
 	}
 	savedUser, err := user.Save()
 	assert.Nil(t, err)
 	assert.NotZero(t, savedUser.ID)
 
-	foundUser, err := FindUserByEmail(savedUser.Email)
+	foundUser, err := FindUserByUsernameOrEmail(savedUser.Email)
 	assert.Nil(t, err)
 
 	assert.Equal(t, "johndoe@ntlworld.com", foundUser.Email)
 	assert.Equal(t, "JohnDoe", foundUser.Username)
 }
 
-func TestFindByUserEmailFails(t *testing.T) {
+func TestFindUserByUsername(t *testing.T) {
 	env.LoadEnv("../../.test.env")
 	OpenDatabaseConnection()
 	AutoMigrateModels()
 	defer Database.Exec("TRUNCATE TABLE users;")
 
-	_, err := FindUserByEmail("emaildoesnotexist@gmail.com")
+	user := User{
+		Username:       "JohnDoe",
+		Email:          "johndoe@ntlworld.com",
+		HashedPassword: "th15154t3st",
+	}
+	savedUser, err := user.Save()
+	assert.Nil(t, err)
+	assert.NotZero(t, savedUser.ID)
+
+	foundUser, err := FindUserByUsernameOrEmail(savedUser.Username)
+	assert.Nil(t, err)
+
+	assert.Equal(t, "johndoe@ntlworld.com", foundUser.Email)
+	assert.Equal(t, "JohnDoe", foundUser.Username)
+}
+
+func TestFindUserByUsernameOrEmailFails(t *testing.T) {
+	env.LoadEnv("../../.test.env")
+	OpenDatabaseConnection()
+	AutoMigrateModels()
+	defer Database.Exec("TRUNCATE TABLE users;")
+
+	_, err := FindUserByUsernameOrEmail("doesnotexist")
 	assert.NotNil(t, err)
 }
 
