@@ -67,7 +67,7 @@ func GetSpotById(ctx *gin.Context) {
 		SendInternalError(ctx, errorMessage)
 		return
 	}
-
+	
 	jsonFeature := make([]JSONFeature, 0)
 	for _, feature := range spotFound.Features {
 		jsonFeature = append(jsonFeature, JSONFeature{
@@ -151,22 +151,21 @@ func CreateSpot(ctx *gin.Context) {
 	userID := value.(string)
 
 	userIdUint, _ := strconv.ParseUint(userID, 10, 64)
-
+	
 	newSpot.UserId = uint(userIdUint)
 
 	if newSpot.UserId == 0 || newSpot.Name == "" || newSpot.Address == "" || newSpot.Description == "" || newSpot.OpenFrom == "" || newSpot.OpenTo == "" || len(newSpot.Features) == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "The new spot's name, address, description, opening hours, and features must be supply"})
 		return
 	}
-
+	
 	_, errorMessage = newSpot.Save()
 	if errorMessage != nil {
 		SendInternalError(ctx, errorMessage)
 		return
 	}
-
+	
 	token, _ := auth.GenerateToken(userID)
 
 	ctx.JSON(http.StatusCreated, gin.H{"spotID": newSpot.ID, "token": token})
 }
-
