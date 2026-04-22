@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --card-bg: #efbea5;
+  --border: #cc8d80;
+  --accent: #543435;
+  --text: #000000;
+  --muted: #888;
+  --input-bg: #fffff0;
+  --radius: 10px;
+}
+
+.signup-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.signup-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 4rem 3.5rem;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.4);
+}
+
+.signup-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2rem 0;
+  letter-spacing: -0.03em;
+}
+
+.signup-title::after {
+  content: '.';
+  color: var(--accent);
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.form-group input {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: var(--accent);
+}
+
+.submit-btn {
+  margin-top: 0.5rem;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.85rem;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.submit-btn:hover {
+  opacity: 0.88;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+}
