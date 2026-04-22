@@ -22,9 +22,13 @@ func (suite *TestFeatureModelSuiteEnv) SetupSuite() {
 	suite.db = Database
 }
 
+func (suite *TestFeatureModelSuiteEnv) SetupTest() {
+	suite.db.Raw("TRUNCATE TABLE features CASCADE;")
+}
+
 // Running after each test
 func (suite *TestFeatureModelSuiteEnv) TearDownTest() {
-	suite.db.Raw("TRUNCATE TABLE features;")
+	suite.db.Raw("TRUNCATE TABLE features CASCADE;")
 }
 
 // This gets run automatically by `go test` so we call `suite.Run` inside it
