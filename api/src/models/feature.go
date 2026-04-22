@@ -27,6 +27,15 @@ func (f *Feature) SaveNewFeature() (*Feature, error) {
 	return f, nil
 }
 
+func FindFeatureByName(name string) (*Feature, error) {
+	var feature Feature
+	err := Database.Where("feat_name = ?", name).First(&feature).Error
+	if err != nil {
+		return &Feature{}, err
+	}
+	return &feature, nil
+}
+
 func SeedFeatures() { 
 	// check if features already exist in the database
 	var count int64
