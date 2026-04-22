@@ -115,7 +115,7 @@ func (suite *TestSuiteEnv) Test_LoginUser_CorrectCredentials() {
 
 	// login with same credentials 
 	suite.res = httptest.NewRecorder()
-	var loginJson = []byte(`{"email":"test@example.com", "password":"password123"}`)
+	var loginJson = []byte(`{"usernameOrEmail":"test@example.com", "password":"password123"}`)
 	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
 	app.ServeHTTP(suite.res, loginReq)
 
@@ -136,7 +136,7 @@ func (suite *TestSuiteEnv) Test_LoginUser_WrongPassword() {
 	app.ServeHTTP(suite.res, signupReq)
 
 	suite.res = httptest.NewRecorder()
-	var loginJson = []byte(`{"email":"test@example.com", "password":"password1234"}`)
+	var loginJson = []byte(`{"usernameOrEmail":"test@example.com", "password":"password1234"}`)
 	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
 	app.ServeHTTP(suite.res, loginReq)
 
@@ -148,7 +148,7 @@ func (suite *TestSuiteEnv) Test_LoginUser_EmailNotFound() {
 	suite.res = httptest.NewRecorder()
 
 	
-	var loginJson = []byte(`{"email":"notregistered@example.com", "password":"password123"}`)
+	var loginJson = []byte(`{"usernameOrEmail":"notregistered@example.com", "password":"password123"}`)
 	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
 	app.ServeHTTP(suite.res, loginReq)
 
