@@ -26,3 +26,30 @@ func (f *Feature) SaveNewFeature() (*Feature, error) {
 
 	return f, nil
 }
+
+func SeedFeatures() { 
+	// check if features already exist in the database
+	var count int64
+	Database.Model(&Feature{}).Count(&count)
+
+	// if features already exist, don't add duplicates
+	if count > 0 {
+		return
+	}
+
+	// features to seed
+	features := []Feature{
+		{FeatName: "wifi"},
+		{FeatName: "toilets"},
+		{FeatName: "power_sockets"},
+		{FeatName: "open_late"},
+		{FeatName: "noise_level"},
+		{FeatName: "price"},
+	}
+
+	// save each feature to the database
+	for _, feature := range features {
+		f := feature 
+		f.SaveNewFeature()
+	}
+}

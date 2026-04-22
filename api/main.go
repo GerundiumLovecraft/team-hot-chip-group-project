@@ -18,6 +18,7 @@ func main() {
 
 	models.OpenDatabaseConnection()
 	models.AutoMigrateModels()
+	models.SeedFeatures()
 
 	// Create a test testPost. Delete these lines when you are creating posts of your own.
 	testPost := models.Post{
