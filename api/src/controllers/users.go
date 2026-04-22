@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/auth"
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
@@ -13,18 +14,15 @@ import (
 )
 
 func CreateUser(ctx *gin.Context) {
-	var newUser models.User
-	err := ctx.BindJSON(&newUser)
+var newUser models.User
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
+    if err := ctx.ShouldBindJSON(&newUser); err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input: " + err.Error()})
+        return
+    }
 
-	if newUser.Email == "" || newUser.HashedPassword == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Must supply username and password"})
-		return
-	}
+	newUser.Username = strings.ToLower(strings.TrimSpace(newUser.Username))
+	newUser.Email = strings.ToLower(strings.TrimSpace(newUser.Email))
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.HashedPassword), bcrypt.DefaultCost)
 	if err != nil {
