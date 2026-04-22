@@ -41,3 +41,14 @@ func FindUserByUsernameOrEmail(usernameOrEmail string) (*User, error) {
 
 	return &user, nil
 }
+
+func FindUserByUsername(username string) (*User, error) {
+	var user User
+	err := Database.Where("username = ?", username).First(&user).Error
+
+	if err != nil {
+		return &User{}, err
+	}
+
+	return &user, nil
+}

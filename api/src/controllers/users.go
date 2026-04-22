@@ -42,9 +42,21 @@ func GetUserById(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	user, err := models.FindUser(id)
-	
+
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
+		return
+	}
+	ctx.JSON(http.StatusOK, user)
+}
+
+func GetUserByUsername(ctx *gin.Context) {
+	username := ctx.Param("username")
+
+	user, err := models.FindUserByUsername(username)
+
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"message": "Username not found"})
 		return
 	}
 	ctx.JSON(http.StatusOK, user)
