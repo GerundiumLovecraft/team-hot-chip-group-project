@@ -45,8 +45,9 @@ func (suite *TestSuiteEnv) SetupTest() {
 
 // Running after each test
 func (suite *TestSuiteEnv) TearDownTest() {
-	suite.db.Raw("TRUNCATE TABLE users;")
-	suite.db.Raw("TRUNCATE TABLE posts;")
+	suite.db.Exec("TRUNCATE TABLE users CASCADE;")
+	suite.db.Exec("TRUNCATE TABLE posts CASCADE;")
+	suite.db.Exec("TRUNCATE TABLE spots CASCADE;")
 }
 
 // This gets run automatically by `go test` so we call `suite.Run` inside it
@@ -99,4 +100,57 @@ func (suite *TestSuiteEnv) Test_GetPosts() {
 
 	assert.Equal(suite.T(), 200, suite.res.Code)
 	assert.Equal(suite.T(), "Test Post", jsonPosts.Posts[0].Message)
+}
+
+// =============================================
+// LOGIN INTEGRATION TESTS
+
+func (suite *TestSuiteEnv) Test_LoginUser_CorrectCredentials() {
+	// create a user first so we have someone to log in as
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+	var signupJson = []byte(`{"email":"test@example.com", "password":"password123", "username":"testuser"}`)
+	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
+	app.ServeHTTP(suite.res, signupReq)
+
+	// login with same credentials 
+	suite.res = httptest.NewRecorder()
+	var loginJson = []byte(`{"usernameOrEmail":"test@example.com", "password":"password123"}`)
+	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
+	app.ServeHTTP(suite.res, loginReq)
+
+	// expect 201 response back
+	assert.Equal(suite.T(), 201, suite.res.Code)
+
+	// is response data correct
+	var response map[string]string
+	json.Unmarshal(suite.res.Body.Bytes(), &response)
+	assert.NotEmpty(suite.T(), response["token"])
+}
+
+func (suite *TestSuiteEnv) Test_LoginUser_WrongPassword() {
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+	var signupJson = []byte(`{"email":"test@example.com", "password":"password123", "username":"testuser"}`)
+	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
+	app.ServeHTTP(suite.res, signupReq)
+
+	suite.res = httptest.NewRecorder()
+	var loginJson = []byte(`{"usernameOrEmail":"test@example.com", "password":"password1234"}`)
+	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
+	app.ServeHTTP(suite.res, loginReq)
+
+	assert.Equal(suite.T(), 401, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_LoginUser_EmailNotFound() {
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	
+	var loginJson = []byte(`{"usernameOrEmail":"notregistered@example.com", "password":"password123"}`)
+	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
+	app.ServeHTTP(suite.res, loginReq)
+
+	assert.Equal(suite.T(), 401, suite.res.Code)
 }
