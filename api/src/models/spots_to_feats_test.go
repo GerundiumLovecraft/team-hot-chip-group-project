@@ -13,9 +13,7 @@ type TestSTFModelSuiteEnv struct {
 	suite.Suite
 	db      *gorm.DB
 	spotId1 uint
-	spotId2 uint
 	featId1 uint
-	featId2 uint
 }
 
 // Tests are run before they start

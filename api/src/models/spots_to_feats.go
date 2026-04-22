@@ -1,11 +1,11 @@
 package models
 
 type SpotsToFeats struct {
-	SpotId  uint    `gorm:"primaryKey;autoIncrement:false"`
+	SpotId  uint    `gorm:"primaryKey;autoIncrement:false" json:"spot_id"`
 	FeatId  uint    `gorm:"primaryKey;autoIncrement:false" json:"feat_id"`
-	Value   *int8   `gorm:"check:value IS NULL OR (value>=1 AND value<=3)"`
-	Spot    Spot    `gorm:"foreignKey:SpotId"`
-	Feature Feature `gorm:"foreignKey:FeatId"`
+	Value   *int8   `gorm:"check:value IS NULL OR (value>=1 AND value<=3)" json:"value"`
+	Spot    Spot    `gorm:"foreignKey:SpotId" json:"spot,omitempty"`
+	Feature Feature `gorm:"foreignKey:FeatId" json:"feature,omitempty"`
 }
 
 func (spotToFeat *SpotsToFeats) SaveNewRelation() (*SpotsToFeats, error) {

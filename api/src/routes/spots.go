@@ -9,8 +9,8 @@ import (
 func setupSpotsRoutes(baseRouter *gin.RouterGroup) {
 	spots := baseRouter.Group("/spots")
 
-	spots.GET("", middleware.AuthenticationMiddleware, controllers.GetAllSpots)
-	spots.GET("/:id", middleware.AuthenticationMiddleware, controllers.GetSpotById)
+	spots.GET("", controllers.GetAllSpots)
+	spots.GET("/:id", controllers.GetSpotById)
 	spots.POST("", middleware.AuthenticationMiddleware, controllers.CreateSpot)
 
 }
