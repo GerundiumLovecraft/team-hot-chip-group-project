@@ -159,7 +159,7 @@ func (suite *TestSuiteEnv) Test_SignupUser_DuplicateUsername() {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
 	app.ServeHTTP(suite.res, req)
 
-	// second signup with same email
+	// second signup with same username
 	var jsonStr2 = []byte(`{"email":"different@example.com", "password":"password123", "username":"sameuser"}`)
 	suite.res = httptest.NewRecorder()
 	req, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr2))
