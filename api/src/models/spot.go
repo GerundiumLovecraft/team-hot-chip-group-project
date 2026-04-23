@@ -39,24 +39,39 @@ func FindSpot(id string) (*Spot, error) {
 	return &spot, nil
 }
 
-func FilterSpotsByFeature(id uint, value *int8) (*[]Spot, error) {
+func FilterSpotsByFeature(feats []Feat) (*[]Spot, error) {
 	var spots []Spot
 
-	// initiate construction of the query
-	query := Database.Joins("JOIN spots_to_feats ON spots_to_feats.spot_id = spots.id").
-		Where("spots_to_feats.feat_id = ?", id)
+	query := Database.Joins("JOIN spots_to_feats ON spots_to_feats.id = spots.id")
 
-	// add additional filter if value is not nil
-	if value != nil {
-		query = query.Where("spots_to_feats.value = ?", *value)
+	// Append Where conditions for each feature
+	for _, feat := range feats {
+		if feat.Value != nil {
+			// If feature is with a value
+			query = query.Where("spots_to_feats.feat_id = ? AND spots_to_feats.value = ?", feat.ID, *feat.Value)
+		} else {
+			// If feature is without the value
+			query = query.Where("spots_to_feats.feat_id = ? AND spots_to_feats.value IS NULL", feat.ID)
+		}
 	}
 
-	// send query to DB
-	err := query.Preload("Features.Feature").Find(&spots).Error
+	err := query.
+		Group("spot_id").
+		Having("COUNT(*) = ?", len(feats)).
+		Preload("Features.Feature").
+		Find(&spots).Error
 
 	if err != nil {
-		return &[]Spot{}, err
+		return nil, err
 	}
 
 	return &spots, nil
+
 }
+
+/*
+type Feat struct {
+	ID       uint   `json:id`
+	Value    *int8  `json:"value"`
+}
+*/
