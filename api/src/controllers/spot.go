@@ -90,6 +90,55 @@ func GetSpotById(ctx *gin.Context) {
 
 }
 
+func GetSpotsByFeature(ctx *gin.Context) {
+    // get the feature id and convert it to Uint
+	featureId := ctx.Param("feat_id")
+	featureIdUint, _ := strconv.ParseUint(featureId, 10, 64)
+
+	// get the optional value filter from query string
+	queryValue := ctx.Query("value")
+	var valueToFilter *int8 = nil
+
+	// convert and assign the value pointer if it is not empty
+	if queryValue != "" {
+		valueInt, _ := strconv.ParseInt(queryValue, 10, 64)
+		valueIntConv := int8(valueInt)
+		valueToFilter = &valueIntConv
+		}
+
+	// filter spots by feature id and optional value
+	spotsFound, errorMessage := models.FilterSpotsByFeature(uint(featureIdUint), valueToFilter)
+
+	if errorMessage != nil {
+		SendInternalError(ctx, errorMessage)
+		return
+	}
+
+	jsonSpots := make([]JSONSpot, 0)
+	for _, spot := range *spotsFound {
+		jsonFeature := make([]JSONFeature, 0)
+		for _, feature := range spot.Features {
+			jsonFeature = append(jsonFeature, JSONFeature{
+				FeatName: feature.Feature.FeatName,
+				Value:    feature.Value,
+			})
+		}
+		jsonSpots = append(jsonSpots, JSONSpot{
+			ID:          spot.ID,
+			UserId:      spot.UserId,
+			Name:        spot.Name,
+			Address:     spot.Address,
+			Description: spot.Description,
+			OpenFrom:    spot.OpenFrom,
+			OpenTo:      spot.OpenTo,
+			Features:    jsonFeature,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"spots": jsonSpots})
+
+}
+
 func CreateSpot(ctx *gin.Context) {
 	var newSpot models.Spot
 	errorMessage := ctx.BindJSON(&newSpot)
@@ -120,3 +169,4 @@ func CreateSpot(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"spotID": newSpot.ID, "token": token})
 }
+
