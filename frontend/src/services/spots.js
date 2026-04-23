@@ -1,73 +1,58 @@
 // docs: https://vitejs.dev/guide/env-and-mode.html
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-export const getSpots = async (token) => {
-  const headers = {
-    "Content-Type": "application/json",
-  };
+export const getAllSpots = async () => {
+    const requestOptions = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    };
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
+    const response = await fetch(`${BACKEND_URL}/spots`, requestOptions);
 
-  const requestOptions = {
-    method: "GET",
-    headers,
-  };
+    if (response.status !== 200) {
+        throw new Error("Unable to fetch all spots!");
+    }
 
-  const response = await fetch(`${BACKEND_URL}/spots`, requestOptions);
+    const data = await response.json();
+    return data;
+};
 
-  if (response.status !== 200) {
-    throw new Error("Unable to fetch spots");
-  }
+export const getSpotById = async (id) => {
+    const requestOptions = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    };
 
-  const data = await response.json();
-  return data;
+    const response = await fetch(`${BACKEND_URL}/spots/${id}`, requestOptions);
+
+    if (response.status !== 200) {
+        throw new Error("Unable to find that spot!");
+    }
+
+    const data = await response.json();
+    return data.Spot;
 };
 
 export const createSpot = async (spotData, token) => {
-  const headers = {
-    "Content-Type": "application/json",
-  };
+    const requestOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(spotData),
+    };
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
+    const response = await fetch(`${BACKEND_URL}/spots`, requestOptions);
 
-  const requestOptions = {
-    method: "POST",
-    headers,
-    body: JSON.stringify(spotData),
-  };
+    if (response.status !== 201) {
+        throw new Error("Unable to create a spot!");
+    }
 
-  const response = await fetch(`${BACKEND_URL}/spots`, requestOptions);
-  const data = await response.json();
-
-  if (response.status !== 201) {
-    throw new Error(data.message || "Unable to create spot");
-  }
-
-  return data;
-};
-
-export const createUser = async (email, password) => {
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: email,
-      hashed_password: password,
-    }),
-  };
-
-  const response = await fetch(`${BACKEND_URL}/users`, requestOptions);
-
-  if (response.status !== 201) {
     const data = await response.json();
-    throw new Error(data.message);
-  }
-
-  return true;
+    return data
 };
