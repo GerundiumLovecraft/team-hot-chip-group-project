@@ -67,7 +67,7 @@ func GetSpotById(ctx *gin.Context) {
 		SendInternalError(ctx, errorMessage)
 		return
 	}
-	
+
 	jsonFeature := make([]JSONFeature, 0)
 	for _, feature := range spotFound.Features {
 		jsonFeature = append(jsonFeature, JSONFeature{
@@ -91,26 +91,33 @@ func GetSpotById(ctx *gin.Context) {
 }
 
 func GetSpotsByFeature(ctx *gin.Context) {
-    // get the feature id and convert it to Uint
-	featureId := ctx.Param("feat_id")
-	featureIdUint, _ := strconv.ParseUint(featureId, 10, 64)
+	// get the slice of features from the request body
+	type FeatureFilter struct {
+		ID    uint  `json:"id"`
+		Value *int8 `json:"value"`
+	}
 
-	// get the optional value filter from query string
-	queryValue := ctx.Query("value")
-	var valueToFilter *int8 = nil
+	features := make([]FeatureFilter, 0)
+	if err := ctx.ShouldBindJSON(&features); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// Check if features for filter were provided
+	if len(features) == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Filter parameters are empty"})
+	}
 
-	// convert and assign the value pointer if it is not empty
-	if queryValue != "" {
-		valueInt, _ := strconv.ParseInt(queryValue, 10, 64)
-		valueIntConv := int8(valueInt)
-		valueToFilter = &valueIntConv
-		}
-
-	// filter spots by feature id and optional value
-	spotsFound, errorMessage := models.FilterSpotsByFeature(uint(featureIdUint), valueToFilter)
+	// filter spots by features (id and value)
+	spotsFound, errorMessage := models.FilterSpotsByFeature(features)
 
 	if errorMessage != nil {
 		SendInternalError(ctx, errorMessage)
+		return
+	}
+
+	// Return empty slice when no matches are found
+	if len(*spotsFound) == 0 {
+		ctx.JSON(http.StatusOK, gin.H{"message": "Spots not found", "spots": []JSONSpot{}})
 		return
 	}
 
@@ -151,20 +158,20 @@ func CreateSpot(ctx *gin.Context) {
 	userID := value.(string)
 
 	userIdUint, _ := strconv.ParseUint(userID, 10, 64)
-	
+
 	newSpot.UserId = uint(userIdUint)
 
 	if newSpot.UserId == 0 || newSpot.Name == "" || newSpot.Address == "" || newSpot.Description == "" || newSpot.OpenFrom == "" || newSpot.OpenTo == "" || len(newSpot.Features) == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "The new spot's name, address, description, opening hours, and features must be supply"})
 		return
 	}
-	
+
 	_, errorMessage = newSpot.Save()
 	if errorMessage != nil {
 		SendInternalError(ctx, errorMessage)
 		return
 	}
-	
+
 	token, _ := auth.GenerateToken(userID)
 
 	ctx.JSON(http.StatusCreated, gin.H{"spotID": newSpot.ID, "token": token})
