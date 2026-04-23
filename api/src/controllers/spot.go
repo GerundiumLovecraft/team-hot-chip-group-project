@@ -95,7 +95,7 @@ func GetSpotsByFeature(ctx *gin.Context) {
 	featureId := ctx.Param("feat_id")
 	featureIdUint, _ := strconv.ParseUint(featureId, 10, 64)
 
-	// get the optional value 
+	// get the optional value filter from query string
 	queryValue := ctx.Query("value")
 	var valueToFilter *int8 = nil
 
@@ -106,17 +106,13 @@ func GetSpotsByFeature(ctx *gin.Context) {
 		valueToFilter = &valueIntConv
 		}
 
-	// Calling the FilterSpotsByFeature with the convert type
+	// filter spots by feature id and optional value
 	spotsFound, errorMessage := models.FilterSpotsByFeature(uint(featureIdUint), valueToFilter)
 
 	if errorMessage != nil {
 		SendInternalError(ctx, errorMessage)
 		return
 	}
-	
-	userId, _ := ctx.Get("userID")
-	userIdStr := userId.(string)
-	token, _ := auth.GenerateToken(userIdStr)
 
 	jsonSpots := make([]JSONSpot, 0)
 	for _, spot := range *spotsFound {
@@ -139,7 +135,7 @@ func GetSpotsByFeature(ctx *gin.Context) {
 		})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"spots": jsonSpots, "token": token})
+	ctx.JSON(http.StatusOK, gin.H{"spots": jsonSpots})
 
 }
 
