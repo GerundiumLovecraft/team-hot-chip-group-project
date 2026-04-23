@@ -64,6 +64,10 @@ func GetSpotById(ctx *gin.Context) {
 	spotFound, errorMessage := models.FindSpot(spotId)
 
 	if errorMessage != nil {
+		if errorMessage.Error() == "record not found" {
+			ctx.JSON(http.StatusNotFound, gin.H{"spotId": JSONSpot{}})
+			return
+		}
 		SendInternalError(ctx, errorMessage)
 		return
 	}
@@ -91,26 +95,28 @@ func GetSpotById(ctx *gin.Context) {
 }
 
 func GetSpotsByFeature(ctx *gin.Context) {
-    // get the feature id and convert it to Uint
-	featureId := ctx.Param("feat_id")
-	featureIdUint, _ := strconv.ParseUint(featureId, 10, 64)
+	// get the slice of features from the request body
+	features := make([]models.FeatureFilter, 0)
+	if err := ctx.ShouldBindJSON(&features); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// Check if features for filter were provided
+	if len(features) == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Filter parameters are empty"})
+	}
 
-	// get the optional value filter from query string
-	queryValue := ctx.Query("value")
-	var valueToFilter *int8 = nil
-
-	// convert and assign the value pointer if it is not empty
-	if queryValue != "" {
-		valueInt, _ := strconv.ParseInt(queryValue, 10, 64)
-		valueIntConv := int8(valueInt)
-		valueToFilter = &valueIntConv
-		}
-
-	// filter spots by feature id and optional value
-	spotsFound, errorMessage := models.FilterSpotsByFeature(uint(featureIdUint), valueToFilter)
+	// filter spots by features (id and value)
+	spotsFound, errorMessage := models.FilterSpotsByFeature(features)
 
 	if errorMessage != nil {
 		SendInternalError(ctx, errorMessage)
+		return
+	}
+
+	// Return empty slice when no matches are found
+	if len(*spotsFound) == 0 {
+		ctx.JSON(http.StatusOK, gin.H{"message": "Spots not found", "spots": []JSONSpot{}})
 		return
 	}
 
@@ -169,4 +175,3 @@ func CreateSpot(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"spotID": newSpot.ID, "token": token})
 }
-
