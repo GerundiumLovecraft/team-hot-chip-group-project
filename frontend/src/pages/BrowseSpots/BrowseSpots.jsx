@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getSpots } from "../../services/spots";
+import { getAllSpots } from "../../services/spots";
 
 export const BrowseSpots = () => {
   const [spots, setSpots] = useState([]);
@@ -7,7 +7,7 @@ export const BrowseSpots = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    getSpots(token)
+    getAllSpots()
       .then((data) => {
         setSpots(data.spots);
       })
@@ -15,7 +15,6 @@ export const BrowseSpots = () => {
         console.error(err);
       });
   }, []);
-
 
   return (
     <>
