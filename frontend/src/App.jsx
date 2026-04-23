@@ -1,29 +1,23 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "./App.css";
-import { HomePage } from "./pages/Home/HomePage";
+import { BrowseSpots } from "./pages/BrowseSpots/BrowseSpots";
 import { LoginPage } from "./pages/Login/LoginPage";
 import { SignupPage } from "./pages/Signup/SignupPage";
-import { FeedPage } from "./pages/Feed/FeedPage";
+// import { SpotDetailsPage } from "./pages/SpotDetailsPage";
+// import { NewSpotPage } from "./pages/NewSpotPage";
+// import { Profile } from "./pages/Profile";
 
 // What is this? Docs here: https://reactrouter.com/en/main/start/overview
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <HomePage />,
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/signup",
-    element: <SignupPage />,
-  },
-  {
-    path: "/posts",
-    element: <FeedPage />,
-  },
+  { path: "/", element: <BrowseSpots /> },
+  { path: "/login", element: <LoginPage /> },
+  { path: "/signup", element: <SignupPage /> },
+
+  //Not yet created below pages
+  // { path: "/spots/:id", element: <SpotDetailsPage /> },
+  // { path: "/spots/new", element: <NewSpotPage /> },
+  // { path: "/profile", element: <Profile /> },
 ]);
 
 const App = () => {
