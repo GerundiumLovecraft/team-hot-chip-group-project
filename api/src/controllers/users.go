@@ -53,16 +53,16 @@ func GetUserById(ctx *gin.Context) {
 	// Get the user ID from the parameters
 	searchedId := ctx.Param("id")
 
-	// Check if the user's ID matches to the searched ID
-	if !exists || !ok || userIdStr != searchedId {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorised access to user's profile"})
-		return
-	}
-
-	// Find the use by ID
+	// Find the user by ID
 	user, err := models.FindUser(searchedId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "User with this ID not found"})
+		return
+	}
+
+	// Check if the user's ID matches to the searched ID
+	if !exists || !ok || userIdStr != searchedId {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorised access to user's profile"})
 		return
 	}
 
