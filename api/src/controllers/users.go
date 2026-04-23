@@ -53,7 +53,7 @@ func GetUserById(ctx *gin.Context) {
 	// Get the user ID from the parameters
 	searchedId := ctx.Param("id")
 
-	// Find the use by ID
+	// Find the user by ID
 	user, err := models.FindUser(searchedId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "User with this ID not found"})

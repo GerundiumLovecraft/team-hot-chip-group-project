@@ -446,7 +446,7 @@ func (suite *TestSuiteEnv) Test_GetUserByID_NotFound() {
 	var loginResponse map[string]string
 	json.Unmarshal(suite.res.Body.Bytes(), &loginResponse)
 
-	// get a fake user ID that doesn't exist
+	// request a fake user ID that doesn't exist
 	suite.res = httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/users/99999", nil)
 	req.Header.Set("Authorization", "Bearer "+loginResponse["token"])
@@ -524,7 +524,7 @@ func (suite *TestSuiteEnv) Test_GetUserByUsername_NotFound() {
 	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
 	app.ServeHTTP(suite.res, signupReq)
 
-	// login to get a real token with the users actual ID
+	// login to get a real token 
 	suite.res = httptest.NewRecorder()
 	var loginJson = []byte(`{"usernameOrEmail":"realuser@example.com", "password":"password123"}`)
 	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
@@ -534,7 +534,7 @@ func (suite *TestSuiteEnv) Test_GetUserByUsername_NotFound() {
 	var loginResponse map[string]string
 	json.Unmarshal(suite.res.Body.Bytes(), &loginResponse)
 
-	// get a fake username that doesn't exist
+	// request a fake username that doesn't exist
 	suite.res = httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/users/search-by-username/idontexist", nil)
 	req.Header.Set("Authorization", "Bearer "+loginResponse["token"])
