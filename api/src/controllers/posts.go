@@ -21,11 +21,7 @@ func GetAllPosts(ctx *gin.Context) {
 		return
 	}
 
-	val, _ := ctx.Get("userID")
-	userID := val.(string)
-	token, _ := auth.GenerateToken(userID)
-
-	// Convert posts to JSON Structs
+		// Convert posts to JSON Structs
 	jsonPosts := make([]JSONPost, 0)
 	for _, post := range *posts {
 		jsonPosts = append(jsonPosts, JSONPost{
@@ -34,9 +30,18 @@ func GetAllPosts(ctx *gin.Context) {
 		})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"posts": jsonPosts, "token": token})
+	val, exists := ctx.Get("userID")
+	if exists {
+		userID, ok := val.(string)
+		if ok {
+			token, _ := auth.GenerateToken(userID)
+			ctx.JSON(http.StatusOK, gin.H{"posts": jsonPosts, "token": token})
+			return
+	}
 }
 
+	ctx.JSON(http.StatusOK, gin.H{"posts": jsonPosts})
+}
 type createPostRequestBody struct {
 	Message string
 }
