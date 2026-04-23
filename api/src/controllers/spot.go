@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/auth"
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
@@ -120,3 +121,4 @@ func CreateSpot(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"spotID": newSpot.ID, "token": token})
 }
+
