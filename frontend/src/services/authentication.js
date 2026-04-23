@@ -49,8 +49,7 @@ export const signup = async (username, email, password) => {
   if (response.status === 201) {
     return;
   } else {
-    throw new Error(
-      `Received status ${response.status} when signing up. Expected 201`
-    );
+    const data = await response.json();
+    throw new Error(data.message || `Received status ${response.status} when signing up. Expected 201`);
   }
 };
