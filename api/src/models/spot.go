@@ -1,6 +1,8 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Spot struct {
 	gorm.Model
@@ -11,6 +13,11 @@ type Spot struct {
 	OpenFrom    string         `json:"open_from"`
 	OpenTo      string         `json:"open_to"`
 	Features    []SpotsToFeats `json:"features" gorm:"foreignKey:SpotId;references:ID;constraint:OnDelete:CASCADE"`
+}
+
+type FeatureFilter struct {
+	ID    uint  `json:"id"`
+	Value *int8 `json:"value"`
 }
 
 func (spot *Spot) Save() (*Spot, error) {
@@ -39,7 +46,7 @@ func FindSpot(id string) (*Spot, error) {
 	return &spot, nil
 }
 
-func FilterSpotsByFeature(feats []Feat) (*[]Spot, error) {
+func FilterSpotsByFeature(feats []FeatureFilter) (*[]Spot, error) {
 	var spots []Spot
 
 	query := Database.Joins("JOIN spots_to_feats ON spots_to_feats.id = spots.id")

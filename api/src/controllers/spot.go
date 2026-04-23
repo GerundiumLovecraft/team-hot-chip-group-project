@@ -64,6 +64,10 @@ func GetSpotById(ctx *gin.Context) {
 	spotFound, errorMessage := models.FindSpot(spotId)
 
 	if errorMessage != nil {
+		if errorMessage.Error() == "record not found" {
+			ctx.JSON(http.StatusNotFound, gin.H{"spotId": JSONSpot{}})
+			return
+		}
 		SendInternalError(ctx, errorMessage)
 		return
 	}
@@ -92,12 +96,7 @@ func GetSpotById(ctx *gin.Context) {
 
 func GetSpotsByFeature(ctx *gin.Context) {
 	// get the slice of features from the request body
-	type FeatureFilter struct {
-		ID    uint  `json:"id"`
-		Value *int8 `json:"value"`
-	}
-
-	features := make([]FeatureFilter, 0)
+	features := make([]models.FeatureFilter, 0)
 	if err := ctx.ShouldBindJSON(&features); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

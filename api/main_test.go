@@ -84,7 +84,6 @@ func TestSuite(t *testing.T) {
 	suite.Run(t, new(TestSuiteEnv))
 }
 
-
 func (suite *TestSuiteEnv) Test_PostUsers_IncorrectJSON() {
 	app, token := suite.app, suite.token
 
@@ -286,6 +285,15 @@ func (suite *TestSuiteEnv) Test_GetSpotById_ReturnsSpot() {
 	assert.Equal(suite.T(), "main_test.go", response.Spot.Address)
 }
 
+func (suite *TestSuiteEnv) Test_GetSpotById_ReturnsError_IncorrectId() {
+	// Send GET request to
+	app := suite.app
+	getSpotRequest, _ := http.NewRequest("GET", "/spots/9999999", nil)
+	app.ServeHTTP(suite.res, getSpotRequest)
+
+	assert.Equal(suite.T(), 404, suite.res.Code)
+}
+
 func (suite *TestSuiteEnv) Test_CreateSpot_AuthError_WithoutToken() {
 	// Send a POST request to /spots without token
 	app := suite.app
@@ -357,9 +365,8 @@ func (suite *TestSuiteEnv) Test_CreateSpot_OK() {
 	assert.NotZero(suite.T(), postResponse.SpotID)
 }
 
-
 // =============================================
-// PROFILE INTEGRATION TESTS 
+// PROFILE INTEGRATION TESTS
 // Tests GET /users/:id
 
 func (suite *TestSuiteEnv) Test_GetUserByID_OwnProfile() {
@@ -431,7 +438,7 @@ func (suite *TestSuiteEnv) Test_GetUserByID_Not_OwnProfile() {
 func (suite *TestSuiteEnv) Test_GetUserByID_NotFound() {
 	app := suite.app
 
-	// signup 
+	// signup
 	var signupJson = []byte(`{"email":"test@example.com", "password":"password123", "username":"testuser"}`)
 	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
 	app.ServeHTTP(suite.res, signupReq)
@@ -465,7 +472,7 @@ func (suite *TestSuiteEnv) Test_GetUserByUsername_OwnProfile() {
 	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
 	app.ServeHTTP(suite.res, signupReq)
 
-	// login to get a real token 
+	// login to get a real token
 	suite.res = httptest.NewRecorder()
 	var loginJson = []byte(`{"usernameOrEmail":"test@example.com", "password":"password123"}`)
 	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
@@ -506,7 +513,6 @@ func (suite *TestSuiteEnv) Test_GetUserByUsername_Not_OwnProfile() {
 	var loginResponse map[string]string
 	json.Unmarshal(suite.res.Body.Bytes(), &loginResponse)
 
-
 	// request person 2 profile
 	suite.res = httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/users/search-by-username/person2", nil)
@@ -519,12 +525,12 @@ func (suite *TestSuiteEnv) Test_GetUserByUsername_Not_OwnProfile() {
 func (suite *TestSuiteEnv) Test_GetUserByUsername_NotFound() {
 	app := suite.app
 
-	// signup 
+	// signup
 	var signupJson = []byte(`{"email":"realuser@example.com", "password":"password123", "username":"realuser"}`)
 	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
 	app.ServeHTTP(suite.res, signupReq)
 
-	// login to get a real token 
+	// login to get a real token
 	suite.res = httptest.NewRecorder()
 	var loginJson = []byte(`{"usernameOrEmail":"realuser@example.com", "password":"password123"}`)
 	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))

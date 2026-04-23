@@ -25,12 +25,6 @@ func (suite *TestSTFModelSuiteEnv) SetupSuite() {
 }
 
 func (suite *TestSTFModelSuiteEnv) SetupTest() {
-	spot1 := Spot{
-		Name:    "spot1",
-		Address: "Spot Street",
-	}
-
-	savedSpot1, _ := spot1.Save()
 
 	feature1 := Feature{
 
@@ -38,9 +32,16 @@ func (suite *TestSTFModelSuiteEnv) SetupTest() {
 	}
 
 	savedFeature1, _ := feature1.SaveNewFeature()
-
-	suite.spotId1 = savedSpot1.ID
 	suite.featId1 = savedFeature1.ID
+
+	spot1 := Spot{
+		Name:    "spot1",
+		Address: "Spot Street",
+	}
+
+	savedSpot1, _ := spot1.Save()
+	suite.spotId1 = savedSpot1.ID
+
 }
 
 // Running after each test
