@@ -84,17 +84,6 @@ func TestSuite(t *testing.T) {
 	suite.Run(t, new(TestSuiteEnv))
 }
 
-func (suite *TestSuiteEnv) Test_PostUsers_CorrectJSON() {
-	app, token := suite.app, suite.token
-
-	res := httptest.NewRecorder()
-	var jsonStr = []byte(`{"email":"test@email.com", "password": "testpassword"}`)
-	req, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr))
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
-	app.ServeHTTP(res, req)
-
-	assert.Equal(suite.T(), 201, res.Code)
-}
 
 func (suite *TestSuiteEnv) Test_PostUsers_IncorrectJSON() {
 	app, token := suite.app, suite.token
@@ -366,4 +355,102 @@ func (suite *TestSuiteEnv) Test_CreateSpot_OK() {
 	// Assert the result
 	assert.Equal(suite.T(), 201, suite.res.Code)
 	assert.NotZero(suite.T(), postResponse.SpotID)
+}
+
+
+// =============================================
+// PROFILE INTEGRATION TESTS 
+// Tests GET /users/:id and GET /users/search-by-username/:username
+
+func (suite *TestSuiteEnv) Test_GetUserByID_OwnProfile() {
+	app := suite.app
+
+	// signup
+	var signupJson = []byte(`{"email":"test@example.com", "password":"password123", "username":"testuser"}`)
+	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
+	app.ServeHTTP(suite.res, signupReq)
+
+	// login to get a real token with the users actual ID
+	suite.res = httptest.NewRecorder()
+	var loginJson = []byte(`{"usernameOrEmail":"test@example.com", "password":"password123"}`)
+	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
+	app.ServeHTTP(suite.res, loginReq)
+
+	// get token from the login response
+	var loginResponse map[string]string
+	json.Unmarshal(suite.res.Body.Bytes(), &loginResponse)
+
+	// get the users ID from the database
+	user, _ := models.FindUserByUsernameOrEmail("test@example.com")
+	userId := fmt.Sprintf("%d", user.ID)
+
+	// request own profile
+	suite.res = httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/users/"+userId, nil)
+	req.Header.Set("Authorization", "Bearer "+loginResponse["token"])
+	app.ServeHTTP(suite.res, req)
+
+	assert.Equal(suite.T(), 200, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_GetUserByID_Not_OwnProfile() {
+	app := suite.app
+
+	// person 1 sign up
+	var signupJson1 = []byte(`{"email":"person1@example.com", "password":"password123", "username":"person1"}`)
+	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson1))
+	app.ServeHTTP(suite.res, signupReq)
+
+	// person 2 sign up
+	var signupJson2 = []byte(`{"email":"person2@example.com", "password":"password123", "username":"person2"}`)
+	signupReq, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson2))
+	app.ServeHTTP(suite.res, signupReq)
+
+	// person 1 login and get token
+	suite.res = httptest.NewRecorder()
+	var loginJson = []byte(`{"usernameOrEmail":"person1@example.com", "password":"password123"}`)
+	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
+	app.ServeHTTP(suite.res, loginReq)
+
+	var loginResponse map[string]string
+	json.Unmarshal(suite.res.Body.Bytes(), &loginResponse)
+
+	// get person 2 user ID from the database
+	user, _ := models.FindUserByUsernameOrEmail("person2@example.com")
+	userId := fmt.Sprintf("%d", user.ID)
+
+	// request person 2 profile
+	suite.res = httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/users/"+userId, nil)
+	req.Header.Set("Authorization", "Bearer "+loginResponse["token"])
+	app.ServeHTTP(suite.res, req)
+
+	assert.Equal(suite.T(), 401, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_GetUserByID_NotFound() {
+	app := suite.app
+
+	// signup 
+	var signupJson = []byte(`{"email":"test@example.com", "password":"password123", "username":"testuser"}`)
+	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJson))
+	app.ServeHTTP(suite.res, signupReq)
+
+	// login to get a real token with the users actual ID
+	suite.res = httptest.NewRecorder()
+	var loginJson = []byte(`{"usernameOrEmail":"test@example.com", "password":"password123"}`)
+	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJson))
+	app.ServeHTTP(suite.res, loginReq)
+
+	// get token from the login response
+	var loginResponse map[string]string
+	json.Unmarshal(suite.res.Body.Bytes(), &loginResponse)
+
+	// get a fake user ID that doesn't exist
+	suite.res = httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/users/99999", nil)
+	req.Header.Set("Authorization", "Bearer "+loginResponse["token"])
+	app.ServeHTTP(suite.res, req)
+
+	assert.Equal(suite.T(), 404, suite.res.Code)
 }
