@@ -9,6 +9,6 @@ import (
 func setupPostRoutes(baseRouter *gin.RouterGroup) {
 	posts := baseRouter.Group("/posts")
 
+	posts.GET("", controllers.GetAllPosts)
 	posts.POST("", middleware.AuthenticationMiddleware, controllers.CreatePost)
-	posts.GET("", middleware.AuthenticationMiddleware, controllers.GetAllPosts)
 }
