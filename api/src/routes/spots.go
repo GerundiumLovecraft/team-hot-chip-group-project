@@ -11,6 +11,7 @@ func setupSpotsRoutes(baseRouter *gin.RouterGroup) {
 
 	spots.GET("", controllers.GetAllSpots)
 	spots.GET("/:id", controllers.GetSpotById)
+	spots.GET("filter", controllers.GetSpotsByFeature)
 	spots.POST("", middleware.AuthenticationMiddleware, controllers.CreateSpot)
 
 }
