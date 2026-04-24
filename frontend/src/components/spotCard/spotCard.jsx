@@ -50,7 +50,7 @@ const Spot = (props) => {
       <div className="features">
         <ul>
           {spot.features.map((feature) => (
-            //in css use .value-1, .value-2... to anchor each value of the feature
+            //in css use icon name '.wifi, .toilets' to anchor each icon individually
             <li
               className={`features-value ${feature.feat_name} value-${feature.value}`}
               key={feature.feat_name}
