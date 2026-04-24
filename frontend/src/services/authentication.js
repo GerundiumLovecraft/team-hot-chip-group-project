@@ -69,7 +69,7 @@ export const fetchUserProfile = async (token) => {
     const data = await response.json();
     return { user: data.user, token: data.token };
   } else if (response.status === 401) {
-    throw new Error("Not Allowed: Please log in again.");
+    throw new Error("Unauthorised: Please log in again.");
   } else {
     throw new Error(
       `Received status ${response.status} when fetching profile. Expected 200`

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchUserProfile } from "../services/authentication";
+import { fetchUserProfile } from "../../services/authentication";
 import "./ProfilePage.css";
 
 export default function ProfilePage() {
