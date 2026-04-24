@@ -6,8 +6,6 @@ export const BrowseSpots = () => {
   const [spots, setSpots] = useState([]);
 
   useEffect(() => {
-    // const token = localStorage.getItem("token");
-
     getAllSpots()
       .then((data) => {
         setSpots(data.spots);
@@ -22,9 +20,12 @@ export const BrowseSpots = () => {
       <h2>Spots</h2>
 
       <div className="feed" role="feed">
-        {spots.map((spot) => (
-          <Spot key={spot._id} spot={spot} />
-        ))}
+        {spots.length !== 0 ?
+        spots.map((spot) => (
+          <Spot key={spot._id} spot={spot}/>
+        )):
+        <p>Nothing here yet. Why not add and submit your favourite spot?{"\u2615"} {"\u2728"}</p>
+        }
       </div>
     </>
   );
