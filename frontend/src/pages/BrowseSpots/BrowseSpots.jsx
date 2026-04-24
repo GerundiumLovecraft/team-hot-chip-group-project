@@ -1,40 +1,55 @@
 import { useState, useEffect } from "react";
 import { getAllSpots } from "../../services/spots";
-import Spot from "../../components/spotCard/spotCard"
+import Spot from "../../components/spotCard/spotCard";
 import SpotModal from "../../components/SpotModal/SpotModal";
+import "./BrowseSpots.css";
 
 export const BrowseSpots = () => {
   const [spots, setSpots] = useState([]);
   const [selectedSpot, setSelectedSpot] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // const token = localStorage.getItem("token");
-
     getAllSpots()
       .then((data) => {
         setSpots(data.spots);
       })
       .catch((err) => {
         console.error(err);
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return (
     <>
-      <h2>Spots</h2>
-
-      <div className="feed" role="feed">
-        {spots.map((spot) => (
-          <Spot 
-              key={spot._id} 
-              spot={spot}
-              onClick={() => setSelectedSpot(spot)}
-          />
-        ))}
+      <div className="browse-header">
+        <h1>Discover Your Perfect Spot</h1>
+        <p>Browse community submitted coffee shops, filtered to your working needs</p>
+      </div>
+      <div className="browse-layout">
+        <div className="spots-section">
+          {loading ? (
+            <p>Brewing something good... ☕️</p>
+          ) : spots.length !== 0 ? (
+            spots.map((spot) => (
+              <Spot
+                key={spot._id}
+                spot={spot}
+                onClick={() => setSelectedSpot(spot)}
+              />
+            ))
+          ) : (
+            <p>Nothing here yet. Why not submit your favourite spot? ☕ ✨</p>
+          )}
+        </div>
+        <div className="filter-section">
+          <h3>Filter</h3>
+          <p>Filter bar coming soon</p>
+        </div>
       </div>
       <SpotModal
-          spot={selectedSpot}
-          onClose={() => setSelectedSpot(null)}
+        spot={selectedSpot}
+        onClose={() => setSelectedSpot(null)}
       />
     </>
   );

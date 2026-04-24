@@ -41,3 +41,11 @@
     object-fit: cover;
     border-radius: 8px 8px 0 0;
 }
+
+.spot-container {
+    max-width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
