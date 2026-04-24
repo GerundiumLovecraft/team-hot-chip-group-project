@@ -53,3 +53,26 @@ export const signup = async (username, email, password) => {
     throw new Error(data.message || `Received status ${response.status} when signing up. Expected 201`);
   }
 };
+
+export const fetchUserProfile = async (token) => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await fetch(`${BACKEND_URL}/profile`, requestOptions);
+
+  if (response.status === 200) {
+    const data = await response.json();
+    return { user: data.user, token: data.token };
+  } else if (response.status === 401) {
+    throw new Error("Unauthorised: Please log in again.");
+  } else {
+    throw new Error(
+      `Received status ${response.status} when fetching profile. Expected 200`
+    );
+  }
+};
