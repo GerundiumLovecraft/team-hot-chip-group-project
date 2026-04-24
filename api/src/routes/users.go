@@ -13,8 +13,7 @@ func setupUserRoutes(baseRouter *gin.RouterGroup) {
 	users.GET("/search-by-username/:username", middleware.AuthenticationMiddleware, controllers.GetUserByUsername)
 	users.GET("/:id", middleware.AuthenticationMiddleware, controllers.GetUserById)
 
-	//Optional routes for getting a profile, editing profile and deleting
-	//If we get to that point, we'll need to implement functions in respective files
+	//Route for getting a profile is in its own route (profiles.go)
 
 	//Optional edit user
 	//users.PUT("/:id", controllers.UpdateUser)
