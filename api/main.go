@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"time"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/env"
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
@@ -20,12 +18,6 @@ func main() {
 	models.AutoMigrateModels()
 	models.SeedFeatures()
 	models.SeedDemoData()
-
-	// Create a test testPost. Delete these lines when you are creating posts of your own.
-	testPost := models.Post{
-		Message: fmt.Sprintf("This is a test message created at %v!", time.Now()),
-	}
-	testPost.Save()
 
 	app.Run(":8082")
 }

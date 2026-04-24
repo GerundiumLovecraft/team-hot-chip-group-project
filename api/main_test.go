@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/auth"
-	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/controllers"
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/env"
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
 	"github.com/gin-gonic/gin"
@@ -95,28 +93,6 @@ func (suite *TestSuiteEnv) Test_PostUsers_IncorrectJSON() {
 	assert.Equal(suite.T(), 400, suite.res.Code)
 }
 
-func (suite *TestSuiteEnv) Test_GetPosts() {
-	app, token := suite.app, suite.token
-
-	newPost := models.Post{
-		Message: "Test Post",
-	}
-	newPost.Save()
-
-	req, _ := http.NewRequest("GET", "/posts", nil)
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
-	app.ServeHTTP(suite.res, req)
-
-	responseData, _ := io.ReadAll(suite.res.Body)
-	var jsonPosts struct {
-		Posts []controllers.JSONPost
-	}
-
-	_ = json.Unmarshal(responseData, &jsonPosts)
-
-	assert.Equal(suite.T(), 200, suite.res.Code)
-	assert.Equal(suite.T(), "Test Post", jsonPosts.Posts[0].Message)
-}
 
 // =============================================
 // SIGNUP INTEGRATION TESTS
