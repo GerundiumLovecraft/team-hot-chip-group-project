@@ -20,6 +20,7 @@ type JSONSpot struct {
 	Name        string        `json:"name"`
 	Address     string        `json:"address"`
 	Description string        `json:"description"`
+	Image       string        `json:"image"`
 	OpenFrom    string        `json:"open_from"`
 	OpenTo      string        `json:"open_to"`
 	Features    []JSONFeature `json:"features"`
@@ -48,6 +49,7 @@ func GetAllSpots(ctx *gin.Context) {
 			Name:        spot.Name,
 			Address:     spot.Address,
 			Description: spot.Description,
+			Image:       spot.Image,
 			OpenFrom:    spot.OpenFrom,
 			OpenTo:      spot.OpenTo,
 			Features:    jsonFeature,
@@ -85,6 +87,7 @@ func GetSpotById(ctx *gin.Context) {
 		Name:        spotFound.Name,
 		Address:     spotFound.Address,
 		Description: spotFound.Description,
+		Image:       spotFound.Image,
 		OpenFrom:    spotFound.OpenFrom,
 		OpenTo:      spotFound.OpenTo,
 		Features:    jsonFeature,
@@ -135,6 +138,7 @@ func GetSpotsByFeature(ctx *gin.Context) {
 			Name:        spot.Name,
 			Address:     spot.Address,
 			Description: spot.Description,
+			Image:       spot.Image,
 			OpenFrom:    spot.OpenFrom,
 			OpenTo:      spot.OpenTo,
 			Features:    jsonFeature,

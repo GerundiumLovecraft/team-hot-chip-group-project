@@ -10,6 +10,7 @@ type Spot struct {
 	Name        string         `json:"name"`
 	Address     string         `json:"address"`
 	Description string         `json:"description"`
+	Image       string         `json:"image"`
 	OpenFrom    string         `json:"open_from"`
 	OpenTo      string         `json:"open_to"`
 	Features    []SpotsToFeats `json:"features" gorm:"foreignKey:SpotId;references:ID;constraint:OnDelete:CASCADE"`
