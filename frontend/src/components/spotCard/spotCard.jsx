@@ -9,8 +9,7 @@ import {
 } from "lucide-react";
 import "./spotCard.css"
 
-const Spot = (props) => {
-  const { spot } = props;
+const Spot = ({ spot, onClick }) => {
 
   const featureIcons = {
     wifi: Wifi,
@@ -28,7 +27,7 @@ const Spot = (props) => {
   const renderFeature = (feature) => {
     const Icon = featureIcons[feature.feat_name];
     if (feature.feat_name === "price") {
-      return <span>{"$".repeat(feature.value)}</span>;
+      return <span>{"£".repeat(feature.value)}</span>;
     }
     if (feature.feat_name === "noise_level") {
       const NoiseIcon = getNoiseIcon(feature.value);
@@ -36,16 +35,15 @@ const Spot = (props) => {
     }
     if (Icon) {
       const isEnabled = Boolean(feature.value);
-
-      return <Icon style={{ opacity: isEnabled ? 1 : 0.3 }} />;
+      return <Icon style={{ opacity: 1 }} />;
     }
   };
 
   return (
-    <div className="spot-container">
+    <div className="spot-container" onClick={onClick}>
+      <img src={spot.image} alt={spot.name} className="spot-image" />
       <h3 className="spot-name">{spot.name}</h3>
-      <p className="spot-address">Address: {spot.address}</p>
-      <p className="spot-description">Description: {spot.description}</p>
+      <p className="spot-address">{spot.address}</p>
 
       <div className="features">
         <ul>
