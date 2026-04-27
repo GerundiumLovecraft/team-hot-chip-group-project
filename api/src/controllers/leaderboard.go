@@ -10,7 +10,7 @@ import (
 type JSONLeaderboardEntry struct {
 	UserID    uint   `json:"user_id"`
 	Username  string `json:"username"`
-	SpotCount int    `json:"spots_created"`
+	SpotCreated int    `json:"spots_created"`
 }
 
 func GetLeaderboardData(ctx *gin.Context) {
