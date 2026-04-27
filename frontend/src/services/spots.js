@@ -37,6 +37,26 @@ export const getSpotById = async (id) => {
     return data.Spot;
 };
 
+export const getSpotByFeature = async (selectedFeatures) => {
+    const requestOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(selectedFeatures),
+    };
+
+    const response = await fetch(`${BACKEND_URL}/spots/filter`, requestOptions);
+
+    if (response.status !== 200) {
+        throw new Error("Unable to fetch the filter spots!");
+    }
+
+    const data = await response.json();
+    return data;
+};
+
+
 export const createSpot = async (spotData, token) => {
     const requestOptions = {
         method: "POST",
