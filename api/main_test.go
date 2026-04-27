@@ -524,3 +524,49 @@ func (suite *TestSuiteEnv) Test_GetUserByUsername_NotFound() {
 
 	assert.Equal(suite.T(), 404, suite.res.Code)
 }
+
+// =============================================
+// FEATURES INTEGRATION TESTS
+// GET /features
+
+func (suite *TestSuiteEnv) Test_GetAllFeatures_ReturnsAllFeatures() {
+	app := suite.app
+
+	getFeatsRequest, _ := http.NewRequest("GET", "/features", nil)
+	app.ServeHTTP(suite.res, getFeatsRequest)
+
+	// Retrieve information from the response
+	var response struct {
+		Features []struct {
+			ID   uint   `json:"feat_id"`
+			Name string `json:"feat_name"`
+		}
+	}
+
+	json.Unmarshal(suite.res.Body.Bytes(), &response)
+	fmt.Println(len(response.Features))
+
+	// Assert the results
+	assert.Equal(suite.T(), 200, suite.res.Code, "Reponse code should be 200")
+	assert.Equal(suite.T(), 7, len(response.Features), "Reponse length should be 7")
+
+}
+
+/*
+app := suite.app
+	getSpotsRequest, _ := http.NewRequest("GET", "/spots", nil)
+	app.ServeHTTP(suite.res, getSpotsRequest)
+
+	// Retrieve information from response
+	var response struct {
+		Spots []struct {
+			ID      uint   `json:"_id"`
+			Name    string `json:"name"`
+			Address string `json:"address"`
+		} `json:"spots"`
+	}
+	json.Unmarshal(suite.res.Body.Bytes(), &response)
+
+	// Assert the results
+	assert.Equal(suite.T(), 200, suite.res.Code)
+*/

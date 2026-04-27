@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar/Navbar";
 import { BrowseSpots } from "./pages/BrowseSpots/BrowseSpots";
 import { LoginPage } from "./pages/Login/LoginPage";
 import { SignupPage } from "./pages/Signup/SignupPage";
+import { CreateSpotPage } from "./pages/CreateSpot/CreateSpot"
 import ProfilePage from "./pages/Profile/ProfilePage";
 import "./App.css";
 
@@ -28,9 +29,9 @@ const router = createBrowserRouter([
       { path: "/login", element: <LoginPage /> },
       { path: "/signup", element: <SignupPage /> },
       { path: "/profile", element: <ProfilePage /> },
+      { path: "/spots/new", element: <CreateSpotPage /> },
    // Not yet created below pages
    // { path: "/spots/:id", element: <SpotDetailsPage /> },
-   // { path: "/spots/new", element: <NewSpotPage /> }
     ],
   },
 ]);

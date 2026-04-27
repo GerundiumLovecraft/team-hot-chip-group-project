@@ -7,6 +7,7 @@ func SetupRoutes(engine *gin.Engine) {
 	setupUserRoutes(apiRouter)
 	setupAuthenticationRoutes(apiRouter)
 	setupSpotsRoutes(apiRouter)
+	SetupFeaturesRouter(apiRouter)
 	setupProfileRoutes(apiRouter)
 	setupLeaderboardRoutes(apiRouter)
 }
