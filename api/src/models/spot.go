@@ -87,7 +87,7 @@ type Feat struct {
 type LeaderboardEntry struct {
 	UserID    uint   `json:"user_id"`
 	Username  string `json:"username"`
-	SpotCount int    `json:"spots_created"`
+	SpotsCreated int    `json:"spots_created"`
 }
 
 func FetchLeaderboard() ([]LeaderboardEntry, error) {
