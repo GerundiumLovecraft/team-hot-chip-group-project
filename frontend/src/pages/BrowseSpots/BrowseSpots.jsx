@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getAllSpots } from "../../services/spots";
 import Spot from "../../components/spotCard/spotCard";
 import SpotModal from "../../components/SpotModal/SpotModal";
+import SpotFilter from "../../components/filterSpot/FilterBar"
 import "./BrowseSpots.css";
 
 export const BrowseSpots = () => {
@@ -19,6 +20,10 @@ export const BrowseSpots = () => {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  const handleFilterChange = (selectedFeaturesList) => {
+    console.log("Features were changed to: ", selectedFeaturesList)
+  }
 
   return (
     <>
@@ -44,7 +49,7 @@ export const BrowseSpots = () => {
         </div>
         <div className="filter-section">
           <h3>Filter</h3>
-          <p>Filter bar coming soon</p>
+          <SpotFilter onFilterChange={handleFilterChange}/>
         </div>
       </div>
       <SpotModal

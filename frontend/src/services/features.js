@@ -1,8 +1,6 @@
-// docs: https://vitejs.dev/guide/env-and-mode.html
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-export const getFeatures = async () => {
-
+export const getAllFeatures = async () => {
     const requestOptions = {
         method: "GET",
         headers: {
@@ -10,13 +8,12 @@ export const getFeatures = async () => {
         },
     };
 
-    const response = await fetch(`${BACKEND_URL}/features`, requestOptions);
+    const response = await fetch(`${BACKEND_URL}/spots/features`, requestOptions);
 
-    if (!response.ok) {
-        throw new Error("Server issue. Try again later!");
+    if (response.status !== 200) {
+        throw new Error("Unable to fetch all features!");
     }
 
     const data = await response.json();
-
     return data;
-}
+};
