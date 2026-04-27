@@ -1,29 +1,29 @@
 import { useState, useEffect } from "react";
-import { getAllSpots } from "../../services/spots";
+import { getAllSpots, getSpotByFeature } from "../../services/spots";
 import Spot from "../../components/spotCard/spotCard";
 import SpotModal from "../../components/SpotModal/SpotModal";
-import SpotFilter from "../../components/filterSpot/FilterBar"
+import FilterBar from "../../components/filterSpot/FilterBar"
 import "./BrowseSpots.css";
 
 export const BrowseSpots = () => {
   const [spots, setSpots] = useState([]);
   const [selectedSpot, setSelectedSpot] = useState(null);
+  const [selectedFeatures, setSelectedFeatures] = useState([])
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllSpots()
+    setLoading(true);
+
+    const fetchingData = selectedFeatures.length > 0 ? getSpotByFeature(selectedFeatures) : getAllSpots();
+    fetchingData
       .then((data) => {
-        setSpots(data.spots);
+        setSpots(data.spots || []);
       })
       .catch((err) => {
         console.error(err);
       })
       .finally(() => setLoading(false));
-  }, []);
-
-  const handleFilterChange = (selectedFeaturesList) => {
-    console.log("Features were changed to: ", selectedFeaturesList)
-  }
+  }, [selectedFeatures]);
 
   return (
     <>
@@ -48,8 +48,10 @@ export const BrowseSpots = () => {
           )}
         </div>
         <div className="filter-section">
-          <h3>Filter</h3>
-          <SpotFilter onFilterChange={handleFilterChange}/>
+          <FilterBar 
+          onFilterChange={setSelectedFeatures}
+          selectedFeatures={selectedFeatures}
+          />
         </div>
       </div>
       <SpotModal

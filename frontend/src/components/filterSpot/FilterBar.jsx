@@ -8,7 +8,7 @@ import {
 import { getAllFeatures } from "../../services/features";
 import { useEffect, useState } from "react";
 
-const SpotFilter = ({ onFilterChange }) => {
+const FilterBar = ({ onFilterChange }) => {
   const buttonFeatureIcon = {
     "wifi": Wifi,
     "toilets": Toilet,
@@ -36,18 +36,18 @@ const SpotFilter = ({ onFilterChange }) => {
     let updatedSelectedFeatures = [];
 
     // when the user selected (to untick) a feature in the selectedFeatures, the feature is removed
-    if (selectedFeatures.includes(feature.feat_name)) {
+    if (selectedFeatures.includes(feature.feat_id)) {
       updatedSelectedFeatures = selectedFeatures.filter(
-        (item) => item !== feature.feat_name,
+        (item) => item !== feature.feat_id,
       );
     } else {
       // when the user selected (to tick) a feature not in the selectedFeatures, the feature is added
-      updatedSelectedFeatures = [...selectedFeatures, feature.feat_name];
+      updatedSelectedFeatures = [...selectedFeatures, feature.feat_id];
     }
     // Setter to update the list with the updated selected features
     setSelectedFeatures(updatedSelectedFeatures);
     // the new list is send to the parent
-    onFilterChange(updatedSelectedFeatures);
+    onFilterChange(updatedSelectedFeatures.map(id => ({id: id})));
   };
 
   // When clear is clicked:
@@ -55,12 +55,12 @@ const SpotFilter = ({ onFilterChange }) => {
     setSelectedFeatures([]);
     onFilterChange([]);
   };
- wednag
+
   return (
     <>
       <div className="filter-container">
         <div className="filter-header">
-          <h3>Filter all spots by feature</h3>
+          <h3>Filter your spots by feature</h3>
           <button
             onClick={handleClearFeaturesClick}
             className="clear-feature-button"
@@ -79,7 +79,7 @@ const SpotFilter = ({ onFilterChange }) => {
                   key={feature.feat_id}
                   onClick={() => handleFilterClick(feature)}
                   className={`filter-button ${
-                    selectedFeatures.includes(feature) ? "active" : ""
+                    selectedFeatures.includes(feature.feat_id) ? "active" : ""
                   }`}
                 >
                   {feature.feat_name === "price" ? (
@@ -89,11 +89,10 @@ const SpotFilter = ({ onFilterChange }) => {
                   ) : (
                     FeatureIcon && <FeatureIcon size={18} />
                   )}
-                  <span className="feature-tag">{feature.feat_name}</span>
+                  <span className="feature-tag">{feature.feat_name.replace(/_/g, ' ')}</span>
                 </button>
               );
             })}
-            ;
           </div>
         )}
       </div>
@@ -101,4 +100,4 @@ const SpotFilter = ({ onFilterChange }) => {
   );
 };
 
-export default SpotFilter;
+export default FilterBar;
