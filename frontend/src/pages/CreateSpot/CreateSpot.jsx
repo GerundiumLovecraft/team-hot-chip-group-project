@@ -22,11 +22,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"
 import { createSpot } from "../../services/spots.js"
 import { getFeatures }  from "../../services/features.js";
+import "./CreateSpotPage.css"
 
-function CreateSpotPage() {
+export function CreateSpotPage() {
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [description, setDescription] = useState("");
+    const [image, setImage] = useState("")
     const [openFrom, setOpenFrom] = useState("");
     const [openTo, setOpenTo] = useState("");
     const [listedFeatures, setListedFeatures] = useState([])
@@ -36,7 +38,7 @@ function CreateSpotPage() {
     const navigate = useNavigate();
 
     const featureDict = {
-        "noise_level": ["quiet", "moderate", "loud"],
+        "noise_level": ["Quiet", "Moderate", "Loud"],
         "price": ["£", "££", "£££"],
     }
 
@@ -63,44 +65,50 @@ function CreateSpotPage() {
 
         switch(inputName) {
             case "name":
-                setName(inputValue)
+                setName(inputValue);
                 break;
             case "address":
-                setAddress(inputValue)
+                setAddress(inputValue);
                 break;
             case "description":
-                setDescription(inputValue)
+                setDescription(inputValue);
+                break;
+            case "image":
+                setImage(inputValue);
                 break;
             case "open-from":
-                setOpenFrom(inputValue)
+                setOpenFrom(inputValue);
                 break;
             case "open-to":
-                setOpenTo(inputValue)
+                setOpenTo(inputValue);
                 break;
             case "features-no-value": {
                 const changedFeat = {
-                    "feat_name": event.target.dataset.featName,
+                    "feat_id": event.target.dataset.featId,
                     "value": null,
                 };
 
-                if (addFeatures.some((feat) => feat.feat_name === changedFeat.feat_name)) {
-                    setAddFeatures(addFeatures.filter((feat) => feat.feat_name != changedFeat.feat_name));
+                if (addFeatures.some((feat) => feat.feat_id === changedFeat.feat_id)) {
+                    setAddFeatures(addFeatures.filter((feat) => feat.feat_id != changedFeat.feat_id));
                 } else {
                     setAddFeatures([...addFeatures, changedFeat]);
                 }
+
                 break;
             }
             case "features-with-value": {
                 const changedFeat = {
-                    "feat_name": event.target.dataset.featName,
+                    "feat_id": event.target.dataset.featId,
                     "value": event.target.dataset.featValue,
                 };
-                const filtered = addFeatures.filter((feat) => feat.feat_name !== changedFeat.feat_name);
-                if (addFeatures.some((feat) => feat.feat_name === changedFeat.feat_name && feat.value === changedFeat.value)) {
+
+                const filtered = addFeatures.filter((feat) => feat.feat_id !== changedFeat.feat_id);
+                if (addFeatures.some((feat) => feat.feat_id === changedFeat.feat_id && feat.value === changedFeat.value)) {
                     setAddFeatures(filtered);
                 } else {
                     setAddFeatures([...filtered, changedFeat]);
                 }
+
                 break;
             }
             default:
@@ -108,123 +116,219 @@ function CreateSpotPage() {
         }
     }
 
+    function checkErrors(spotJson) {
+
+        let errorCount = 0;
+        let newErrors = []
+
+        if (spotJson.name.length === 0) {
+            newErrors = [...newErrors, "Name field should not be empty"]
+            errorCount++;
+        }
+        if (spotJson.address.length === 0) {
+            newErrors = [...newErrors, "Address field should not be empty"]
+            errorCount++;
+        }
+        if (spotJson.description.length === 0) {
+            newErrors = [...newErrors, "Description field should not be empty"];
+            errorCount++;
+        }
+        if (spotJson.image.length === 0) {
+            newErrors = [...newErrors, "Provide a URL for the image"]
+            errorCount++;
+        } else {
+            try {
+                new URL(spotJson.image)
+            } catch (e) {
+                newErrors = [...newErrors, "Provide a valid URL"];
+                errorCount++;
+            }
+        }
+        if (spotJson.open_from.length !== 5) {
+            newErrors = [...newErrors, "Provide a correct open time"];
+            errorCount++;
+        }
+        if (spotJson.open_to.length !== 5) {
+            newErrors = [...newErrors, "Provide a correct close time"];
+            errorCount++;
+        }
+        if (spotJson.features.length === 0) {
+            newErrors = [...newErrors, "Select at least one feature"];
+            errorCount++;
+        }
+
+        if (errorCount > 0) {
+            setErrors(newErrors)
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     async function handleSubmit(event) {
         event.preventDefault();
 
         try{
+            const openLateFeat = listedFeatures.find((f) => f.feat_name === "open_late");
             const finalFeatures = (openTo >= "18:00" || openTo < openFrom)
-                ? [...addFeatures, { "feat_name": "open_late", "value": null }]
+                ? [...addFeatures, { "feat_id": openLateFeat.feat_id, "value": null }]
                 : addFeatures;
 
             const newSpotJson = {
                 "name": name,
                 "address": address,
                 "description": description,
+                "image": image,
                 "open_from": openFrom,
                 "open_to": openTo,
-                "features": finalFeatures,
+                "features": finalFeatures.map((f) => ({
+                    "feat_id": Number(f.feat_id),
+                    "value": f.value !== null ? parseInt(f.value, 10) : null})),
             };
 
-            await createSpot(newSpotJson, token)
-            navigate("/browse_spots")
-        } catch {
-            setErrors([...errors, "Something went wrong, please try again!"])
+            if (checkErrors(newSpotJson)) {
+                throw new Error("Validator errors");
+            }
+
+            await createSpot(newSpotJson, token);
+            setErrors([]);
+            navigate("/");
+        } catch(e) {
+            if (e.message !== "Validator errors") {
+                setErrors([...errors, "Something went wrong, please try again!"])
+            }
         } finally {
-            setName("")
-            setAddress("")
-            setDescription("")
-            setOpenFrom("")
-            setOpenTo("")
-            setAddFeatures([])
+            setName("");
+            setAddress("");
+            setDescription("");
+            setImage("");
+            setOpenFrom("");
+            setOpenTo("");
+            setAddFeatures([]);
         }
     }
 
     return(
         <>
-            <div>
+            <div className="create-spot-page">
                 <h2>Create a new Spot</h2>
-                {(errors.length > 0) && <p className={errors}></p>}
+                <div className="form-errors">
+                    {errors.map((e, i) => <p key={i}>{e}</p>)}
+                </div>
                 <form onSubmit={handleSubmit}>
-                    <input
-                        name="name"
-                        type="text"
-                        placeholder="How's your spot called?"
-                        value={name}
-                        onChange={(e) => handleChange(e)}
-                        required
-                    />
-                    <input
-                        name="address"
-                        type="text"
-                        placeholder="Where's your spot located"
-                        value={address}
-                        onChange={(e) => {handleChange(e)}}
-                        required
-                    />
-                    <textarea
-                        name="description"
-                        placeholder="Write a short description about your spot..."
-                        value={description}
-                        onChange={(e) => {handleChange(e)}}
-                        required
-                    />
-                    <input
-                        name="open-from"
-                        type="time"
-                        value={openFrom}
-                        onChange={(e) => {handleChange(e)}}
-                        required
-                    />
-                    <input
-                        name="open-to"
-                        type="time"
-                        value={openTo}
-                        onChange={(e) => {handleChange(e)}}
-                        required
-                    />
+                    <div className="form-field">
+                        <label>Spot name</label>
+                        <input
+                            name="name"
+                            type="text"
+                            placeholder="How's your spot called?"
+                            value={name}
+                            onChange={(e) => handleChange(e)}
+                        />
+                    </div>
+                    <div className="form-field">
+                        <label>Address</label>
+                        <input
+                            name="address"
+                            type="text"
+                            placeholder="Where's your spot located"
+                            value={address}
+                            onChange={(e) => {handleChange(e)}}
+                        />
+                    </div>
+                    <div className="form-field">
+                        <label>Description</label>
+                        <textarea
+                            name="description"
+                            placeholder="Write a short description about your spot..."
+                            value={description}
+                            onChange={(e) => {handleChange(e)}}
+                        />
+                    </div>
+                    <div className="form-field">
+                        <label>Image URL</label>
+                        <input
+                            name="image"
+                            placeholder="Paste a link to the image here"
+                            value={image}
+                            onChange={(e) => {handleChange(e)}}
+                        />
+                    </div>
+                    <div className="time-row">
+                        <div className="form-field">
+                            <label>Open from</label>
+                            <input
+                                name="open-from"
+                                type="time"
+                                value={openFrom}
+                                onChange={(e) => {handleChange(e)}}
+                            />
+                        </div>
+                        <div className="form-field">
+                            <label>Open to</label>
+                            <input
+                                name="open-to"
+                                type="time"
+                                value={openTo}
+                                onChange={(e) => {handleChange(e)}}
+                            />
+                        </div>
+                    </div>
+
                     {listedFeatures.map((feature) => {
-                        if (feature.feature_name === "noise_level" || feature.feature_name === "price") {
+                        if (feature.feat_name === "noise_level" || feature.feat_name === "price") {
                             return (
                                 <div key={feature.feat_id}>
-                                    <label>{feature.feature_name}</label>
+                                    <label>{feature.feat_name}</label>
                                     <button
+                                        type="button"
+                                        className={`scale-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id) && f.value === "1") ? "selected" : ""}`}
                                         name="features-with-value"
-                                        data-feat-name={feature.feature_name}
-                                        data-feat-value={1}
+                                        data-feat-id={feature.feat_id}
+                                        data-feat-value="1"
                                         onClick={(e) => {handleChange(e)}}
                                     >
-                                        {featureDict[feature.feature_name][0]}
+                                        {featureDict[feature.feat_name][0]}
                                     </button>
                                     <button
+                                        type="button"
+                                        className={`scale-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id) && f.value === "2") ? "selected" : ""}`}
                                         name="features-with-value"
-                                        data-feat-name={feature.feature_name}
-                                        data-feat-value={2}
+                                        data-feat-id={feature.feat_id}
+                                        data-feat-value="2"
                                         onClick={(e) => {handleChange(e)}}
                                     >
-                                        {featureDict[feature.feature_name][1]}
+                                        {featureDict[feature.feat_name][1]}
                                     </button>
                                     <button
+                                        type="button"
+                                        className={`scale-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id) && f.value === "3") ? "selected" : ""}`}
                                         name="features-with-value"
-                                        data-feat-name={feature.feature_name}
-                                        data-feat-value={3}
+                                        data-feat-id={feature.feat_id}
+                                        data-feat-value="3"
                                         onClick={(e) => {handleChange(e)}}
                                     >
-                                        {featureDict[feature.feature_name][2]}
+                                        {featureDict[feature.feat_name][2]}
                                     </button>
                                 </div>
                             )
-                        } else {
+                        } else if (feature.feat_name != "open_late") {
                             return (
                                 <button
                                     key={feature.feat_id}
+                                    type="button"
+                                    className={`feature-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id)) ? "selected" : ""}`}
                                     name="features-no-value"
-                                    data-feat-name={feature.feature_name}
-                                    value={feature.feature_name}
+                                    data-feat-id={feature.feat_id}
+                                    value={feature.feat_id}
                                     onClick={(e) => {handleChange(e)}}
-                                />
+                                >
+                                    {feature.feat_name}
+                                </ button>
                             )
                         }
                     })}
+                    <button type="submit" className="submit-btn"> Create a spot!</button>
                 </form>
             </div>
         </>

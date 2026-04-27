@@ -1,7 +1,7 @@
 // docs: https://vitejs.dev/guide/env-and-mode.html
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-export const getFeaturess = async () => {
+export const getFeatures = async () => {
 
     const requestOptions = {
         method: "GET",
