@@ -626,17 +626,17 @@ func (suite *TestSuiteEnv) Test_GetLeaderboardOrderedBySpots() {
 		assert.Equal(suite.T(), 201, suite.res.Code)
 	}
 
-	tokenAlpha := signupAndLogin("alpha@example.com", "alpha", "password123")
-	createSpot(tokenAlpha, "alpha-spot-1")
-	createSpot(tokenAlpha, "alpha-spot-2")
+	tokenA := signupAndLogin("a@example.com", "a", "password123")
+	createSpot(tokenA, "a-spot-1")
+	createSpot(tokenA, "a-spot-2")
 
-	tokenBravo := signupAndLogin("bravo@example.com", "bravo", "password123")
-	createSpot(tokenBravo, "bravo-spot-1")
+	tokenB := signupAndLogin("b@example.com", "b", "password123")
+	createSpot(tokenB, "b-spot-1")
 
-	tokenCharlie := signupAndLogin("charlie@example.com", "charlie", "password123")
-	createSpot(tokenCharlie, "charlie-spot-1")
-	createSpot(tokenCharlie, "charlie-spot-2")
-	createSpot(tokenCharlie, "charlie-spot-3")
+	tokenC := signupAndLogin("c@example.com", "c", "password123")
+	createSpot(tokenC, "c-spot-1")
+	createSpot(tokenC, "c-spot-2")
+	createSpot(tokenC, "c-spot-3")
 
 	//Leaderboard get request
 	suite.res = httptest.NewRecorder()
@@ -651,15 +651,15 @@ func (suite *TestSuiteEnv) Test_GetLeaderboardOrderedBySpots() {
 	assert.Len(suite.T(), response.Leaderboard, 3)
 
 	//Assert in descending order
-	assert.Equal(suite.T(), "charlie", response.Leaderboard[0].Username)
+	assert.Equal(suite.T(), "c", response.Leaderboard[0].Username)
 	assert.Equal(suite.T(), 3, response.Leaderboard[0].SpotsCreated)
 	assert.NotZero(suite.T(), response.Leaderboard[0].UserID)
 
-	assert.Equal(suite.T(), "alpha", response.Leaderboard[1].Username)
+	assert.Equal(suite.T(), "a", response.Leaderboard[1].Username)
 	assert.Equal(suite.T(), 2, response.Leaderboard[1].SpotsCreated)
 	assert.NotZero(suite.T(), response.Leaderboard[1].UserID)
 
-	assert.Equal(suite.T(), "bravo", response.Leaderboard[2].Username)
+	assert.Equal(suite.T(), "b", response.Leaderboard[2].Username)
 	assert.Equal(suite.T(), 1, response.Leaderboard[2].SpotsCreated)
 	assert.NotZero(suite.T(), response.Leaderboard[2].UserID)
 
