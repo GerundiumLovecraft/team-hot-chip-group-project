@@ -2,3 +2,9 @@
 .vscode
 
 node_modules
+/.idea/.gitignore
+/.idea/go.imports.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/team-hot-chip-group-project.iml
+/.idea/vcs.xml
