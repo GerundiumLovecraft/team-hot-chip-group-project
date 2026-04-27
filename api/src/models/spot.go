@@ -93,10 +93,10 @@ type LeaderboardEntry struct {
 func FetchLeaderboard() ([]LeaderboardEntry, error) {
 	var entries []LeaderboardEntry
 	err := Database.Table("spots").
-		Select("spots.user_id, users.username, COUNT(spots.id) as spot_count").
+		Select("spots.user_id, users.username, COUNT(spots.id) as spots_created").
 		Joins("JOIN users ON users.id = spots.user_id").
 		Group("spots.user_id, users.username").
-		Order("spot_count DESC").
+		Order("spots_created DESC").
 		Scan(&entries).Error
 
 	if err != nil {
