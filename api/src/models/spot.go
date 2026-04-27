@@ -83,3 +83,25 @@ type Feat struct {
 	Value    *int8  `json:"value"`
 }
 */
+
+type LeaderboardEntry struct {
+	UserID    uint   `json:"user_id"`
+	Username  string `json:"username"`
+	SpotCount int    `json:"spots_created"`
+}
+
+func FetchLeaderboard() ([]LeaderboardEntry, error) {
+	var entries []LeaderboardEntry
+	err := Database.Table("spots").
+		Select("spots.user_id, users.username, COUNT(spots.id) as spot_count").
+		Joins("JOIN users ON users.id = spots.user_id").
+		Group("spots.user_id, users.username").
+		Order("spot_count DESC").
+		Scan(&entries).Error
+
+	if err != nil {
+		return []LeaderboardEntry{}, err
+	}
+
+	return entries, nil
+}
