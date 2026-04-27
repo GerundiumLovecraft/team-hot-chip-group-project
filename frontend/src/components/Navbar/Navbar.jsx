@@ -21,17 +21,19 @@ const Navbar = () => {
 
       <div className="navbar-links">
         <Link to="/">Browse Spots</Link>
-
+        <Link to="/leaderboards">Leaderboards</Link>
         {token ? (
           <>
             <Link to="/spots/new">Submit Spot</Link>
-            <div>
-              <button
-                className="profile-button"
-                onClick={() => setMenuOpen(!menuOpen)}
-              >
+            <div
+              className="profile-menu"
+              onMouseEnter={() => setMenuOpen(true)}
+              onMouseLeave={() => setMenuOpen(false)}
+            >
+              <button className="profile-button">
                 <User size={24} />
               </button>
+
               {menuOpen && (
                 <div className="dropdown-menu">
                   <Link to="/profile">My Profile</Link>
