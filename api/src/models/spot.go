@@ -77,6 +77,15 @@ func FilterSpotsByFeature(feats []FeatureFilter) (*[]Spot, error) {
 
 }
 
+func FetchSpotsByUserId(userId string) (*[]Spot, error) {
+    var spots []Spot
+    err := Database.Preload("Features.Feature").Where("user_id = ?", userId).Find(&spots).Error
+    if err != nil {
+        return &[]Spot{}, err
+    }
+    return &spots, nil
+}
+
 /*
 type Feat struct {
 	ID       uint   `json:id`
