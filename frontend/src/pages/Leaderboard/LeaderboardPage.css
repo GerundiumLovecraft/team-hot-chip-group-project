@@ -1,0 +1,120 @@
+.leaderboard-page {
+    padding: 40px 24px;
+    min-height: calc(100vh - 65px);
+    background-color: #faf7f3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 48px;
+    color: #57473c;
+}
+
+.leaderboard-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.leaderboard-header p {
+    font-size: 16px;
+    opacity: 0.7;
+}
+
+/* Podium */
+.podium {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+.podium-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: #57473c;
+}
+
+.avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #57473c;
+    color: #faf7f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.avatar.large {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+    background-color: #f1ebe3;
+}
+
+.podium-rank {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.6;
+    margin: 0;
+}
+
+.podium-username {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 4px 0;
+}
+
+.podium-spots {
+    font-size: 13px;
+    opacity: 0.6;
+    margin: 0;
+}
+
+.podium-entry.first .podium-username {
+    font-size: 20px;
+}
+
+/* List */
+.leaderboard-list {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.leaderboard-entry {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #f1ebe3;
+    border-radius: 10px;
+    padding: 16px 20px;
+    color: #57473c;
+}
+
+.rank {
+    font-weight: 700;
+    width: 40px;
+}
+
+.username {
+    flex: 1;
+    font-weight: 500;
+}
+
+.spots-created {
+    font-size: 13px;
+    opacity: 0.6;
+}
