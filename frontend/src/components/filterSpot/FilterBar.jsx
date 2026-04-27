@@ -55,7 +55,7 @@ const SpotFilter = ({ onFilterChange }) => {
     setSelectedFeatures([]);
     onFilterChange([]);
   };
-
+ wednag
   return (
     <>
       <div className="filter-container">
