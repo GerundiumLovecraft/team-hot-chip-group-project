@@ -3,6 +3,8 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"fmt"
+	"net/url"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/auth"
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
@@ -23,6 +25,7 @@ type JSONSpot struct {
 	Image       string        `json:"image"`
 	OpenFrom    string        `json:"open_from"`
 	OpenTo      string        `json:"open_to"`
+	LocationURL	string        `json:"location_url"`
 	Features    []JSONFeature `json:"features"`
 }
 
@@ -52,6 +55,7 @@ func GetAllSpots(ctx *gin.Context) {
 			Image:       spot.Image,
 			OpenFrom:    spot.OpenFrom,
 			OpenTo:      spot.OpenTo,
+			LocationURL: spot.LocationURL,
 			Features:    jsonFeature,
 		})
 	}
@@ -90,6 +94,7 @@ func GetSpotById(ctx *gin.Context) {
 		Image:       spotFound.Image,
 		OpenFrom:    spotFound.OpenFrom,
 		OpenTo:      spotFound.OpenTo,
+		LocationURL: spotFound.LocationURL,
 		Features:    jsonFeature,
 	}
 
@@ -141,6 +146,7 @@ func GetSpotsByFeature(ctx *gin.Context) {
 			Image:       spot.Image,
 			OpenFrom:    spot.OpenFrom,
 			OpenTo:      spot.OpenTo,
+			LocationURL: spot.LocationURL,
 			Features:    jsonFeature,
 		})
 	}
@@ -177,11 +183,20 @@ func GetSpotsByUser(ctx *gin.Context) {
             Image:       spot.Image,
             OpenFrom:    spot.OpenFrom,
             OpenTo:      spot.OpenTo,
+			LocationURL: spot.LocationURL,
             Features:    jsonFeature,
         })
     }
 
     ctx.JSON(http.StatusOK, gin.H{"spots": jsonSpots})
+}
+
+func BuildEmbedURL(name string, address string) string {
+	query := url.QueryEscape(name + " " + address)
+	return fmt.Sprintf(
+		"https://www.google.com/maps?q=%s&z=17&output=embed",
+		query,
+	)
 }
 
 func CreateSpot(ctx *gin.Context) {
@@ -203,6 +218,8 @@ func CreateSpot(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "The new spot's name, address, description, opening hours, and features must be supply"})
 		return
 	}
+
+	newSpot.LocationURL = BuildEmbedURL(newSpot.Name, newSpot.Address)
 
 	_, errorMessage = newSpot.Save()
 	if errorMessage != nil {
