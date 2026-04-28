@@ -150,6 +150,13 @@ func GetSpotsByFeature(ctx *gin.Context) {
 		return
 	}
 
+	// fetch average ratings for all spots
+	avgRatings, err := models.GetAvgRatingsForSpots()
+	if err != nil {
+		SendInternalError(ctx, err)
+		return
+	}
+
 	jsonSpots := make([]JSONSpot, 0)
 	for _, spot := range *spotsFound {
 		jsonFeature := make([]JSONFeature, 0)
@@ -169,6 +176,7 @@ func GetSpotsByFeature(ctx *gin.Context) {
 			OpenFrom:    spot.OpenFrom,
 			OpenTo:      spot.OpenTo,
 			LocationURL: spot.LocationURL,
+			AverageRating: avgRatings[spot.ID],
 			Features:    jsonFeature,
 		})
 	}
