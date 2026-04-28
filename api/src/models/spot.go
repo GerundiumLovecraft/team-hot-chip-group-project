@@ -96,7 +96,7 @@ func FetchLeaderboard() ([]LeaderboardEntry, error) {
 		Select("spots.user_id, users.username, COUNT(spots.id) as spots_created").
 		Joins("JOIN users ON users.id = spots.user_id").
 		Group("spots.user_id, users.username").
-		Order("spots_created DESC").
+		Order("spots_created DESC, spots.created_at ASC").
 		Scan(&entries).Error
 
 	if err != nil {

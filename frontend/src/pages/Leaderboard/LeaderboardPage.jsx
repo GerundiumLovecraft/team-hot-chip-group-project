@@ -20,6 +20,8 @@ const LeaderboardPage = () => {
             })
             .catch((err) => {
                 console.error(err);
+                localStorage.removeItem("token");
+                navigate("/login");
             })
             .finally(() => setLoading(false));
     }, [navigate]);
@@ -40,25 +42,25 @@ const LeaderboardPage = () => {
                         {leaderboard[1] && (
                             <div className="podium-entry second">
                                 <div className="avatar">{leaderboard[1].username.slice(0, 2).toUpperCase()}</div>
-                                <p className="podium-rank">2nd</p>
+                                <p className="podium-medal">🥈</p>
                                 <p className="podium-username">{leaderboard[1].username}</p>
-                                <p className="podium-spots">{leaderboard[1].spots_created} spots</p>
+                                <p className="podium-spots">{leaderboard[0].spots_created} {leaderboard[0].spots_created === 1 ? "spot" : "spots"}</p>
                             </div>
                         )}
                         {leaderboard[0] && (
                             <div className="podium-entry first">
-                                <div className="avatar large">🏆</div>
-                                <p className="podium-rank">1st</p>
+                                <div className="avatar large">{leaderboard[0].username.slice(0, 2).toUpperCase()}</div>
+                                <p className="podium-medal">🏆</p>
                                 <p className="podium-username">{leaderboard[0].username}</p>
-                                <p className="podium-spots">{leaderboard[0].spots_created} spots</p>
+                                <p className="podium-spots">{leaderboard[0].spots_created} {leaderboard[0].spots_created === 1 ? "spot" : "spots"}</p>
                             </div>
                         )}
                         {leaderboard[2] && (
                             <div className="podium-entry third">
                                 <div className="avatar">{leaderboard[2].username.slice(0, 2).toUpperCase()}</div>
-                                <p className="podium-rank">3rd</p>
+                                <p className="podium-medal">🥉</p>
                                 <p className="podium-username">{leaderboard[2].username}</p>
-                                <p className="podium-spots">{leaderboard[2].spots_created} spots</p>
+                                <p className="podium-spots">{leaderboard[2].spots_created} {leaderboard[0].spots_created === 1 ? "spot" : "spots"}</p>
                             </div>
                         )}
                     </div>
@@ -69,8 +71,9 @@ const LeaderboardPage = () => {
                             {leaderboard.slice(3).map((entry, index) => (
                                 <div key={entry.user_id} className="leaderboard-entry">
                                     <span className="rank">#{index + 4}</span>
+                                    <div className="list-avatar">{entry.username.slice(0, 2).toUpperCase()}</div>
                                     <span className="username">{entry.username}</span>
-                                    <span className="spots-created">{entry.spots_created} spots submitted</span>
+                                    <span className="spots-created">{entry.spots_created} {entry.spots_created === 1 ? "spot" : "spots"} submitted</span>
                                 </div>
                             ))}
                         </div>
