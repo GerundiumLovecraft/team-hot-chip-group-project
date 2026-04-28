@@ -1,23 +1,20 @@
 .profile-page {
   min-height: calc(100vh - 65px);
   background-color: #faf7f3;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 60px 24px;
-  box-sizing: border-box;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  align-items: start;
   gap: 40px;
+  padding: 60px 40px;
+  box-sizing: border-box;
 }
 
 .profile-card {
   background-color: #ffffff;
   border: 1px solid #f1ebe3;
   border-radius: 16px;
-  padding: 48px;
+  padding: 32px;
   width: 100%;
-  max-width: 520px;
   box-shadow: 0 2px 16px rgba(87, 71, 60, 0.06);
 }
 
@@ -111,8 +108,9 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 560px) {
-  .profile-card {
+@media (max-width: 700px) {
+  .profile-page {
+    grid-template-columns: 1fr;
     padding: 32px 24px;
   }
 
@@ -123,21 +121,21 @@
 }
 
 .my-spots-section {
-    width: 100%;
-    max-width: 900px;
+  width: 100%;
 }
 
 .my-spots-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #57473c;
-    margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #57473c;
+  margin: 0 0 20px 0;
+  text-align: center;
 }
 
 .my-spots-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
 }
 
 .my-spot-card {
