@@ -30,6 +30,14 @@ const SpotModal = ({ spot, onClose }) => {
                             ))}
                         </ul>
                     </div>
+                    {spot.location_url && (
+                        <iframe
+                            src={spot.location_url}
+                            className="modal-map"
+                            loading="lazy"
+                            allowFullScreen
+                        />
+                    )}
                 </div>
             </div>
         </div>

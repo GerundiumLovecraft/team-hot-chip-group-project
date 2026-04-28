@@ -103,3 +103,11 @@
 .feature-value {
     font-weight: 500;
 }
+
+.modal-map {
+    width: 100%;
+    height: 250px;
+    border: 0;
+    margin: 16px 0;
+    border-radius: 8px;
+}
