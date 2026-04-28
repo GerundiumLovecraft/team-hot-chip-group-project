@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getLeaderboard } from "../../services/leaderboards";
 import "./LeaderboardPage.css";
+import {isTokenValid} from "../../helpers/authentication.js";
 
 const LeaderboardPage = () => {
     const [leaderboard, setLeaderboard] = useState([]);
@@ -9,11 +10,13 @@ const LeaderboardPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (!token) {
+        if(!isTokenValid()) {
             navigate("/login");
             return;
         }
+
+        const token = localStorage.getItem("token");
+
         getLeaderboard(token)
             .then((data) => {
                 setLeaderboard(data.leaderboard);
