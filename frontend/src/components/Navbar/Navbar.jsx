@@ -2,10 +2,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { User } from "lucide-react";
 import "./Navbar.css";
+import {isTokenValid} from "../../helpers/authentication.js";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const isAuth = isTokenValid();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -22,7 +23,7 @@ const Navbar = () => {
       <div className="navbar-links">
         <Link to="/">Browse Spots</Link>
         <Link to="/leaderboard">Leaderboard</Link>
-        {token ? (
+        {isAuth ? (
           <>
             <Link to="/spots/new">Submit Spot</Link>
             <div

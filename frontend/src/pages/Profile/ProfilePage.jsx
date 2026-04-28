@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchUserProfile } from "../../services/authentication";
 import { getSpotsByUser } from "../../services/spots";
 import SpotModal from "../../components/SpotModal/SpotModal";
+import {isTokenValid} from "../../helpers/authentication.js";
 // import { Link } from "react-router-dom";
 import "./ProfilePage.css";
 
@@ -17,33 +18,33 @@ export default function ProfilePage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        
-        if (!token) {
+        if (!isTokenValid()) {
             navigate("/login");
             return;
         }
 
-    fetchUserProfile(token)
-      .then(({ user, token: newToken }) => {
-        setUser(user);
-        // Store the rotated token to keep the session alive
-        localStorage.setItem("token", newToken);
-      })
-      .catch((err) => {
-        if (err.message.startsWith("Unauthorised")) {
-          navigate("/login");
-        } else {
-          setError(err.message);
-        }
-      })
-      .finally(() => setLoading(false));
+        const token = localStorage.getItem("token");
 
-    getSpotsByUser(token)
-      .then((spots) => setMySpots(spots ?? []))
-      .catch((err) => setSpotsError(err.message))
-      .finally(() => setSpotsLoading(false));
-  }, [navigate]);
+        fetchUserProfile(token)
+          .then(({ user, token: newToken }) => {
+            setUser(user);
+            // Store the rotated token to keep the session alive
+            localStorage.setItem("token", newToken);
+          })
+          .catch((err) => {
+            if (err.message.startsWith("Unauthorised")) {
+              navigate("/login");
+            } else {
+              setError(err.message);
+            }
+          })
+        .finally(() => setLoading(false));
+
+        getSpotsByUser(token)
+          .then((spots) => setMySpots(spots ?? []))
+          .catch((err) => setSpotsError(err.message))
+          .finally(() => setSpotsLoading(false));
+    }, [navigate]);
 
   const memberSince = user?.createdAt
     ? new Date(user.createdAt).toLocaleDateString("en-GB", {
