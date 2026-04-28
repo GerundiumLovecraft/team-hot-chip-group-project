@@ -51,16 +51,22 @@ func FindSpot(id string) (*Spot, error) {
 func FilterSpotsByFeature(feats []FeatureFilter) (*[]Spot, error) {
 	var spots []Spot
 
-	var featuresIds []uint
+	query := Database.Joins("JOIN spots_to_feats ON spots_to_feats.id = spots.id")
+
+	// Append Where conditions for each feature
 	for _, feat := range feats {
-		featuresIds = append(featuresIds, feat.ID)
+		if feat.Value != nil {
+			// If feature is with a value
+			query = query.Where("spots_to_feats.feat_id = ? AND spots_to_feats.value = ?", feat.ID, *feat.Value)
+		} else {
+			// If feature is without the value
+			query = query.Where("spots_to_feats.feat_id = ? AND spots_to_feats.value IS NULL", feat.ID)
+		}
 	}
 
-	query := Database.Table("spots").Joins("JOIN spots_to_feats ON spots_to_feats.spot_id = spots.id").Joins("JOIN features ON features.id = spots_to_feats.feat_id").Where("features.id IN ?", featuresIds)
-
 	err := query.
-		Group("spots.id").
-		Having("COUNT(DISTINCT spots_to_feats.feat_id) = ?", len(featuresIds)).
+		Group("spot_id").
+		Having("COUNT(*) = ?", len(feats)).
 		Preload("Features.Feature").
 		Find(&spots).Error
 
