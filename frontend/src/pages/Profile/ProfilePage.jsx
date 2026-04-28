@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchUserProfile } from "../../services/authentication";
 import { getSpotsByUser } from "../../services/spots";
+import { Link } from "react-router-dom";
 import "./ProfilePage.css";
 
 export default function ProfilePage() {
@@ -93,7 +94,7 @@ export default function ProfilePage() {
                 {mySpots.length > 0 && (
                     <div className="my-spots-grid">
                         {mySpots.map((spot) => (
-                            <div key={spot._id} className="my-spot-card">
+                            <Link to={`/spots/:id`} key={spot._id} className="my-spot-card">
                                 {spot.image && (
                                     <img
                                         src={spot.image}
@@ -105,7 +106,7 @@ export default function ProfilePage() {
                                     <p className="my-spot-name">{spot.name}</p>
                                     <p className="my-spot-address">{spot.address}</p>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 )}
