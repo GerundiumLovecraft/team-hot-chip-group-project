@@ -22,6 +22,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"
 import { createSpot } from "../../services/spots.js"
 import { getFeatures }  from "../../services/features.js";
+import {isTokenValid} from "../../helpers/authentication.js";
 import "./CreateSpotPage.css"
 
 export function CreateSpotPage() {
@@ -43,7 +44,7 @@ export function CreateSpotPage() {
     }
 
     useEffect(() => {
-        if (!token) {
+        if (!isTokenValid()) {
             navigate("/login");
             return;
         }
@@ -54,8 +55,8 @@ export function CreateSpotPage() {
         }).
         catch((err) => {
             console.error(err);
-            navigate("/login")
-        })
+            navigate("/");
+        });
 
     }, [navigate])
 
@@ -89,7 +90,7 @@ export function CreateSpotPage() {
                 };
 
                 if (addFeatures.some((feat) => feat.feat_id === changedFeat.feat_id)) {
-                    setAddFeatures(addFeatures.filter((feat) => feat.feat_id != changedFeat.feat_id));
+                    setAddFeatures(addFeatures.filter((feat) => feat.feat_id !== changedFeat.feat_id));
                 } else {
                     setAddFeatures([...addFeatures, changedFeat]);
                 }
