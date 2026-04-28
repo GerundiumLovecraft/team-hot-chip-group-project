@@ -10,4 +10,5 @@ func setupProfileRoutes(baseRouter *gin.RouterGroup) {
 	profile := baseRouter.Group("/profile")
 
 	profile.GET("", middleware.AuthenticationMiddleware, controllers.GetProfile)
+	profile.GET("/spots", middleware.AuthenticationMiddleware, controllers.GetSpotsByUser)
 }

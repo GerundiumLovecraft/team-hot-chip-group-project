@@ -56,3 +56,26 @@ export const createSpot = async (spotData, token) => {
     const data = await response.json();
     return data
 };
+
+export const getSpotsByUser = async (token) => {
+    const requestOptions = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    const response = await fetch(`${BACKEND_URL}/profile/spots`, requestOptions);
+
+    if (response.status === 401) {
+        throw new Error("Unauthorised: Please log in again.");
+    }
+
+    if (response.status !== 200) {
+        throw new Error("Unable to fetch your submitted spots!");
+    }
+
+    const data = await response.json();
+    return data.spots;
+};

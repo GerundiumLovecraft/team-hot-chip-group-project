@@ -149,6 +149,41 @@ func GetSpotsByFeature(ctx *gin.Context) {
 
 }
 
+func GetSpotsByUser(ctx *gin.Context) {
+    value, _ := ctx.Get("userID")
+    userID := value.(string)
+
+    spots, errorMessage := models.FetchSpotsByUserId(userID)
+    if errorMessage != nil {
+        SendInternalError(ctx, errorMessage)
+        return
+    }
+
+    jsonSpots := make([]JSONSpot, 0)
+    for _, spot := range *spots {
+        jsonFeature := make([]JSONFeature, 0)
+        for _, feature := range spot.Features {
+            jsonFeature = append(jsonFeature, JSONFeature{
+                FeatName: feature.Feature.FeatName,
+                Value:    feature.Value,
+            })
+        }
+        jsonSpots = append(jsonSpots, JSONSpot{
+            ID:          spot.ID,
+            UserId:      spot.UserId,
+            Name:        spot.Name,
+            Address:     spot.Address,
+            Description: spot.Description,
+            Image:       spot.Image,
+            OpenFrom:    spot.OpenFrom,
+            OpenTo:      spot.OpenTo,
+            Features:    jsonFeature,
+        })
+    }
+
+    ctx.JSON(http.StatusOK, gin.H{"spots": jsonSpots})
+}
+
 func CreateSpot(ctx *gin.Context) {
 	var newSpot models.Spot
 	errorMessage := ctx.BindJSON(&newSpot)
