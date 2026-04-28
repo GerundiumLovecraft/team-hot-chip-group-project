@@ -30,7 +30,8 @@ export const SignupPage = () => {
     }
   
     try {
-      await signup(username, email, password);
+      const res = await signup(username, email, password);
+      localStorage.setItem("token", res.token)
       navigate("/");
     } catch (err) {
       console.error(err);

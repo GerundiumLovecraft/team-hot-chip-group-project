@@ -44,12 +44,12 @@ export const signup = async (username, email, password) => {
   };
 
   let response = await fetch(`${BACKEND_URL}/users`, requestOptions);
+  const data = await response.json();
 
   // docs: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/201
   if (response.status === 201) {
-    return;
+    return data;
   } else {
-    const data = await response.json();
     throw new Error(data.message || `Received status ${response.status} when signing up. Expected 201`);
   }
 };

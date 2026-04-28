@@ -14,12 +14,12 @@ import (
 )
 
 func CreateUser(ctx *gin.Context) {
-var newUser models.User
+	var newUser models.User
 
-    if err := ctx.ShouldBindJSON(&newUser); err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input: " + err.Error()})
-        return
-    }
+	if err := ctx.ShouldBindJSON(&newUser); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input: " + err.Error()})
+		return
+	}
 
 	newUser.Username = strings.ToLower(strings.TrimSpace(newUser.Username))
 	newUser.Email = strings.ToLower(strings.TrimSpace(newUser.Email))
@@ -31,7 +31,8 @@ var newUser models.User
 	}
 	newUser.HashedPassword = string(hashedPassword)
 
-	_, err = newUser.Save()
+	savedUser, err := newUser.Save()
+
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // if error code is 23505 (duplicate), return 409 otherwise 500
@@ -42,7 +43,11 @@ var newUser models.User
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "OK"})
+	//create token on successful signup
+	savedUserId := strconv.FormatUint(uint64(savedUser.ID), 10)
+	token, _ := auth.GenerateToken(savedUserId)
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "OK", "token": token})
 }
 
 func GetUserById(ctx *gin.Context) {
