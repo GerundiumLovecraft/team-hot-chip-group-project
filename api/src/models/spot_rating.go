@@ -60,4 +60,4 @@ func GetAvgRatingsForSpots() (map[uint]*float64, error) {
 		avgMap[r.SpotId] = r.Avg
 	}
 	return avgMap, nil
-}
+} 

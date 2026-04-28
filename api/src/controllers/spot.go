@@ -23,6 +23,7 @@ type JSONSpot struct {
 	Image       string        `json:"image"`
 	OpenFrom    string        `json:"open_from"`
 	OpenTo      string        `json:"open_to"`
+	AverageRating *float64    `json:"average_rating"` // *float64 so if a spot has no ratings we can return null instead of 0
 	Features    []JSONFeature `json:"features"`
 }
 
@@ -31,6 +32,13 @@ func GetAllSpots(ctx *gin.Context) {
 
 	if errorMessage != nil {
 		SendInternalError(ctx, errorMessage)
+		return
+	}
+
+	// fetch average ratings for all spots in one database call
+	avgRatings, err := models.GetAvgRatingsForSpots()
+	if err != nil {
+		SendInternalError(ctx, err)
 		return
 	}
 
@@ -43,6 +51,10 @@ func GetAllSpots(ctx *gin.Context) {
 				Value:    feature.Value,
 			})
 		}
+
+		// look up spots average rating from the map
+		avgRating := avgRatings[spot.ID]
+
 		jsonSpots = append(jsonSpots, JSONSpot{
 			ID:          spot.ID,
 			UserId:      spot.UserId,
@@ -52,6 +64,7 @@ func GetAllSpots(ctx *gin.Context) {
 			Image:       spot.Image,
 			OpenFrom:    spot.OpenFrom,
 			OpenTo:      spot.OpenTo,
+			AverageRating: avgRating, 
 			Features:    jsonFeature,
 		})
 	}
@@ -74,6 +87,14 @@ func GetSpotById(ctx *gin.Context) {
 		return
 	}
 
+	// fetch average rating for a specific spot
+	spotIdUint := spotFound.ID
+	avgRating, err := models.GetAvgRatingForSpotById(spotIdUint)
+	if err != nil {
+		SendInternalError(ctx, err)
+		return
+	}
+
 	jsonFeature := make([]JSONFeature, 0)
 	for _, feature := range spotFound.Features {
 		jsonFeature = append(jsonFeature, JSONFeature{
@@ -90,6 +111,7 @@ func GetSpotById(ctx *gin.Context) {
 		Image:       spotFound.Image,
 		OpenFrom:    spotFound.OpenFrom,
 		OpenTo:      spotFound.OpenTo,
+		AverageRating: avgRating,
 		Features:    jsonFeature,
 	}
 
