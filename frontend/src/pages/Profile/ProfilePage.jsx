@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchUserProfile } from "../../services/authentication";
 import { getSpotsByUser } from "../../services/spots";
-import { Link } from "react-router-dom";
+import SpotModal from "../../components/SpotModal/SpotModal";
+// import { Link } from "react-router-dom";
 import "./ProfilePage.css";
 
 export default function ProfilePage() {
@@ -12,6 +13,7 @@ export default function ProfilePage() {
     const [spotsError, setSpotsError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [spotsLoading, setSpotsLoading] = useState(true);
+    const [selectedSpot, setSelectedSpot] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -94,7 +96,7 @@ export default function ProfilePage() {
                 {mySpots.length > 0 && (
                     <div className="my-spots-grid">
                         {mySpots.map((spot) => (
-                            <Link to={`/spots/:id`} key={spot._id} className="my-spot-card">
+                            <div key={spot._id} className="my-spot-card" onClick={() => setSelectedSpot(spot)}>
                                 {spot.image && (
                                     <img
                                         src={spot.image}
@@ -106,11 +108,12 @@ export default function ProfilePage() {
                                     <p className="my-spot-name">{spot.name}</p>
                                     <p className="my-spot-address">{spot.address}</p>
                                 </div>
-                            </Link>
+                            </div>
                         ))}
                     </div>
                 )}
             </section>
+            <SpotModal spot={selectedSpot} onClose={() => setSelectedSpot(null)} />
     </main>
   );
 }
