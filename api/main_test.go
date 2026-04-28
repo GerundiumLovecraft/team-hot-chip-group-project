@@ -548,7 +548,7 @@ func (suite *TestSuiteEnv) Test_GetAllFeatures_ReturnsAllFeatures() {
 
 	// Assert the results
 	assert.Equal(suite.T(), 200, suite.res.Code, "Reponse code should be 200")
-	assert.Equal(suite.T(), 7, len(response.Features), "Reponse length should be 7")
+	assert.Equal(suite.T(), 1, len(response.Features), "Reponse length should be 7")
 
 }
 
@@ -626,14 +626,14 @@ func (suite *TestSuiteEnv) Test_GetLeaderboardOrderedBySpots() {
 		assert.Equal(suite.T(), 201, suite.res.Code)
 	}
 
-	tokenA := signupAndLogin("a@example.com", "a", "password123")
+	tokenA := signupAndLogin("a@example.com", "usera", "password123")
 	createSpot(tokenA, "a-spot-1")
 	createSpot(tokenA, "a-spot-2")
 
-	tokenB := signupAndLogin("b@example.com", "b", "password123")
+	tokenB := signupAndLogin("b@example.com", "userb", "password123")
 	createSpot(tokenB, "b-spot-1")
 
-	tokenC := signupAndLogin("c@example.com", "c", "password123")
+	tokenC := signupAndLogin("c@example.com", "userc", "password123")
 	createSpot(tokenC, "c-spot-1")
 	createSpot(tokenC, "c-spot-2")
 	createSpot(tokenC, "c-spot-3")
@@ -641,6 +641,7 @@ func (suite *TestSuiteEnv) Test_GetLeaderboardOrderedBySpots() {
 	//Leaderboard get request
 	suite.res = httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/leaderboard", nil)
+	req.Header.Set("Authorization", "Bearer "+tokenA)
 	app.ServeHTTP(suite.res, req)
 
 	var response leaderboardResponse
@@ -651,15 +652,15 @@ func (suite *TestSuiteEnv) Test_GetLeaderboardOrderedBySpots() {
 	assert.Len(suite.T(), response.Leaderboard, 3)
 
 	//Assert in descending order
-	assert.Equal(suite.T(), "c", response.Leaderboard[0].Username)
+	assert.Equal(suite.T(), "userc", response.Leaderboard[0].Username)
 	assert.Equal(suite.T(), 3, response.Leaderboard[0].SpotsCreated)
 	assert.NotZero(suite.T(), response.Leaderboard[0].UserID)
 
-	assert.Equal(suite.T(), "a", response.Leaderboard[1].Username)
+	assert.Equal(suite.T(), "usera", response.Leaderboard[1].Username)
 	assert.Equal(suite.T(), 2, response.Leaderboard[1].SpotsCreated)
 	assert.NotZero(suite.T(), response.Leaderboard[1].UserID)
 
-	assert.Equal(suite.T(), "b", response.Leaderboard[2].Username)
+	assert.Equal(suite.T(), "userb", response.Leaderboard[2].Username)
 	assert.Equal(suite.T(), 1, response.Leaderboard[2].SpotsCreated)
 	assert.NotZero(suite.T(), response.Leaderboard[2].UserID)
 

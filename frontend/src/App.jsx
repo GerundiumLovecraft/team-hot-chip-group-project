@@ -5,6 +5,7 @@ import { LoginPage } from "./pages/Login/LoginPage";
 import { SignupPage } from "./pages/Signup/SignupPage";
 import { CreateSpotPage } from "./pages/CreateSpot/CreateSpot"
 import ProfilePage from "./pages/Profile/ProfilePage";
+import LeaderboardPage from "./pages/Leaderboard/LeaderboardPage";
 import "./App.css";
 
 // import { SpotDetailsPage } from "./pages/SpotDetailsPage";
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
       { path: "/signup", element: <SignupPage /> },
       { path: "/profile", element: <ProfilePage /> },
       { path: "/spots/new", element: <CreateSpotPage /> },
+      { path: "/leaderboard", element: <LeaderboardPage /> },
    // Not yet created below pages
    // { path: "/spots/:id", element: <SpotDetailsPage /> },
     ],

@@ -21,7 +21,7 @@ const Navbar = () => {
 
       <div className="navbar-links">
         <Link to="/">Browse Spots</Link>
-        <Link to="/leaderboards">Leaderboards</Link>
+        <Link to="/leaderboard">Leaderboard</Link>
         {token ? (
           <>
             <Link to="/spots/new">Submit Spot</Link>
