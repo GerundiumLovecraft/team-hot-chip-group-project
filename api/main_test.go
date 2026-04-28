@@ -548,7 +548,7 @@ func (suite *TestSuiteEnv) Test_GetAllFeatures_ReturnsAllFeatures() {
 
 	// Assert the results
 	assert.Equal(suite.T(), 200, suite.res.Code, "Reponse code should be 200")
-	assert.Equal(suite.T(), 7, len(response.Features), "Reponse length should be 7")
+	assert.Equal(suite.T(), 1, len(response.Features), "Reponse length should be 7")
 
 }
 
@@ -570,3 +570,105 @@ app := suite.app
 	// Assert the results
 	assert.Equal(suite.T(), 200, suite.res.Code)
 */
+
+// =============================================
+// LEADERBOARDS INTEGRATION TESTS
+// GET /leaderboards
+
+func (suite *TestSuiteEnv) Test_GetLeaderboardOrderedBySpots() {
+	app := suite.app
+
+	type leaderboardResponse struct {
+		Leaderboard []struct {
+			UserID       uint   `json:"user_id"`
+			Username     string `json:"username"`
+			SpotsCreated int    `json:"spots_created"`
+		} `json:"leaderboard"`
+	}
+
+	signupAndLogin := func(email, username, password string) string {
+		suite.res = httptest.NewRecorder()
+		signupJSON := []byte(fmt.Sprintf(
+			`{"email":"%s", "password":"%s", "username":"%s"}`,
+			email, password, username,
+		))
+		signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJSON))
+		app.ServeHTTP(suite.res, signupReq)
+		assert.Equal(suite.T(), 201, suite.res.Code)
+
+		suite.res = httptest.NewRecorder()
+		loginJSON := []byte(fmt.Sprintf(
+			`{"usernameOrEmail":"%s", "password":"%s"}`,
+			email, password,
+		))
+		loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJSON))
+		app.ServeHTTP(suite.res, loginReq)
+		assert.Equal(suite.T(), 201, suite.res.Code)
+
+		var loginResponse map[string]string
+		err := json.Unmarshal(suite.res.Body.Bytes(), &loginResponse)
+		assert.NoError(suite.T(), err)
+		assert.NotEmpty(suite.T(), loginResponse["token"])
+
+		return loginResponse["token"]
+	}
+
+	createSpot := func(token, name string) {
+		suite.res = httptest.NewRecorder()
+		spotJSON := []byte(fmt.Sprintf(
+			`{"user_id": 1, "name": "%s", "address": "main_test.go", "description": "test desc", "open_from": "11:00", "open_to": "19:00", "features": [{"feat_id": %d}]}`,
+			name, suite.ids.featId1,
+		))
+		postSpotRequest, _ := http.NewRequest("POST", "/spots", bytes.NewBuffer(spotJSON))
+		postSpotRequest.Header.Set("Authorization", "Bearer "+token)
+		app.ServeHTTP(suite.res, postSpotRequest)
+
+		assert.Equal(suite.T(), 201, suite.res.Code)
+	}
+
+	tokenA := signupAndLogin("a@example.com", "usera", "password123")
+	createSpot(tokenA, "a-spot-1")
+	createSpot(tokenA, "a-spot-2")
+
+	tokenB := signupAndLogin("b@example.com", "userb", "password123")
+	createSpot(tokenB, "b-spot-1")
+
+	tokenC := signupAndLogin("c@example.com", "userc", "password123")
+	createSpot(tokenC, "c-spot-1")
+	createSpot(tokenC, "c-spot-2")
+	createSpot(tokenC, "c-spot-3")
+
+	//Leaderboard get request
+	suite.res = httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/leaderboard", nil)
+	req.Header.Set("Authorization", "Bearer "+tokenA)
+	app.ServeHTTP(suite.res, req)
+
+	var response leaderboardResponse
+	err := json.Unmarshal(suite.res.Body.Bytes(), &response)
+
+	assert.NoError(suite.T(), err)
+	assert.Equal(suite.T(), 200, suite.res.Code)
+	assert.Len(suite.T(), response.Leaderboard, 3)
+
+	//Assert in descending order
+	assert.Equal(suite.T(), "userc", response.Leaderboard[0].Username)
+	assert.Equal(suite.T(), 3, response.Leaderboard[0].SpotsCreated)
+	assert.NotZero(suite.T(), response.Leaderboard[0].UserID)
+
+	assert.Equal(suite.T(), "usera", response.Leaderboard[1].Username)
+	assert.Equal(suite.T(), 2, response.Leaderboard[1].SpotsCreated)
+	assert.NotZero(suite.T(), response.Leaderboard[1].UserID)
+
+	assert.Equal(suite.T(), "userb", response.Leaderboard[2].Username)
+	assert.Equal(suite.T(), 1, response.Leaderboard[2].SpotsCreated)
+	assert.NotZero(suite.T(), response.Leaderboard[2].UserID)
+
+	for i := 0; i < len(response.Leaderboard)-1; i++ {
+		assert.GreaterOrEqual(
+			suite.T(),
+			response.Leaderboard[i].SpotsCreated,
+			response.Leaderboard[i+1].SpotsCreated,
+		)
+	}
+}

@@ -6,6 +6,9 @@
   justify-content: center;
   padding: 60px 24px;
   box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
 }
 
 .profile-card {
@@ -50,7 +53,7 @@
   margin: 0;
 }
 
-/* ── Status messages ── */
+
 .status-text {
   color: #57473c;
   opacity: 0.6;
@@ -65,7 +68,7 @@
   opacity: 1;
 }
 
-/* ── Profile fields ── */
+
 .profile-fields {
   list-style: none;
   margin: 0;
@@ -117,4 +120,55 @@
     margin-bottom: 28px;
     padding-bottom: 24px;
   }
+}
+
+.my-spots-section {
+    width: 100%;
+    max-width: 900px;
+}
+
+.my-spots-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #57473c;
+    margin: 0 0 20px 0;
+}
+
+.my-spots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.my-spot-card {
+    background-color: #ffffff;
+    border: 1px solid #f1ebe3;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(87, 71, 60, 0.06);
+}
+
+.my-spot-image {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+}
+
+.my-spot-info {
+    padding: 12px 14px;
+}
+
+.my-spot-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #57473c;
+    margin: 0 0 4px 0;
+}
+
+.my-spot-address {
+    font-size: 13px;
+    color: #57473c;
+    opacity: 0.55;
+    margin: 0;
 }
