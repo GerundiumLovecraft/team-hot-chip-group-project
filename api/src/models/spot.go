@@ -18,7 +18,7 @@ type Spot struct {
 }
 
 type FeatureFilter struct {
-	ID    uint  `json:"id"`
+	ID    uint  `json:"feat_id"`
 	Value *int8 `json:"value"`
 }
 
@@ -51,23 +51,25 @@ func FindSpot(id string) (*Spot, error) {
 func FilterSpotsByFeature(feats []FeatureFilter) (*[]Spot, error) {
 	var spots []Spot
 
-	query := Database.Joins("JOIN spots_to_feats ON spots_to_feats.id = spots.id")
+	query := Database.Table("spots_to_feats").
+		Select("spot_id").
+		Group("spot_id").
+		Having("COUNT(*) = ?", len(feats))
+
 
 	// Append Where conditions for each feature
 	for _, feat := range feats {
 		if feat.Value != nil {
 			// If feature is with a value
-			query = query.Where("spots_to_feats.feat_id = ? AND spots_to_feats.value = ?", feat.ID, *feat.Value)
+			query = query.Or("feat_id = ? AND value = ?", feat.ID, *feat.Value)
 		} else {
 			// If feature is without the value
-			query = query.Where("spots_to_feats.feat_id = ? AND spots_to_feats.value IS NULL", feat.ID)
+			query = query.Or("feat_id = ? AND value IS NULL", feat.ID)
 		}
 	}
 
-	err := query.
-		Group("spot_id").
-		Having("COUNT(*) = ?", len(feats)).
-		Preload("Features.Feature").
+	err := Database.Preload("Features.Feature").
+		Where("id IN (?)", query).
 		Find(&spots).Error
 
 	if err != nil {
