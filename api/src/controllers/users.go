@@ -114,12 +114,28 @@ func UpdateUserAvatar(ctx *gin.Context) {
 		return
 	}
 
-	user, err := models.UpdateUserAvatar(userIdStr, body.Avatar)
+	_, err := models.UpdateUserAvatar(userIdStr, body.Avatar)
 	if err != nil {
 		SendInternalError(ctx, err)
 		return
 	}
 
 	token, _ := auth.GenerateToken(userIdStr)
-	ctx.JSON(http.StatusOK, gin.H{"user": user, "token": token})
+
+	updatedUser, err := models.FindUser(userIdStr)
+	if err != nil {
+		SendInternalError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"token": token,
+		"user": gin.H{
+			"id":        userIdStr,
+			"username":  updatedUser.Username,
+			"email":     updatedUser.Email,
+			"createdAt": updatedUser.CreatedAt,
+			"avatar":    updatedUser.Avatar,
+		},
+	})
 }
