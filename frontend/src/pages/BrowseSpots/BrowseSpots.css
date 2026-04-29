@@ -34,7 +34,6 @@
     top: 24px;
     align-self: flex-start;
     background-color: var(--color-cream);
-    border: 1px solid var(--color-yellow);
     border-radius: 12px;
     padding: 20px;
 }
