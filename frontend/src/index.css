@@ -1,25 +1,76 @@
+/* ── Google Fonts ── */
+/* Playfair Display → headings and logos */
+/* Instrument Sans → body text, buttons, links */
+
+/* ── CSS Variables ── */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    --color-brown:      #543C2B;
+    --color-sage:       #C1CF9B;
+    --color-terracotta: #F08456;
+    --color-yellow:     #F2E8B6;
+    --color-olive:      #6E6E47;
+    --color-salmon:     #F28A6B;
+    --color-cream:      #F5F0E6;
+    --color-cream2:     #e2ddd4;
+    --color-white:      #FFFFFF;
+    --color-error:      #c0392b;
+
+    --font-heading: 'Playfair Display', serif;
+    --font-body:    'Instrument Sans', sans-serif;
 }
 
+/* ── Reset ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── Base ── */
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-cream);
+    color: var(--color-brown);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--color-brown);
+    line-height: 1.2;
+}
+
+h1 { font-size: 48px; }
+h2 { font-size: 36px; }
+h3 { font-size: 24px; }
+h4 { font-size: 20px; }
+
+p {
+    line-height: 1.6;
+    color: var(--color-brown);
+}
+
+/* ── Links ── */
 a {
-  font-weight: 500;
-  color: #57473c;
-  text-decoration: inherit;
+    color: var(--color-brown);
+    text-decoration: none;
 }
 
 a:hover {
-  color: #57473c;
+    color: var(--color-terracotta);
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  min-width: 320px;
-  min-height: 100vh;
+/* ── Buttons ── */
+button {
+    font-family: var(--font-body);
+    cursor: pointer;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* ── Root div ── */
+#root {
+    min-height: 100vh;
+    width: 100%;
 }

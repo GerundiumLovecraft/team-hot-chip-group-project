@@ -1,7 +1,6 @@
 .leaderboard-page {
     padding: 40px 24px;
     min-height: calc(100vh - 65px);
-    background-color: #faf7f3;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10,12 +9,9 @@
 .leaderboard-header {
     text-align: center;
     margin-bottom: 48px;
-    color: #57473c;
 }
 
 .leaderboard-header h1 {
-    font-size: 32px;
-    font-weight: 700;
     margin-bottom: 8px;
 }
 
@@ -38,7 +34,6 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    color: #57473c;
 }
 
 .podium-medal {
@@ -73,8 +68,8 @@
     width: 90px;
     height: 90px;
     border-radius: 50%;
-    background-color: #57473c;
-    color: #faf7f3;
+    background-color: var(--color-brown);
+    color: var(--color-cream);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -101,19 +96,18 @@
 .leaderboard-entry {
     display: flex;
     align-items: center;
-    background-color: #fff;
-    border: 1px solid #f1ebe3;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-yellow);
     border-radius: 10px;
     padding: 16px 20px;
-    color: #57473c;
 }
 
 .list-avatar {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background-color: #57473c;
-    color: #faf7f3;
+    background-color: var(--color-brown);
+    color: var(--color-cream);
     display: flex;
     align-items: center;
     justify-content: center;
