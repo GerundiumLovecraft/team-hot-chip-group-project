@@ -44,7 +44,7 @@ export const BrowseSpots = () => {
               />
             ))
           ) : (
-            <p>Nothing here yet. Why not submit your favourite spot? ☕ ✨</p>
+            <p>No spots were found. Why not submit your favourite spot? ☕ ✨</p>
           )}
         </div>
         <div className="filter-section">
