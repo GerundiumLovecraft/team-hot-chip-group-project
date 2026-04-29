@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { User, Lock } from "lucide-react";
 import "./LoginPage.css";
+
 import { login } from "../../services/authentication";
 
 export const LoginPage = () => {
@@ -16,7 +18,7 @@ export const LoginPage = () => {
       localStorage.setItem("token", token);
       navigate("/");
     } catch (err) {
-      setErrorMessage("Invalid username/email or password.")
+      setErrorMessage("Invalid username/email or password.");
     }
   };
 
@@ -32,42 +34,45 @@ export const LoginPage = () => {
     <div className="login-page">
       <div className="login-card">
         <div className="login-header">
-          <h2>Login to your account</h2>
-          <p>Enter your username or email to access your account</p>
-          <p className="signup-option">
-            Don&apos;t have an account yet? <Link to="/signup" className="signup-link">Sign Up</Link>
-            </p>
+          <h2>Login</h2>
         </div>
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form className="login-form" onSubmit={handleSubmit}>
-
-          <div className="form-group">
-            <label>Username or Email</label>
+          <div className="form-group-user">
             <input
-            id="usernameOrEmail"
-            type="text"
-            value={usernameOrEmail}
-            onChange={handleUsernameOrEmailChange}
-            placeholder="awe@example.com"
-            required
+              id="usernameOrEmail"
+              type="text"
+              value={usernameOrEmail}
+              onChange={handleUsernameOrEmailChange}
+              placeholder="Username/Email"
+              required
             />
+            <User className="user-icon" />
           </div>
 
-          <div className="form-group">
-            <label>Password</label>
+          <div className="form-group-pass">
             <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            placeholder="* * * * * * * *"
-            required
+              id="password"
+              type="password"
+              value={password}
+              onChange={handlePasswordChange}
+              placeholder="Password"
+              required
             />
+            <Lock className="lock-icon" />
           </div>
 
-          <button type="submit" className="login-btn">Login</button>
+          <button type="submit" className="login-button">
+            Login
+          </button>
+          <p className="signup-option">
+            Don&apos;t have an account yet?{" "}
+            <Link to="/signup" className="signup-link">
+              Sign Up
+            </Link>
+          </p>
         </form>
       </div>
-      </div>
+    </div>
   );
-}; 
+};
