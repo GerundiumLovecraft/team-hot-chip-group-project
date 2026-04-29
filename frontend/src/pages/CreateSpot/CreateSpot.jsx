@@ -43,17 +43,24 @@ export function CreateSpotPage() {
         "price": ["£", "££", "£££"],
     }
 
+    const featureNames = {
+    "wifi": "WiFi",
+    "toilets": "Toilets",
+    "power_sockets": "Power Sockets",
+    "open_late": "Open Late",
+    }
+
     useEffect(() => {
         if (!isTokenValid()) {
             navigate("/login");
             return;
         }
 
-        getFeatures().
-        then((data) => {
+        getFeatures()
+        .then((data) => {
             setListedFeatures(data.features);
-        }).
-        catch((err) => {
+        })
+        .catch((err) => {
             console.error(err);
             navigate("/");
         });
@@ -118,58 +125,58 @@ export function CreateSpotPage() {
     }
 
     function checkErrors(spotJson) {
-
-        let errorCount = 0;
         let newErrors = []
 
         if (spotJson.name.length === 0) {
-            newErrors = [...newErrors, "Name field should not be empty"]
-            errorCount++;
+            newErrors.push("Name field should not be empty");
         }
         if (spotJson.address.length === 0) {
-            newErrors = [...newErrors, "Address field should not be empty"]
-            errorCount++;
+            newErrors.push("Address field should not be empty");
         }
         if (spotJson.description.length === 0) {
-            newErrors = [...newErrors, "Description field should not be empty"];
-            errorCount++;
+            newErrors.push("Description field should not be empty");
         }
         if (spotJson.image.length === 0) {
-            newErrors = [...newErrors, "Provide a URL for the image"]
-            errorCount++;
+            newErrors.push("Provide a URL for the image");
         } else {
             try {
                 new URL(spotJson.image)
             } catch (e) {
-                newErrors = [...newErrors, "Provide a valid URL"];
-                errorCount++;
+                newErrors.push("Provide a valid URL");
             }
         }
         if (spotJson.open_from.length !== 5) {
-            newErrors = [...newErrors, "Provide a correct open time"];
-            errorCount++;
+            newErrors.push("Provide a correct open time");
         }
         if (spotJson.open_to.length !== 5) {
-            newErrors = [...newErrors, "Provide a correct close time"];
-            errorCount++;
-        }
-        if (spotJson.features.length === 0) {
-            newErrors = [...newErrors, "Select at least one feature"];
-            errorCount++;
+            newErrors.push("Provide a correct close time");
         }
 
-        if (errorCount > 0) {
-            setErrors(newErrors)
-            return true;
-        } else {
-            return false;
-        }
+        const hasNoise = addFeatures.some(f => {
+            const feature = listedFeatures.find(lf => String(lf.feat_id) === f.feat_id);
+            return feature?.feat_name === "noise_level";
+        });
+        const hasPrice = addFeatures.some(f => {
+            const feature = listedFeatures.find(lf => String(lf.feat_id) === f.feat_id);
+            return feature?.feat_name === "price";
+        });
+        const hasFeature = addFeatures.some(f => {
+            const feature = listedFeatures.find(lf => String(lf.feat_id) === f.feat_id);
+            return feature?.feat_name !== "noise_level" && feature?.feat_name !== "price" && feature?.feat_name !== "open_late";
+        });
+
+        if (!hasNoise) newErrors.push("Select a noise level");
+        if (!hasPrice) newErrors.push("Select a price range");
+        if (!hasFeature) newErrors.push("Select at least one feature");
+
+        setErrors(newErrors);
+        return newErrors.length > 0;
     }
 
     async function handleSubmit(event) {
         event.preventDefault();
 
-        try{
+        try {
             const openLateFeat = listedFeatures.find((f) => f.feat_name === "open_late");
             const finalFeatures = (openTo >= "18:00" || openTo < openFrom)
                 ? [...addFeatures, { "feat_id": openLateFeat.feat_id, "value": null }]
@@ -184,21 +191,17 @@ export function CreateSpotPage() {
                 "open_to": openTo,
                 "features": finalFeatures.map((f) => ({
                     "feat_id": Number(f.feat_id),
-                    "value": f.value !== null ? parseInt(f.value, 10) : null})),
+                    "value": f.value !== null ? parseInt(f.value, 10) : null
+                })),
             };
 
             if (checkErrors(newSpotJson)) {
-                throw new Error("Validator errors");
+                return;
             }
 
             await createSpot(newSpotJson, token);
+
             setErrors([]);
-            navigate("/");
-        } catch(e) {
-            if (e.message !== "Validator errors") {
-                setErrors([...errors, "Something went wrong, please try again!"])
-            }
-        } finally {
             setName("");
             setAddress("");
             setDescription("");
@@ -206,130 +209,156 @@ export function CreateSpotPage() {
             setOpenFrom("");
             setOpenTo("");
             setAddFeatures([]);
+            navigate("/");
+
+        } catch(e) {
+            setErrors(["Something went wrong, please try again!"]);
         }
     }
 
     return(
         <>
             <div className="create-spot-page">
-                <h2>Create a new Spot</h2>
-                <div className="form-errors">
-                    {errors.map((e, i) => <p key={i}>{e}</p>)}
+                <div className="create-spot-header">
+                    <h2>Submit a New Spot</h2>
+                    <p>Share your favourite work spot with the community</p>
                 </div>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="create-spot-form">
+
+                    {errors.length > 0 && (
+                        <div className="form-errors">
+                            {errors.map((e, i) => <p key={i}>{e}</p>)}
+                        </div>
+                    )}
+
                     <div className="form-field">
-                        <label>Spot name</label>
+                        <label>Spot name <span className="required">*</span></label>
                         <input
                             name="name"
                             type="text"
-                            placeholder="How's your spot called?"
+                            placeholder="What's the name of the cafe?"
                             value={name}
                             onChange={(e) => handleChange(e)}
                         />
                     </div>
                     <div className="form-field">
-                        <label>Address</label>
+                        <label>Address <span className="required">*</span></label>
                         <input
                             name="address"
                             type="text"
-                            placeholder="Where's your spot located"
+                            placeholder="e.g. 12 Baker Street, London, EC1A 1BB"
                             value={address}
-                            onChange={(e) => {handleChange(e)}}
+                            onChange={(e) => handleChange(e)}
                         />
                     </div>
-                    <div className="form-field">
-                        <label>Description</label>
+                    <div className="form-field full-width">
+                        <label>Description <span className="required">*</span></label>
                         <textarea
                             name="description"
-                            placeholder="Write a short description about your spot..."
+                            placeholder="Tell us what makes this spot great for working..."
                             value={description}
-                            onChange={(e) => {handleChange(e)}}
+                            onChange={(e) => handleChange(e)}
                         />
                     </div>
-                    <div className="form-field">
-                        <label>Image URL</label>
+                    <div className="form-field full-width">
+                        <label>Image URL <span className="required">*</span></label>
                         <input
                             name="image"
                             placeholder="Paste a link to the image here"
                             value={image}
-                            onChange={(e) => {handleChange(e)}}
+                            onChange={(e) => handleChange(e)}
                         />
                     </div>
                     <div className="time-row">
                         <div className="form-field">
-                            <label>Open from</label>
+                            <label>Open from <span className="required">*</span></label>
                             <input
                                 name="open-from"
                                 type="time"
                                 value={openFrom}
-                                onChange={(e) => {handleChange(e)}}
+                                onChange={(e) => handleChange(e)}
                             />
                         </div>
                         <div className="form-field">
-                            <label>Open to</label>
+                            <label>Open to <span className="required">*</span></label>
                             <input
                                 name="open-to"
                                 type="time"
                                 value={openTo}
-                                onChange={(e) => {handleChange(e)}}
+                                onChange={(e) => handleChange(e)}
                             />
                         </div>
                     </div>
 
+                    <hr className="features-divider" />
+
                     {listedFeatures.map((feature) => {
                         if (feature.feat_name === "noise_level" || feature.feat_name === "price") {
                             return (
-                                <div key={feature.feat_id}>
-                                    <label>{feature.feat_name}</label>
-                                    <button
-                                        type="button"
-                                        className={`scale-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id) && f.value === "1") ? "selected" : ""}`}
-                                        name="features-with-value"
-                                        data-feat-id={feature.feat_id}
-                                        data-feat-value="1"
-                                        onClick={(e) => {handleChange(e)}}
-                                    >
-                                        {featureDict[feature.feat_name][0]}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className={`scale-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id) && f.value === "2") ? "selected" : ""}`}
-                                        name="features-with-value"
-                                        data-feat-id={feature.feat_id}
-                                        data-feat-value="2"
-                                        onClick={(e) => {handleChange(e)}}
-                                    >
-                                        {featureDict[feature.feat_name][1]}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className={`scale-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id) && f.value === "3") ? "selected" : ""}`}
-                                        name="features-with-value"
-                                        data-feat-id={feature.feat_id}
-                                        data-feat-value="3"
-                                        onClick={(e) => {handleChange(e)}}
-                                    >
-                                        {featureDict[feature.feat_name][2]}
-                                    </button>
+                                <div key={feature.feat_id} className="scale-feature">
+                                    <label>{feature.feat_name === "noise_level" ? "Noise Level" : "Price"} <span className="required">*</span></label>
+                                    <div className="scale-buttons">
+                                        <button
+                                            type="button"
+                                            className={`scale-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id) && f.value === "1") ? "selected" : ""}`}
+                                            name="features-with-value"
+                                            data-feat-id={feature.feat_id}
+                                            data-feat-value="1"
+                                            onClick={(e) => handleChange(e)}
+                                        >
+                                            {featureDict[feature.feat_name][0]}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`scale-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id) && f.value === "2") ? "selected" : ""}`}
+                                            name="features-with-value"
+                                            data-feat-id={feature.feat_id}
+                                            data-feat-value="2"
+                                            onClick={(e) => handleChange(e)}
+                                        >
+                                            {featureDict[feature.feat_name][1]}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`scale-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id) && f.value === "3") ? "selected" : ""}`}
+                                            name="features-with-value"
+                                            data-feat-id={feature.feat_id}
+                                            data-feat-value="3"
+                                            onClick={(e) => handleChange(e)}
+                                        >
+                                            {featureDict[feature.feat_name][2]}
+                                        </button>
+                                    </div>
                                 </div>
                             )
-                        } else if (feature.feat_name != "open_late") {
-                            return (
-                                <button
-                                    key={feature.feat_id}
-                                    type="button"
-                                    className={`feature-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id)) ? "selected" : ""}`}
-                                    name="features-no-value"
-                                    data-feat-id={feature.feat_id}
-                                    value={feature.feat_id}
-                                    onClick={(e) => {handleChange(e)}}
-                                >
-                                    {feature.feat_name}
-                                </ button>
-                            )
+                        } else if (feature.feat_name !== "open_late") {
+                            return null
                         }
                     })}
-                    <button type="submit" className="submit-btn"> Create a spot!</button>
+
+                    <div className="features-section">
+                        <label>Features <span className="required">*</span></label>
+                        <div className="features-grid">
+                            {listedFeatures
+                                .filter(f => f.feat_name !== "noise_level" && f.feat_name !== "price" && f.feat_name !== "open_late")
+                                .map((feature) => (
+                                    <button
+                                        key={feature.feat_id}
+                                        type="button"
+                                        className={`feature-btn ${addFeatures.some(f => f.feat_id === String(feature.feat_id)) ? "selected" : ""}`}
+                                        name="features-no-value"
+                                        data-feat-id={feature.feat_id}
+                                        value={feature.feat_id}
+                                        onClick={(e) => handleChange(e)}
+                                    >
+                                        {featureNames[feature.feat_name] || feature.feat_name}
+                                    </button>
+                                ))
+                            }
+                        </div>
+                    </div>
+
+                    <button type="submit" className="submit-btn">Create spot!</button>
                 </form>
             </div>
         </>
