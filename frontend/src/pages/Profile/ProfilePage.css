@@ -1,23 +1,20 @@
 .profile-page {
   min-height: calc(100vh - 65px);
   background-color: #faf7f3;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 60px 24px;
-  box-sizing: border-box;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  align-items: start;
   gap: 40px;
+  padding: 60px 40px;
+  box-sizing: border-box;
 }
 
 .profile-card {
   background-color: #ffffff;
   border: 1px solid #f1ebe3;
   border-radius: 16px;
-  padding: 48px;
+  padding: 32px;
   width: 100%;
-  max-width: 520px;
   box-shadow: 0 2px 16px rgba(87, 71, 60, 0.06);
 }
 
@@ -111,8 +108,9 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 560px) {
-  .profile-card {
+@media (max-width: 700px) {
+  .profile-page {
+    grid-template-columns: 1fr;
     padding: 32px 24px;
   }
 
@@ -123,21 +121,21 @@
 }
 
 .my-spots-section {
-    width: 100%;
-    max-width: 900px;
+  width: 100%;
 }
 
 .my-spots-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #57473c;
-    margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #57473c;
+  margin: 0 0 20px 0;
+  text-align: center;
 }
 
 .my-spots-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
 }
 
 .my-spot-card {
@@ -171,4 +169,106 @@
     color: #57473c;
     opacity: 0.55;
     margin: 0;
+}
+
+/* ── Avatar with edit overlay ── */
+.avatar-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.avatar {
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+.avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(87, 71, 60, 0.5);
+    color: #faf7f3;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.avatar:hover .avatar-overlay {
+    opacity: 1;
+}
+
+/* ── Avatar edit input ── */
+.avatar-edit {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: #ffffff;
+    border: 1px solid #f1ebe3;
+    border-radius: 10px;
+    padding: 12px;
+    width: 240px;
+    box-shadow: 0 4px 16px rgba(87, 71, 60, 0.1);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.avatar-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #f1ebe3;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #57473c;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.avatar-input:focus {
+    border-color: #57473c;
+}
+
+.avatar-edit-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.avatar-save-btn,
+.avatar-cancel-btn {
+    flex: 1;
+    padding: 7px 0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #57473c;
+}
+
+.avatar-save-btn {
+    background-color: #57473c;
+    color: #faf7f3;
+}
+
+.avatar-cancel-btn {
+    background-color: transparent;
+    color: #57473c;
 }

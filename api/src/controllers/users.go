@@ -100,3 +100,42 @@ func GetUserByUsername(ctx *gin.Context) {
 	// Send the response
 	ctx.JSON(http.StatusOK, gin.H{"message": "OK", "user": user, "token": token})
 }
+
+func UpdateUserAvatar(ctx *gin.Context) {
+
+	userId, _ := ctx.Get("userID")
+	userIdStr := userId.(string)
+
+	var body struct {
+		Avatar string `json:"avatar" binding:"required"`
+	}
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "An image URL is required"})
+		return
+	}
+
+	_, err := models.UpdateUserAvatar(userIdStr, body.Avatar)
+	if err != nil {
+		SendInternalError(ctx, err)
+		return
+	}
+
+	token, _ := auth.GenerateToken(userIdStr)
+
+	updatedUser, err := models.FindUser(userIdStr)
+	if err != nil {
+		SendInternalError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"token": token,
+		"user": gin.H{
+			"id":        userIdStr,
+			"username":  updatedUser.Username,
+			"email":     updatedUser.Email,
+			"createdAt": updatedUser.CreatedAt,
+			"avatar":    updatedUser.Avatar,
+		},
+	})
+}

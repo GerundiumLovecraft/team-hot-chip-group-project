@@ -49,6 +49,7 @@ func GetProfile(ctx *gin.Context) {
 			"username":  user.Username,
 			"email":     user.Email,
 			"createdAt": user.CreatedAt,
+			"avatar": user.Avatar,
 		},
 	})
 }
