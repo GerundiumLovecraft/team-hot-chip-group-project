@@ -1,6 +1,10 @@
 .profile-page {
   min-height: calc(100vh - 65px);
-  background-color: #faf7f3;
+  background-image: url('../../assets/pexels-roman-odintsov-8063832.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: scroll;
+  background-repeat: repeat;
   display: grid;
   grid-template-columns: 280px 1fr;
   align-items: start;
@@ -10,8 +14,8 @@
 }
 
 .profile-card {
-  background-color: #ffffff;
-  border: 1px solid #f1ebe3;
+  background-color: #f5f4eb;
+  border: 1px solid #ffffff;
   border-radius: 16px;
   padding: 32px;
   width: 100%;
@@ -125,9 +129,10 @@
 }
 
 .my-spots-title {
-  font-size: 20px;
+  font-family: var(--font-heading);
+  font-size: 25px;
   font-weight: 700;
-  color: #57473c;
+  color: #ffffff;
   margin: 0 0 20px 0;
   text-align: center;
 }
@@ -139,7 +144,7 @@
 }
 
 .my-spot-card {
-    background-color: #ffffff;
+    background-color: #f5f4eb;
     border: 1px solid #f1ebe3;
     border-radius: 12px;
     overflow: hidden;
@@ -272,3 +277,8 @@
     background-color: transparent;
     color: #57473c;
 }
+
+/* background-image: linear-gradient(
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.5)
+  ), url('../assets/your-image-name.jpg'); */
