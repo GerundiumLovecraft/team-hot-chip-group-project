@@ -10,4 +10,5 @@ func SetupRoutes(engine *gin.Engine) {
 	SetupFeaturesRouter(apiRouter)
 	setupProfileRoutes(apiRouter)
 	setupLeaderboardRoutes(apiRouter)
+	setupRatingRoutes(apiRouter)
 }

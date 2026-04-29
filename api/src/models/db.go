@@ -29,4 +29,5 @@ func AutoMigrateModels() {
 	Database.AutoMigrate(&Spot{})
 	Database.AutoMigrate(&Feature{})
 	Database.AutoMigrate(&SpotsToFeats{})
+	Database.AutoMigrate(&SpotRating{})
 }
