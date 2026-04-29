@@ -12,6 +12,7 @@ import (
 )
 
 type JSONFeature struct {
+	ID uint `json:"feat_id"`
 	FeatName string `json:"feat_name"`
 	Value    *int8  `json:"value"`
 }
@@ -50,6 +51,7 @@ func GetAllSpots(ctx *gin.Context) {
 		jsonFeature := make([]JSONFeature, 0)
 		for _, feature := range spot.Features {
 			jsonFeature = append(jsonFeature, JSONFeature{
+				ID: feature.FeatId,
 				FeatName: feature.Feature.FeatName,
 				Value:    feature.Value,
 			})
@@ -102,6 +104,7 @@ func GetSpotById(ctx *gin.Context) {
 	jsonFeature := make([]JSONFeature, 0)
 	for _, feature := range spotFound.Features {
 		jsonFeature = append(jsonFeature, JSONFeature{
+			ID: feature.FeatId,
 			FeatName: feature.Feature.FeatName,
 			Value:    feature.Value,
 		})
@@ -134,6 +137,7 @@ func GetSpotsByFeature(ctx *gin.Context) {
 	// Check if features for filter were provided
 	if len(features) == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Filter parameters are empty"})
+		return
 	}
 
 	// filter spots by features (id and value)
@@ -162,6 +166,7 @@ func GetSpotsByFeature(ctx *gin.Context) {
 		jsonFeature := make([]JSONFeature, 0)
 		for _, feature := range spot.Features {
 			jsonFeature = append(jsonFeature, JSONFeature{
+				ID: feature.FeatId,
 				FeatName: feature.Feature.FeatName,
 				Value:    feature.Value,
 			})

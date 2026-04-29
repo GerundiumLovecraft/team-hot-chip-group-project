@@ -1,24 +1,29 @@
 import { useState, useEffect } from "react";
-import { getAllSpots } from "../../services/spots";
+import { getAllSpots, getSpotByFeature } from "../../services/spots";
 import Spot from "../../components/spotCard/spotCard";
 import SpotModal from "../../components/SpotModal/SpotModal";
+import FilterBar from "../../components/filterSpot/FilterBar"
 import "./BrowseSpots.css";
 
 export const BrowseSpots = () => {
   const [spots, setSpots] = useState([]);
   const [selectedSpot, setSelectedSpot] = useState(null);
+  const [selectedFeatures, setSelectedFeatures] = useState([])
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllSpots()
+    setLoading(true);
+
+    const fetchingData = selectedFeatures.length > 0 ? getSpotByFeature(selectedFeatures) : getAllSpots();
+    fetchingData
       .then((data) => {
-        setSpots(data.spots);
+        setSpots(data.spots || []);
       })
       .catch((err) => {
         console.error(err);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedFeatures]);
 
   return (
     <>
@@ -39,12 +44,14 @@ export const BrowseSpots = () => {
               />
             ))
           ) : (
-            <p>Nothing here yet. Why not submit your favourite spot? ☕ ✨</p>
+            <p>No spots were found. Why not submit your favourite spot? ☕ ✨</p>
           )}
         </div>
         <div className="filter-section">
-          <h3>Filter</h3>
-          <p>Filter bar coming soon</p>
+          <FilterBar 
+          onFilterChange={setSelectedFeatures}
+          selectedFeatures={selectedFeatures}
+          />
         </div>
       </div>
       <SpotModal
