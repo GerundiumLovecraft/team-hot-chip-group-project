@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/auth"
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/env"
@@ -29,6 +30,41 @@ type TestSuiteEnv struct {
 		spotId2 uint
 		featId1 uint
 	}
+}
+
+func (suite *TestSuiteEnv) SignupAndLogin(email, username, password string) string {
+	suite.res = httptest.NewRecorder()
+	signupJSON := []byte(fmt.Sprintf(
+		`{"email":"%s", "password":"%s", "username":"%s"}`,
+		email, password, username,
+	))
+	signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJSON))
+	suite.app.ServeHTTP(suite.res, signupReq)
+	assert.Equal(suite.T(), 201, suite.res.Code)
+
+	suite.res = httptest.NewRecorder()
+	loginJSON := []byte(fmt.Sprintf(
+		`{"usernameOrEmail":"%s", "password":"%s"}`,
+		email, password,
+	))
+	loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJSON))
+	suite.app.ServeHTTP(suite.res, loginReq)
+
+	var loginResponse map[string]string
+	json.Unmarshal(suite.res.Body.Bytes(), &loginResponse)
+
+	return loginResponse["token"]
+}
+
+func (suite *TestSuiteEnv) CreateSpot(token, name string) {
+	suite.res = httptest.NewRecorder()
+	spotJSON := []byte(fmt.Sprintf(
+		`{"user_id": 1, "name": "%s", "address": "main_test.go", "description": "test desc", "open_from": "11:00", "open_to": "19:00", "features": [{"feat_id": %d}]}`,
+		name, suite.ids.featId1,
+	))
+	postSpotRequest, _ := http.NewRequest("POST", "/spots", bytes.NewBuffer(spotJSON))
+	postSpotRequest.Header.Set("Authorization", "Bearer "+token)
+	suite.app.ServeHTTP(suite.res, postSpotRequest)
 }
 
 // Tests are run before they start
@@ -92,7 +128,6 @@ func (suite *TestSuiteEnv) Test_PostUsers_IncorrectJSON() {
 
 	assert.Equal(suite.T(), 400, suite.res.Code)
 }
-
 
 // =============================================
 // SIGNUP INTEGRATION TESTS
@@ -544,32 +579,12 @@ func (suite *TestSuiteEnv) Test_GetAllFeatures_ReturnsAllFeatures() {
 	}
 
 	json.Unmarshal(suite.res.Body.Bytes(), &response)
-	fmt.Println(len(response.Features))
 
 	// Assert the results
 	assert.Equal(suite.T(), 200, suite.res.Code, "Reponse code should be 200")
 	assert.Equal(suite.T(), 1, len(response.Features), "Reponse length should be 7")
 
 }
-
-/*
-app := suite.app
-	getSpotsRequest, _ := http.NewRequest("GET", "/spots", nil)
-	app.ServeHTTP(suite.res, getSpotsRequest)
-
-	// Retrieve information from response
-	var response struct {
-		Spots []struct {
-			ID      uint   `json:"_id"`
-			Name    string `json:"name"`
-			Address string `json:"address"`
-		} `json:"spots"`
-	}
-	json.Unmarshal(suite.res.Body.Bytes(), &response)
-
-	// Assert the results
-	assert.Equal(suite.T(), 200, suite.res.Code)
-*/
 
 // =============================================
 // LEADERBOARDS INTEGRATION TESTS
@@ -586,57 +601,17 @@ func (suite *TestSuiteEnv) Test_GetLeaderboardOrderedBySpots() {
 		} `json:"leaderboard"`
 	}
 
-	signupAndLogin := func(email, username, password string) string {
-		suite.res = httptest.NewRecorder()
-		signupJSON := []byte(fmt.Sprintf(
-			`{"email":"%s", "password":"%s", "username":"%s"}`,
-			email, password, username,
-		))
-		signupReq, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(signupJSON))
-		app.ServeHTTP(suite.res, signupReq)
-		assert.Equal(suite.T(), 201, suite.res.Code)
+	tokenA := suite.SignupAndLogin("a@example.com", "usera", "password123")
+	suite.CreateSpot(tokenA, "a-spot-1")
+	suite.CreateSpot(tokenA, "a-spot-2")
 
-		suite.res = httptest.NewRecorder()
-		loginJSON := []byte(fmt.Sprintf(
-			`{"usernameOrEmail":"%s", "password":"%s"}`,
-			email, password,
-		))
-		loginReq, _ := http.NewRequest("POST", "/tokens", bytes.NewBuffer(loginJSON))
-		app.ServeHTTP(suite.res, loginReq)
-		assert.Equal(suite.T(), 201, suite.res.Code)
+	tokenB := suite.SignupAndLogin("b@example.com", "userb", "password123")
+	suite.CreateSpot(tokenB, "b-spot-1")
 
-		var loginResponse map[string]string
-		err := json.Unmarshal(suite.res.Body.Bytes(), &loginResponse)
-		assert.NoError(suite.T(), err)
-		assert.NotEmpty(suite.T(), loginResponse["token"])
-
-		return loginResponse["token"]
-	}
-
-	createSpot := func(token, name string) {
-		suite.res = httptest.NewRecorder()
-		spotJSON := []byte(fmt.Sprintf(
-			`{"user_id": 1, "name": "%s", "address": "main_test.go", "description": "test desc", "open_from": "11:00", "open_to": "19:00", "features": [{"feat_id": %d}]}`,
-			name, suite.ids.featId1,
-		))
-		postSpotRequest, _ := http.NewRequest("POST", "/spots", bytes.NewBuffer(spotJSON))
-		postSpotRequest.Header.Set("Authorization", "Bearer "+token)
-		app.ServeHTTP(suite.res, postSpotRequest)
-
-		assert.Equal(suite.T(), 201, suite.res.Code)
-	}
-
-	tokenA := signupAndLogin("a@example.com", "usera", "password123")
-	createSpot(tokenA, "a-spot-1")
-	createSpot(tokenA, "a-spot-2")
-
-	tokenB := signupAndLogin("b@example.com", "userb", "password123")
-	createSpot(tokenB, "b-spot-1")
-
-	tokenC := signupAndLogin("c@example.com", "userc", "password123")
-	createSpot(tokenC, "c-spot-1")
-	createSpot(tokenC, "c-spot-2")
-	createSpot(tokenC, "c-spot-3")
+	tokenC := suite.SignupAndLogin("c@example.com", "userc", "password123")
+	suite.CreateSpot(tokenC, "c-spot-1")
+	suite.CreateSpot(tokenC, "c-spot-2")
+	suite.CreateSpot(tokenC, "c-spot-3")
 
 	//Leaderboard get request
 	suite.res = httptest.NewRecorder()
@@ -671,4 +646,357 @@ func (suite *TestSuiteEnv) Test_GetLeaderboardOrderedBySpots() {
 			response.Leaderboard[i+1].SpotsCreated,
 		)
 	}
+}
+
+/*
+GET /profile
+
+	case 1: Valid token → 200
+	case 2: Invalid/No token → 401
+*/
+func (suite *TestSuiteEnv) Test_GetProfile_ValidToken() {
+	app := suite.app
+
+	// Create user A
+	tokenA := suite.SignupAndLogin("a@example.com", "usera", "password123")
+
+	suite.res = httptest.NewRecorder()
+
+	// Construct a GET /profile request
+	getProfileRequest, _ := http.NewRequest("GET", "/profile", nil)
+	getProfileRequest.Header.Set("Authorization", "Bearer "+tokenA)
+	app.ServeHTTP(suite.res, getProfileRequest)
+
+	// Retrieve information from the response
+	var getProfileResponse struct {
+		User struct {
+			ID        uint      `json:"id"`
+			Username  string    `json:"username"`
+			Email     string    `json:"email"`
+			CreatedAt time.Time `json:"createdAt"`
+			Avatar    string    `json:"avatar"`
+		} `json:"user"`
+	}
+	json.Unmarshal(suite.res.Body.Bytes(), &getProfileResponse)
+	assert.Equal(suite.T(), 200, suite.res.Code)
+	assert.NotNil(suite.T(), getProfileResponse)
+	assert.Equal(suite.T(), "a@example.com", getProfileResponse.User.Email)
+}
+
+func (suite *TestSuiteEnv) Test_GetProfile_InvalidToken() {
+	app := suite.app
+
+	// Create invalid token
+	tokenA := "invalid-token"
+
+	suite.res = httptest.NewRecorder()
+
+	// Construct a GET /profile request
+	getProfileRequest, _ := http.NewRequest("GET", "/profile", nil)
+	getProfileRequest.Header.Set("Authorization", "Bearer "+tokenA)
+	app.ServeHTTP(suite.res, getProfileRequest)
+
+	assert.Equal(suite.T(), 401, suite.res.Code)
+}
+
+/*
+GET /profile/spots
+	case 1: Valid Token + Spots > 200 + slice of spots
+	case 2: Valid Token + No Spots > 200 + empty slice
+	case 3: Invalid/No Token > 401
+*/
+
+func (suite *TestSuiteEnv) Test_GetSpotsByUser_WithSpots() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+	suite.CreateSpot(token, "spot-1")
+	suite.CreateSpot(token, "spot-2")
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	getSpotsByUserRequest, _ := http.NewRequest("GET", "/profile/spots", nil)
+	getSpotsByUserRequest.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, getSpotsByUserRequest)
+
+	var getSpotsByUserResponse struct {
+		Spots []struct {
+			ID      uint   `json:"_id"`
+			Name    string `json:"name"`
+			Address string `json:"address"`
+		} `json:"spots"`
+	}
+	json.Unmarshal(suite.res.Body.Bytes(), &getSpotsByUserResponse)
+
+	assert.Equal(suite.T(), 200, suite.res.Code)
+	assert.Equal(suite.T(), 2, len(getSpotsByUserResponse.Spots))
+	assert.Equal(suite.T(), "spot-1", getSpotsByUserResponse.Spots[0].Name)
+
+}
+
+func (suite *TestSuiteEnv) Test_GetSpotsByUser_WithNoSpots() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	getSpotsByUserRequest, _ := http.NewRequest("GET", "/profile/spots", nil)
+	getSpotsByUserRequest.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, getSpotsByUserRequest)
+
+	var getSpotsByUserResponse struct {
+		Spots []struct {
+			ID      uint   `json:"_id"`
+			Name    string `json:"name"`
+			Address string `json:"address"`
+		} `json:"spots"`
+	}
+	json.Unmarshal(suite.res.Body.Bytes(), &getSpotsByUserResponse)
+
+	assert.Equal(suite.T(), 200, suite.res.Code)
+	assert.Equal(suite.T(), 0, len(getSpotsByUserResponse.Spots))
+}
+
+func (suite *TestSuiteEnv) Test_GetSpotsByUser_InvalidToken() {
+	token := "invalid-token"
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	getSpotsByUserRequest, _ := http.NewRequest("GET", "/profile/spots", nil)
+	getSpotsByUserRequest.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, getSpotsByUserRequest)
+
+	assert.Equal(suite.T(), 401, suite.res.Code)
+}
+
+/*
+POST /spots/filter
+
+	case 1: Valid feature filter that matches spots → 200 + matching spots returned
+	case 2: Valid feature filter with no matches → 200 + empty array + message "Spots not found"
+	case 3: Empty array body [] → 400 "Filter parameters are empty"
+	case 4: Malformed JSON body → 400
+*/
+func (suite *TestSuiteEnv) Test_GetSpotsByFeature_Match() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+	suite.CreateSpot(token, "spot-1")
+	suite.CreateSpot(token, "spot-2")
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	var featureJson = []byte(fmt.Sprintf(`[{"feat_id": %v}]`, suite.ids.featId1))
+	postSpotsByFeatureRequest, _ := http.NewRequest("POST", "/spots/filter", bytes.NewBuffer(featureJson))
+	app.ServeHTTP(suite.res, postSpotsByFeatureRequest)
+
+	var postSpotsByFeatureResponse struct {
+		Spots []struct {
+			ID      uint   `json:"_id"`
+			Name    string `json:"name"`
+			Address string `json:"address"`
+		} `json:"spots"`
+	}
+	json.Unmarshal(suite.res.Body.Bytes(), &postSpotsByFeatureResponse)
+
+	assert.Equal(suite.T(), 200, suite.res.Code)
+	assert.Equal(suite.T(), 2, len(postSpotsByFeatureResponse.Spots))
+	assert.Equal(suite.T(), "spot-1", postSpotsByFeatureResponse.Spots[0].Name)
+}
+
+func (suite *TestSuiteEnv) Test_GetSpotsByFeature_NoMatch() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+	suite.CreateSpot(token, "spot-1")
+	suite.CreateSpot(token, "spot-2")
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	var featureJson = []byte(`[{"feat_id": 9876}]`)
+	postSpotsByFeatureRequest, _ := http.NewRequest("POST", "/spots/filter", bytes.NewBuffer(featureJson))
+	app.ServeHTTP(suite.res, postSpotsByFeatureRequest)
+
+	var postSpotsByFeatureResponse struct {
+		Spots []struct {
+			ID      uint   `json:"_id"`
+			Name    string `json:"name"`
+			Address string `json:"address"`
+		} `json:"spots"`
+	}
+	json.Unmarshal(suite.res.Body.Bytes(), &postSpotsByFeatureResponse)
+
+	assert.Equal(suite.T(), 200, suite.res.Code)
+	assert.Equal(suite.T(), 0, len(postSpotsByFeatureResponse.Spots))
+}
+
+func (suite *TestSuiteEnv) Test_GetSpotsByFeature_EmptyFeatArray() {
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	var featureJson = []byte(`[]`)
+	postSpotsByFeatureRequest, _ := http.NewRequest("POST", "/spots/filter", bytes.NewBuffer(featureJson))
+	app.ServeHTTP(suite.res, postSpotsByFeatureRequest)
+
+	assert.Equal(suite.T(), 400, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_GetSpotsByFeature_MalformedJson() {
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	var featureJson = []byte(`not a valid json at all`)
+	postSpotsByFeatureRequest, _ := http.NewRequest("POST", "/spots/filter", bytes.NewBuffer(featureJson))
+	app.ServeHTTP(suite.res, postSpotsByFeatureRequest)
+
+	assert.Equal(suite.T(), 400, suite.res.Code)
+}
+
+/*
+POST /spots/:id/rate
+	case 1: Valid token + valid spot ID + rating between 1-5 → 201
+	case 2: No token → 401
+	case 3: Rating below 1 or above 5 → 400
+	case 4: Missing rating field in body → 400
+	case 5: Invalid spot ID (non-numeric) → 400
+*/
+
+func (suite *TestSuiteEnv) Test_AddRating() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	// Construct a POST request to add a review
+	var ratingJson = []byte(`{"rating": 4}`)
+	postNewRatingRequest, _ := http.NewRequest("POST", fmt.Sprintf(`/spots/%v/rate`, suite.ids.spotId1), bytes.NewBuffer(ratingJson))
+	postNewRatingRequest.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, postNewRatingRequest)
+
+	assert.Equal(suite.T(), 201, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_AddRating_NoToken() {
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	// Construct a POST request to add a review
+	var ratingJson = []byte(`{"rating": 4}`)
+	postNewRatingRequest, _ := http.NewRequest("POST", fmt.Sprintf(`/spots/%v/rate`, suite.ids.spotId1), bytes.NewBuffer(ratingJson))
+	app.ServeHTTP(suite.res, postNewRatingRequest)
+
+	assert.Equal(suite.T(), 401, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_AddRating_InvalidRating() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+
+	app := suite.app
+
+	// Send a request with a rating lower than 1
+	suite.res = httptest.NewRecorder()
+
+	// Construct a POST request to add a review
+	var lowRatingJson = []byte(`{"rating": 0}`)
+	postNewRatingRequestLow, _ := http.NewRequest("POST", fmt.Sprintf(`/spots/%v/rate`, suite.ids.spotId1), bytes.NewBuffer(lowRatingJson))
+	postNewRatingRequestLow.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, postNewRatingRequestLow)
+
+	assert.Equal(suite.T(), 400, suite.res.Code)
+
+	// Send a request with a rating higher than 5
+	suite.res = httptest.NewRecorder()
+
+	// Construct a POST request to add a review
+	var highRatingJson = []byte(`{"rating": 6}`)
+	postNewRatingRequestHigh, _ := http.NewRequest("POST", fmt.Sprintf(`/spots/%v/rate`, suite.ids.spotId1), bytes.NewBuffer(highRatingJson))
+	postNewRatingRequestHigh.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, postNewRatingRequestHigh)
+
+	assert.Equal(suite.T(), 400, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_AddRating_NoRating() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	// Construct a POST request to add a review
+	postNewRatingRequestLow, _ := http.NewRequest("POST", fmt.Sprintf(`/spots/%v/rate`, suite.ids.spotId1), nil)
+	postNewRatingRequestLow.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, postNewRatingRequestLow)
+
+	assert.Equal(suite.T(), 400, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_AddRating_InvalidSpotId() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	// Construct a POST request to add a review
+	var ratingJson = []byte(`{"rating": 4}`)
+	postNewRatingRequestLow, _ := http.NewRequest("POST", `/spots/invalid-id/rate`, bytes.NewBuffer(ratingJson))
+	postNewRatingRequestLow.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, postNewRatingRequestLow)
+
+	assert.Equal(suite.T(), 400, suite.res.Code)
+}
+
+/*
+PATCH /users/avatar
+	case 1: Valid token + valid avatar URL → 200 + updated user returned
+	case 2: No token → 401
+	case 3: Missing avatar field in body → 400
+*/
+
+func (suite *TestSuiteEnv) Test_UpdateUserAvatar() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	var avatarJson = []byte(`{"avatar": "https://marketplace.canva.com/EAFdIOc_EM0/3/0/1600w/canva-beige-and-pink-illustrative-cute-girl-avatar-pUk78cukytY.jpg"}`)
+	patchUserAvatarRequest, _ := http.NewRequest("PATCH", "/users/avatar", bytes.NewBuffer(avatarJson))
+	patchUserAvatarRequest.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, patchUserAvatarRequest)
+
+	var patchUpdateAvatarRequest struct {
+		User struct {
+			ID        string `json:"id"`
+			Username  string `json:"username"`
+			Email     string `json:"email"`
+			CreatedAt string `json:"createdAt"`
+			Avatar    string `json:"avatar"`
+		} `json:"user"`
+	}
+	json.Unmarshal(suite.res.Body.Bytes(), &patchUpdateAvatarRequest)
+
+	assert.Equal(suite.T(), 200, suite.res.Code)
+	assert.Equal(suite.T(), "usera", patchUpdateAvatarRequest.User.Username)
+	assert.NotNil(suite.T(), patchUpdateAvatarRequest.User.Avatar)
+}
+
+func (suite *TestSuiteEnv) Test_UpdateUserAvatar_NoToken() {
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	var avatarJson = []byte(`{"avatar": "https://marketplace.canva.com/EAFdIOc_EM0/3/0/1600w/canva-beige-and-pink-illustrative-cute-girl-avatar-pUk78cukytY.jpg"}`)
+	patchUserAvatarRequest, _ := http.NewRequest("PATCH", "/users/avatar", bytes.NewBuffer(avatarJson))
+	app.ServeHTTP(suite.res, patchUserAvatarRequest)
+
+	assert.Equal(suite.T(), 401, suite.res.Code)
+}
+
+func (suite *TestSuiteEnv) Test_UpdateUserAvatar_MissingJsonBody() {
+	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
+
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	patchUserAvatarRequest, _ := http.NewRequest("PATCH", "/users/avatar", nil)
+	patchUserAvatarRequest.Header.Set("Authorization", "Bearer "+token)
+	app.ServeHTTP(suite.res, patchUserAvatarRequest)
+
+	assert.Equal(suite.T(), 400, suite.res.Code)
 }
