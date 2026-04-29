@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { getAllSpots, getSpotByFeature } from "../../services/spots";
+import {getAllSpots, getSpotById, getSpotByFeature} from "../../services/spots";
 import Spot from "../../components/spotCard/spotCard";
 import SpotModal from "../../components/SpotModal/SpotModal";
+import { SubmitRating } from "../../services/ratings.js";
 import FilterBar from "../../components/filterSpot/FilterBar"
 import "./BrowseSpots.css";
 
@@ -24,6 +25,15 @@ export const BrowseSpots = () => {
       })
       .finally(() => setLoading(false));
   }, [selectedFeatures]);
+
+    const handleRatingSubmit = async (token, spotId, value) => {
+        SubmitRating(token, spotId, value)
+            .then(() => getSpotById(spotId))
+            .then((updatedSpot) => {
+                setSpots(spots.map(spot => spot._id === updatedSpot._id ? updatedSpot : spot));
+                setSelectedSpot(updatedSpot);
+            })
+    }
 
   return (
     <>
@@ -48,7 +58,7 @@ export const BrowseSpots = () => {
           )}
         </div>
         <div className="filter-section">
-          <FilterBar 
+          <FilterBar
           onFilterChange={setSelectedFeatures}
           selectedFeatures={selectedFeatures}
           />
@@ -57,6 +67,7 @@ export const BrowseSpots = () => {
       <SpotModal
         spot={selectedSpot}
         onClose={() => setSelectedSpot(null)}
+        onRatingSubmit={handleRatingSubmit}
       />
     </>
   );

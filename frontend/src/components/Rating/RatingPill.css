@@ -1,0 +1,110 @@
+.sr-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.sr-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid #f1ebe3;
+    box-shadow: 0 1px 3px rgba(87, 71, 60, 0.08);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    user-select: none;
+}
+
+.sr-pill--clickable {
+    cursor: pointer;
+}
+
+.sr-pill--clickable:hover {
+    box-shadow: 0 3px 8px rgba(87, 71, 60, 0.14);
+    transform: translateY(-1px);
+}
+
+.sr-pill--clickable:focus-visible {
+    outline: 2px solid #57473c;
+    outline-offset: 2px;
+}
+
+.sr-value {
+    line-height: 1;
+    color: #57473c;
+}
+
+/* Null/no rating state */
+.sr-pill[aria-label="No ratings yet"] {
+    background: #fff9f1;
+    color: #57473c;
+    opacity: 0.6;
+}
+
+/* Backdrop to close popup on outside click */
+.sr-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+}
+
+/* Popup */
+.sr-popup {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: auto;
+    right: 0;
+    background: #fff9f1;
+    border-radius: 8px;
+    border: 1px solid #f1ebe3;
+    box-shadow: 0 4px 16px rgba(87, 71, 60, 0.12);
+    padding: 8px 10px;
+    z-index: 1000;
+    display: flex;
+    gap: 6px;
+    flex-direction: column;
+    animation: sr-popup-in 0.15s ease;
+}
+
+.sr-popup-label {
+    font-size: 12px;
+    color: #57473c;
+    opacity: 0.7;
+    margin: 0;
+}
+
+.sr-popup-stars {
+    display: flex;
+    gap: 2px;
+}
+
+@keyframes sr-popup-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Star buttons */
+.sr-star-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 22px;
+    line-height: 1;
+    transition: transform 0.15s ease, filter 0.15s ease;
+    filter: grayscale(1) opacity(0.4);
+}
+
+.sr-star-btn:hover,
+.sr-star-btn.hovered {
+    filter: grayscale(0) opacity(1);
+    transform: scale(1.18);
+}

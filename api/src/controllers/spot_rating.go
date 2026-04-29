@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/GerundiumLovecraft/team-hot-chip-group-project/api/src/models"
-	"github.com/gin-gonic/gin"	
+	"github.com/gin-gonic/gin"
 )
 
 // get the user id from the token
@@ -22,7 +22,7 @@ func AddRating(ctx *gin.Context) {
 		return
 	}
 
-	// get the spot id from the url 
+	// get the spot id from the url
 	spotIdStr := ctx.Param("id")
 	spotIdUint, err := strconv.ParseUint(spotIdStr, 10, 64)
 	if err != nil {
@@ -45,7 +45,7 @@ func AddRating(ctx *gin.Context) {
 		return
 	}
 
-	userIdUint,  _ := strconv.ParseUint(userIdStr, 10, 64)
+	userIdUint, _ := strconv.ParseUint(userIdStr, 10, 64)
 
 	// save the rating
 	err = models.AddRating(uint(userIdUint), uint(spotIdUint), requestBody.Rating)

@@ -1,6 +1,7 @@
 import "./SpotModal.css";
+import RatingPill from "../Rating/RatingPill.jsx";
 
-const SpotModal = ({ spot, onClose }) => {
+const SpotModal = ({ spot, onClose, onRatingSubmit }) => {
     if (!spot) return null;
 
     return (
@@ -9,7 +10,10 @@ const SpotModal = ({ spot, onClose }) => {
                 <button className="modal-close" onClick={onClose}>✕</button>
                 <img src={spot.image} alt={spot.name} className="modal-image" />
                 <div className="modal-details">
-                    <h2>{spot.name}</h2>
+                    <div className="name-rating-grid">
+                        <h2>{spot.name}</h2>
+                        <RatingPill rating={spot.average_rating} spotId={spot._id} interactive={true} onRatingSubmit={onRatingSubmit} />
+                    </div>
                     <p className="modal-address">{spot.address}</p>
                     <p className="modal-description">{spot.description}</p>
                     <p className="modal-hours">Opening Hours: {spot.open_from} - {spot.open_to}</p>
@@ -21,8 +25,8 @@ const SpotModal = ({ spot, onClose }) => {
                                     <span className="feature-name">{feature.feat_name.replace(/_/g, ' ')}</span>
                                     <span className="feature-value">
                                         {feature.feat_name === 'price' ? '£'.repeat(feature.value) :
-                                         feature.feat_name === 'noise_level' ? 
-                                            feature.value === 1 ? 'Quiet' : 
+                                         feature.feat_name === 'noise_level' ?
+                                            feature.value === 1 ? 'Quiet' :
                                             feature.value === 2 ? 'Moderate' : 'Loud'
                                          : 'Available'}
                                     </span>
