@@ -12,6 +12,7 @@ func setupUserRoutes(baseRouter *gin.RouterGroup) {
 	users.POST("", controllers.CreateUser)
 	users.GET("/search-by-username/:username", middleware.AuthenticationMiddleware, controllers.GetUserByUsername)
 	users.GET("/:id", middleware.AuthenticationMiddleware, controllers.GetUserById)
+	users.PATCH("/avatar", middleware.AuthenticationMiddleware, controllers.UpdateUserAvatar)
 
 	//Route for getting a profile is in its own route (profiles.go)
 
