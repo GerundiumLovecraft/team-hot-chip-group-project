@@ -1,208 +1,168 @@
-import {
-  Wifi,
-  Toilet,
-  Plug,
-  Volume,
-  Volume1,
-  Volume2,
-  Moon,
-} from "lucide-react";
-import { getAllFeatures } from "../../services/features";
+import {Filter, Wifi, Toilet, Plug, Volume, Volume1, Volume2, Moon,} from "lucide-react";
 import { useEffect, useState } from "react";
+import { getFeatures } from "../../services/features";
 
-const FilterBar = ({ onFilterChange }) => {
-  const buttonFeatureIcon = {
+const amenitiesFeatureIcons = {
     "wifi": Wifi,
     "toilets": Toilet,
     "power_sockets": Plug,
-    "noise_level": Volume1,
-    "open_late": Moon,
-  };
-
-  const [features, setFeatures] = useState([]);
-  const [selectedFeatures, setSelectedFeatures] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getAllFeatures()
-      .then((data) => {
-        setFeatures(data.features);
-      })
-      .catch((errorMessage) => {
-        console.error(errorMessage);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  // const featureGroups = {
-  //   "Amenities": ["wifi", "toilets", "power_sockets"],
-  //   "Noise Level": ["noise_level"],
-  //   "Price": ["price"],
-  //   "Open Late": ["open_late"]
-  // }
-
-  const handleFilterClick = (feature) => {
-    let updatedSelectedFeatures = [];
-
-    // when the user selected (to untick) a feature in the selectedFeatures, the feature is removed
-    if (selectedFeatures.includes(feature.feat_id)) {
-      updatedSelectedFeatures = selectedFeatures.filter(
-        (item) => item !== feature.feat_id,
-      );
-    } else {
-      // when the user selected (to tick) a feature not in the selectedFeatures, the feature is added
-      updatedSelectedFeatures = [...selectedFeatures, feature.feat_id];
-    }
-    // Setter to update the list with the updated selected features
-    setSelectedFeatures(updatedSelectedFeatures);
-    // the new list is send to the parent
-    console.log("sending to backend:", updatedSelectedFeatures)
-    onFilterChange(updatedSelectedFeatures.map(id => ({id: id})));
-  };
-
-  //   const handleSingleFilterClick = (featId) => {
-  //   let updatedSingleSelectedFeature = [];
-      
-  //   const isAlreadySelected = selectedFeatures.some(feat => feat.id === featId && feat.value === value);
-    
-  //   if (isAlreadySelected) {
-  //     updatedSingleSelectedFeature = selectedFeatures
-  //       .filter(item => item.id !== featId || item.value !== value);
-  //   } else {
-  //     const newSelectedFeatures = selectedFeatures.filter(item => item.id !== featId);
-  //     updatedSingleSelectedFeature = [...newSelectedFeatures, {id: featId, value: value}];
-  //   }
-  //   // Setter to update the list with the updated selected features
-  //   setSelectedFeatures(updatedSingleSelectedFeature);
-  //   // the new list is send to the parent
-  //   console.log("sending to backend:", updatedSingleSelectedFeature)
-  //   onFilterChange(updatedSingleSelectedFeature);
-  // };
-
-  // When clear is clicked:
-  const handleClearFeaturesClick = () => {
-    setSelectedFeatures([]);
-    onFilterChange([]);
-  };
-
-  const renderAmenityButtons = () => {
-    const AmenitiesFeature = features.filter(feat => ["wifi", "toilets", "power_sockets"].includes(feat.feat_name));
-
-    return (
-      AmenitiesFeature.map((feature) => {
-        const AmentiesIcon = buttonFeatureIcon[feature.feat_name]
-        return (
-          <button
-          key={feature.feat_id} 
-          onClick={() => handleFilterClick(feature)}
-          className={`amenities-button ${selectedFeatures.includes(feature.feat_id) ? "active" : ""}`}>
-            {AmentiesIcon && <AmentiesIcon size={18}/>}
-            <span className="amenities-tag">{feature.feat_name.replace(/_/g, ' ')}</span>
-          </button>
-        )
-      })
-    )
-  }
-
-  // const renderNoiseLevelButtons = () => {
-  //   const noiseLevelsFeature = features.filter(feat => ["noise_level"].includes(feat.feat_name))
-
-  //   const NoiseLevelIcon = [
-  //     {label: "Quiet", value: 1, icon: Volume},
-  //     {label: "Moderate", value: 2, icon: Volume1},
-  //     {label: "Loud", value: 3, icon: Volume2}
-  //   ]
-
-  //   const noiseFeat = noiseLevelsFeature[0]
-  //   return (
-  //     NoiseLevelIcon.map((feature) => {
-  //       const NoiseIcon = feature.icon
-  //       return (
-  //         <button
-  //         key={feature.value} 
-  //         onClick={() => handleSingleFilterClick(noiseFeat.feat_id, feature.value)}
-  //         className={`noise-button ${selectedFeatures.some(feat => feat.id === noiseFeat.feat_id && feat.value === feature.value) ? "active" : ""}`}>
-  //           {NoiseIcon && <NoiseIcon size={18}/>}
-  //           <span className="noise-tag">{feature.label}</span>
-  //         </button>
-  //       )
-  //     })
-  //   )
-  // }
-
-  // const renderPriceButtons = () => {
-  //   const priceFeature = features.filter(feat => ["price"].includes(feat.feat_name))
-
-  //   const priceLabel = [
-  //     {label: "£", value: 1},
-  //     {label: "££", value: 2},
-  //     {label: "£££", value: 3},
-  //   ];
-
-  //   return priceFeature.map((feature) => {
-  //     priceLabel && <priceLabel size={18}/>
-  //     return <button key={feature.feat_id} onClick={() => handleFilterClick(feature)}></button>
-  //   })
-  // }
-
-  const renderOpeningLateButton = () => {
-    const openingLateFeature = features.filter(feat => ["open_late"].includes(feat.feat_name));
-
-    return (
-      openingLateFeature.map((feature) => {
-        const OpeningLateIcon = buttonFeatureIcon[feature.feat_name]
-        return (
-          <button
-          key={feature.feat_id}
-          onClick={() => handleFilterClick(feature)}
-          className={`open-late-button ${selectedFeatures.includes(feature.feat_id) ? "active" : ""}`}>
-          {OpeningLateIcon && <OpeningLateIcon size={18}/>}
-          <span className="open-late-tag">{feature.feat_name.replace(/_/g, ' ')}</span>
-          </button>
-        )
-      })
-    ) 
-  }
-
-  return (
-    <>
-      <div className="filter-container">
-        <div className="filter-header">
-          <h3>Filter your spots</h3>
-        </div>
-        {loading ? (
-          <p>Loading features... ⏳</p>
-        ) : (
-          <>
-          <div className="amenities-section">
-            <h3>Amenities</h3>
-            {renderAmenityButtons()}
-          </div>
-          <div className="noise-section">
-            <h3>Noise Level</h3>
-            {/* {renderNoiseLevelButtons()} */}
-          </div>
-          <div className="price-section">
-            <h3>Price</h3>
-            {/* {renderPriceButtons()} */}
-          </div>
-          <div className="open_late">
-            <h3>Open Late</h3>
-            {renderOpeningLateButton()}
-          </div>
-          </>
-        )}
-        <div className="clear-section">
-          <button
-            onClick={handleClearFeaturesClick}
-            className="clear-feature-button"
-          >
-            Clear all
-          </button>
-        </div>
-      </div>
-    </>
-  );
+    // "open_late": Moon
 };
 
-export default FilterBar;
+const amenitiesFeatureLabels = {
+    wifi: "Wifi",
+    toilets: "Toilets",
+    power_sockets: "Power Sockets",
+    // open_late: "Open Late"
+};
+
+const noiseLevelOptions = [
+    {label: "Quiet", value: "1", Icon: Volume},
+    {label: "Moderate", value: "2", Icon: Volume1},
+    {label: "Loud", value: "3", Icon: Volume2},
+];
+
+const priceOptions = [
+    {label: "£", value: "1"},
+    {label: "££", value: "2"},
+    {label: "£££", value: "3"},
+
+];
+
+export default function FilterBar({selectedFeatures, onFilterChange}) {
+    const [listedFeatures, setListedFeatures] = useState([]);
+
+    useEffect(() => {
+        getFeatures()
+        .then((data) => setListedFeatures(data.features))
+        .catch((err) => console.error(err));
+    }, []);
+
+    function getFeatId(featName) {
+        return listedFeatures.find((feat) => feat.feat_name === featName)?.feat_id;
+    }
+
+    function toggleFeatureId(featId) {
+        const numberId = Number(featId);
+        if (selectedFeatures.some((feat) => feat.feat_id === numberId)) {
+            onFilterChange(selectedFeatures.filter((feat) => feat.feat_id !== numberId));
+        } else {
+            onFilterChange([...selectedFeatures, {feat_id: numberId, value: null}]);
+        }
+    }
+
+
+    function toggleFeatureIdAndValue(featId, value) {
+        const numberId = Number(featId);
+        const numberValue = parseInt(value, 10);
+        const filteredFeat = selectedFeatures.filter((feat) => feat.feat_id !== numberId);
+        if (selectedFeatures.some((feat) => feat.feat_id === numberId && feat.value === numberValue)) {
+            onFilterChange(filteredFeat)
+        } else {
+            onFilterChange([...filteredFeat, {feat_id: numberId, value: numberValue}]);
+        }
+    }
+
+    function isValueSelected(featId, value) {
+        return selectedFeatures.some(
+            (feat) => feat.feat_id === Number(featId) && feat.value === parseInt(value, 10)
+        )
+    }
+
+    function isFeatureIdSelected(featId) {
+        return selectedFeatures.some((feat) => feat.feat_id === Number(featId));
+    }
+
+    function clearAll(){
+        onFilterChange([])
+    }
+
+    const noiseFeatId = getFeatId("noise_level");
+    const priceFeatId = getFeatId("price");
+    const openLateFeatId = getFeatId("open_late")
+
+    return (
+        <div className="filter-bar">
+      <div className="filter-bar__header">
+        <Filter size={18} />
+        <span>Filter</span>
+      </div>
+
+      <div className="filter-bar__section">
+        <h3 className="filter-bar__section-title">Amenities</h3>
+        <div className="filter-bar__options">
+          {Object.entries(amenitiesFeatureIcons).map(([featName, Icon]) => {
+            const featId = getFeatId(featName);
+            if (!featId) return null;
+            return (
+              <button
+                key={featName}
+                type="button"
+                className={`filter-btn ${isFeatureIdSelected(featId) ? "selected" : ""}`}
+                onClick={() => toggleFeatureId(featId)}
+              >
+                <Icon size={16} />
+                <span>{amenitiesFeatureLabels[featName]}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="filter-bar__section">
+        <h3 className="filter-bar__section-title">Noise Level</h3>
+        <div className="filter-bar__options">
+          {noiseFeatId && noiseLevelOptions.map(({ label, value, Icon }) => (
+            <button
+              key={value}
+              type="button"
+              className={`filter-btn ${isValueSelected(noiseFeatId, value) ? "selected" : ""}`}
+              onClick={() => toggleFeatureIdAndValue(noiseFeatId, value)}
+            >
+              <Icon size={16} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="filter-bar__section">
+        <h3 className="filter-bar__section-title">Price</h3>
+        <div className="filter-bar__options">
+          {priceFeatId && priceOptions.map(({ label, value }) => (
+            <button
+              key={value}
+              type="button"
+              className={`filter-btn ${isValueSelected(priceFeatId, value) ? "selected" : ""}`}
+              onClick={() => toggleFeatureIdAndValue(priceFeatId, value)}
+            >
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="filter-bar__section">
+        <h3 className="filter-bar__section-title">Open Late</h3>
+        <div className="filter-bar__options">
+          {openLateFeatId && (
+            <button
+              type="button"
+              className={`filter-btn ${isFeatureIdSelected(openLateFeatId) ? "selected" : ""}`}
+              onClick={() => toggleFeatureId(openLateFeatId)}
+            >
+              <Moon size={16} />
+              <span>Open Late</span>
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="clear-section">
+        <button
+        onClick={clearAll}
+        >Clear all</button>
+      </div>
+    </div>
+  );
+}
+
