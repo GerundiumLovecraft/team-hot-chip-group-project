@@ -63,5 +63,11 @@ func UpdateUserAvatar(id string, avatarUrl string) (*User, error) {
 	}
 
 	user.Avatar = avatarUrl
-	err = 
+	err = Database.Save(&user).Error
+
+	if err != nil {
+		return &User{}, err
+	}
+
+	return &user, nil
 }

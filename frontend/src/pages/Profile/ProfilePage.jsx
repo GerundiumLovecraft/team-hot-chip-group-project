@@ -12,6 +12,8 @@ export default function ProfilePage() {
     const [error, setError] = useState(null);
     const [spotsError, setSpotsError] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [editingAvatar, setEditingAvatar] = useState(false);
+    const [avatarInput, setAvatarInput] = useState("");
     const [spotsLoading, setSpotsLoading] = useState(true);
     const [selectedSpot, setSelectedSpot] = useState(null);
     const navigate = useNavigate();
@@ -60,7 +62,7 @@ export default function ProfilePage() {
           <div className="avatar">
             {user ? user.username.slice(0, 2).toUpperCase() : "??"}
           </div>
-          <h1 className="profile-title">My Profile</h1>
+          <h1 className="profile-title">Welcome to your profile!</h1>
         </div>
 
         {loading && <p className="status-text">Loading profile…</p>}
@@ -77,7 +79,7 @@ export default function ProfilePage() {
               <span className="field-value">{user.email}</span>
             </li>
             <li className="profile-field">
-              <span className="field-label">Member since</span>
+              <span className="field-label">Sipstacker since</span>
               <span className="field-value">{memberSince}</span>
             </li>
           </ul>
