@@ -1,6 +1,7 @@
-import {Filter, Wifi, Toilet, Plug, Volume, Volume1, Volume2, Moon,} from "lucide-react";
+import {SlidersHorizontal, Wifi, Toilet, Plug, Volume, Volume1, Volume2, Moon,} from "lucide-react";
 import { useEffect, useState } from "react";
 import { getFeatures } from "../../services/features";
+import "./FilterBar.css";
 
 const amenitiesFeatureIcons = {
     "wifi": Wifi,
@@ -84,7 +85,7 @@ export default function FilterBar({selectedFeatures, onFilterChange}) {
     return (
         <div className="filter-bar">
       <div className="filter-bar__header">
-        <Filter size={18} />
+        <SlidersHorizontal size={19} />
         <span>Filter</span>
       </div>
 
@@ -160,7 +161,7 @@ export default function FilterBar({selectedFeatures, onFilterChange}) {
       <div className="clear-section">
         <button
         onClick={clearAll}
-        >Clear all</button>
+        >Clear All</button>
       </div>
     </div>
   );
