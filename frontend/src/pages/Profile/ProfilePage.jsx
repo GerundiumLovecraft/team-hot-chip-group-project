@@ -105,7 +105,7 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
-          <h1 className="profile-title">Welcome to your profile!</h1>
+          <h1 className="profile-title">My Profile:</h1>
         </div>
 
         {loading && <p className="status-text">Loading profile…</p>}
@@ -129,7 +129,7 @@ export default function ProfilePage() {
         )}
       </div>
       <section className="my-spots-section">
-        <h2 className="my-spots-title">My Submitted Spots</h2>
+        <h2 className="my-spots-title">✨ Your Hot Spots ✨</h2>
 
         {spotsLoading && <p className="status-text">Loading your spots…</p>}
         {spotsError && <p className="status-text error">{spotsError}</p>}
