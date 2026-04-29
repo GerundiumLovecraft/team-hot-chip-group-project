@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
+import "./LoginPage.css";
 import { login } from "../../services/authentication";
 
 export const LoginPage = () => {
@@ -65,7 +65,7 @@ export const LoginPage = () => {
             />
           </div>
 
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-btn">Login</button>
         </form>
       </div>
       </div>
