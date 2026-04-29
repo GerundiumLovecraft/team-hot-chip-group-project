@@ -115,6 +115,7 @@ func GetSpotsByFeature(ctx *gin.Context) {
 	// Check if features for filter were provided
 	if len(features) == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Filter parameters are empty"})
+		return
 	}
 
 	// filter spots by features (id and value)
