@@ -8,7 +8,7 @@ import {
   Moon,
 } from "lucide-react";
 import "./spotCard.css"
-import StarRating from "../Rating/RatingPill.jsx";
+import RatingPill from "../Rating/RatingPill.jsx";
 
 const Spot = ({ spot, onClick }) => {
 
@@ -57,10 +57,8 @@ const Spot = ({ spot, onClick }) => {
               {renderFeature(feature)}
             </li>
           ))}
+          <li><RatingPill rating={spot.average_rating} /></li>
         </ul>
-      </div>
-      <div>
-        <StarRating rating={spot.rating} />
       </div>
     </div>
   );

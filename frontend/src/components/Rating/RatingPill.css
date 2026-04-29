@@ -1,5 +1,3 @@
-/* StarRating.css */
-
 .sr-wrapper {
     position: relative;
     display: inline-block;
@@ -56,7 +54,8 @@
 .sr-popup {
     position: absolute;
     top: calc(100% + 8px);
-    left: 0;
+    left: auto;
+    right: 0;
     background: #fff9f1;
     border-radius: 8px;
     border: 1px solid #f1ebe3;
@@ -64,8 +63,21 @@
     padding: 8px 10px;
     z-index: 1000;
     display: flex;
-    gap: 2px;
+    gap: 6px;
+    flex-direction: column;
     animation: sr-popup-in 0.15s ease;
+}
+
+.sr-popup-label {
+    font-size: 12px;
+    color: #57473c;
+    opacity: 0.7;
+    margin: 0;
+}
+
+.sr-popup-stars {
+    display: flex;
+    gap: 2px;
 }
 
 @keyframes sr-popup-in {

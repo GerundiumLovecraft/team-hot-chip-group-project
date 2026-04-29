@@ -3,11 +3,12 @@ import { Star } from "lucide-react";
 import "./RatingPill.css";
 import { isTokenValid } from "../../helpers/authentication.js";
 
-const StarRating = ({ rating, spotId, interactive = false, onRatingSubmit }) => {
+const RatingPill = ({ rating, spotId, interactive = false, onRatingSubmit }) => {
     const [popupOpen, setPopupOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
     const isLoggedIn = isTokenValid();
+    const token = isLoggedIn ? localStorage.getItem("token") : null;
 
     const getColorTier = (r) => {
         if (r === null) return { bg: "#f4f4f5", text: "#71717a", accent: "#a1a1aa" };
@@ -17,12 +18,12 @@ const StarRating = ({ rating, spotId, interactive = false, onRatingSubmit }) => 
         return { bg: "#fee2e2", text: "#991b1b", accent: "#ef4444" };
     };
 
-    const tier = getColorTier(rating);
+    const tier = getColorTier(rating ?? null);
 
     const handleStarClick = (value) => {
         setPopupOpen(false);
         setHoveredIndex(null);
-        onRatingSubmit?.(spotId, value);
+        onRatingSubmit?.(token, spotId, value);
     };
 
     const handlePillClick = () => {
@@ -39,11 +40,10 @@ const StarRating = ({ rating, spotId, interactive = false, onRatingSubmit }) => 
                 onClick={handlePillClick}
                 role={interactive && isLoggedIn ? "button" : undefined}
                 tabIndex={interactive && isLoggedIn ? 0 : undefined}
-                onKeyDown={(e) => e.key === "Enter" && handlePillClick()}
-                aria-label={rating !== null ? `Rating: ${rating.toFixed(1)}` : "No ratings yet"}
+                aria-label={rating != null ? `Rating: ${rating.toFixed(1)}` : "No ratings yet"}
             >
         <span className="sr-value">
-          {rating !== null ? rating.toFixed(1) : "—"}
+          {rating != null ? rating.toFixed(1) : "—"}
         </span>
                 <Star size={14} color={tier.accent} fill={tier.accent} />
             </div>
@@ -55,17 +55,20 @@ const StarRating = ({ rating, spotId, interactive = false, onRatingSubmit }) => 
                         className="sr-popup"
                         onMouseLeave={() => setHoveredIndex(null)}
                     >
-                        {[1, 2, 3, 4, 5].map((value) => (
-                            <button
-                                key={value}
-                                className={`sr-star-btn ${hoveredIndex !== null && value <= hoveredIndex ? "hovered" : ""}`}
-                                onClick={() => handleStarClick(value)}
-                                onMouseEnter={() => setHoveredIndex(value)}
-                                aria-label={`Rate ${value} star${value > 1 ? "s" : ""}`}
-                            >
-                                ⭐
-                            </button>
-                        ))}
+                        <p className="sr-popup-label">Rate the spot!</p>
+                        <div className="sr-popup-stars">
+                            {[1, 2, 3, 4, 5].map((value) => (
+                                <button
+                                    key={value}
+                                    className={`sr-star-btn ${hoveredIndex !== null && value <= hoveredIndex ? "hovered" : ""}`}
+                                    onClick={() => handleStarClick(value)}
+                                    onMouseEnter={() => setHoveredIndex(value)}
+                                    aria-label={`Rate ${value} star${value > 1 ? "s" : ""}`}
+                                >
+                                    ⭐
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </>
             )}
@@ -73,4 +76,4 @@ const StarRating = ({ rating, spotId, interactive = false, onRatingSubmit }) => 
     );
 };
 
-export default StarRating;
+export default RatingPill;
