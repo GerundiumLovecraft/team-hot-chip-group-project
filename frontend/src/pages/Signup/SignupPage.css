@@ -1,14 +1,16 @@
+/* ── Page ─────────────────────────────────────── */
 .signup-page {
     min-height: calc(100vh - 65px);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 40px 24px;
+    background-color: #f5f4eb;
 }
 
+/* ── Card ─────────────────────────────────────── */
 .signup-card {
-    background-color: var(--color-white);
-    border: 1px solid var(--color-cream2);
     border-radius: 16px;
     padding: 48px;
     width: 100%;
@@ -16,30 +18,55 @@
 }
 
 .signup-header {
-    margin-bottom: 32px;
+    margin-bottom: 4px;
+    text-align: center;
 }
 
 .signup-header h2 {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-style: italic;
 }
 
 .signup-header p {
     opacity: 0.7;
     font-size: 15px;
+    font-style: italic;
+    margin-bottom: 15px;
+    color: rgb(236, 74, 10)
 }
 
-.login-link {
+/* ── Login link ─────────────────────────────────────── */
+.login-option {
     display: block;
     margin-top: 8px;
     font-size: 14px;
-    color: var(--color-brown);
     opacity: 0.7;
+    font-style: italic;
+    color: rgb(236, 74, 10)
 }
 
+.login-link {
+    font-weight: 700;
+    color: rgb(236, 74, 10)
+}
+
+.login-link:hover,
+.login-option:hover{
+    transform: scale(1.05);
+}
+
+/* ── Form ─────────────────────────────────────── */
 .signup-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    background: #f9f9f1;
+    border-radius: 16px;
+    padding: 32px;
+    border: 1px solid var(--color-cream2);
+    margin-top: 20px;
 }
 
 .form-group {
@@ -52,17 +79,19 @@
     font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    opacity: 0.6;
+    letter-spacing: 0.07em;
+    color: var(--color-brown);
+    opacity: 0.85;
 }
 
 .form-group input {
-    background-color: var(--color-cream);
-    border: 1px solid var(--color-cream2);
+    background-color: var(--color-white);
+    border: 1.5px solid var(--color-cream2);
     border-radius: 10px;
-    padding: 14px 18px;
-    font-size: 16px;
+    padding: 12px 14px;
+    font-size: 14px;
     font-family: var(--font-body);
+    transition: border-color 0.2s, box-shadow 0.2s;
     color: var(--color-brown);
     outline: none;
     width: 100%;
@@ -70,7 +99,8 @@
 }
 
 .form-group input:focus {
-    border-color: var(--color-brown);
+    border-color: var(--color-salmon);
+    box-shadow: 0 0 0 2px rgb(235, 164, 176);
 }
 
 .signup-btn {
@@ -90,7 +120,12 @@
     opacity: 0.9;
 }
 
+/* ── Error ─────────────────────────────────────── */
 .errorMessage {
     color: var(--color-error);
+    background-color:  #fdf0ed;
+    border: 1px solid #e8b4a8;
+    border-radius: 10px;
+    padding: 12px, 12px;
     font-size: 14px;
 }

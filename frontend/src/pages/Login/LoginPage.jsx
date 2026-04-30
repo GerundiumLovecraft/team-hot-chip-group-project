@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { User, Lock } from "lucide-react";
+import AnimatedButton from "../../components/animation/AnimatedButton";
 import "./LoginPage.css";
 
 import { login } from "../../services/authentication";
@@ -36,35 +37,37 @@ export const LoginPage = () => {
         <div className="login-header">
           <h2>Login</h2>
         </div>
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form className="login-form" onSubmit={handleSubmit}>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
           <div className="form-group-user">
+            <label>Username</label>
             <input
               id="usernameOrEmail"
               type="text"
               value={usernameOrEmail}
               onChange={handleUsernameOrEmailChange}
-              placeholder="Username/Email"
+              placeholder="Your username or email"
               required
             />
             <User className="user-icon" />
           </div>
 
           <div className="form-group-pass">
+            <label>Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={handlePasswordChange}
-              placeholder="Password"
+              placeholder="Your secret password"
               required
             />
             <Lock className="lock-icon" />
           </div>
 
-          <button type="submit" className="login-button">
+          <AnimatedButton type="submit" className="login-button">
             Login
-          </button>
+          </AnimatedButton>
           <p className="signup-option">
             Don&apos;t have an account yet?{" "}
             <Link to="/signup" className="signup-link">
