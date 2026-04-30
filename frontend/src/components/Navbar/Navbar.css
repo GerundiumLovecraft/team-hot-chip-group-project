@@ -1,23 +1,23 @@
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #f1eee4;
-  border-bottom: 1px solid var(--color-cream2);
-  padding: 12px 40px;
-  width: 100%;
-  box-sizing: border-box;
-  position: sticky;        /* ← sticks to top on scroll */
-  top: 0;
-  z-index: 100;            /* ← sits above page content */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ece9e0;
+    border-bottom: 1px solid var(--color-cream2);
+    padding: 8px 40px;
+    width: 100%;
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .navbar-logo {
-  font-family: var(--font-heading);
-  font-size: 30px;
-  font-weight: 700;
-  color: var(--color-brown);
-  text-decoration: none;
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-brown);
+    text-decoration: none;
 }
 
 .navbar-logo-italic {
