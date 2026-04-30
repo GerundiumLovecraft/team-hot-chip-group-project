@@ -787,9 +787,10 @@ func (suite *TestSuiteEnv) Test_GetSpotsByUser_InvalidToken() {
 POST /spots/filter
 
 	case 1: Valid feature filter that matches spots → 200 + matching spots returned
-	case 2: Valid feature filter with no matches → 200 + empty array + message "Spots not found"
-	case 3: Empty array body [] → 400 "Filter parameters are empty"
-	case 4: Malformed JSON body → 400
+	case 2: Valid feature with value filter that matches spots → 200 + matching spots returned
+	case 3: Valid feature filter with no matches → 200 + empty array + message "Spots not found"
+	case 4: Empty array body [] → 400 "Filter parameters are empty"
+	case 5: Malformed JSON body → 400
 */
 func (suite *TestSuiteEnv) Test_GetSpotsByFeature_Match() {
 	token := suite.SignupAndLogin("a@example.com", "usera", "password123")
