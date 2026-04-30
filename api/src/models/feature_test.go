@@ -23,12 +23,12 @@ func (suite *TestFeatureModelSuiteEnv) SetupSuite() {
 }
 
 func (suite *TestFeatureModelSuiteEnv) SetupTest() {
-	suite.db.Raw("TRUNCATE TABLE features CASCADE;")
+	suite.db.Exec("TRUNCATE TABLE features CASCADE;")
 }
 
 // Running after each test
 func (suite *TestFeatureModelSuiteEnv) TearDownTest() {
-	suite.db.Raw("TRUNCATE TABLE features CASCADE;")
+	suite.db.Exec("TRUNCATE TABLE features CASCADE;")
 }
 
 // This gets run automatically by `go test` so we call `suite.Run` inside it
@@ -65,4 +65,33 @@ func (suite *TestFeatureModelSuiteEnv) TestFetchAllFeatures() {
 	assert.Nil(suite.T(), err, "Error should be nil")
 	assert.Len(suite.T(), *features, 2, "Number of features should be 2")
 	assert.Equal(suite.T(), "test-1", (*features)[0].FeatName, "FeatName should be equal to test-1")
+}
+
+func (suite *TestFeatureModelSuiteEnv) Test_FindFeatureByName_ValidName() {
+	// Save the feature
+	feature1 := Feature{
+		FeatName: "test-1",
+	}
+	feature1.SaveNewFeature()
+
+	// Search the feature by the name
+	searchedFeature, err := FindFeatureByName("test-1")
+
+	assert.Nil(suite.T(), err, "Error should be nil")
+	assert.Equal(suite.T(), feature1.FeatName, (*searchedFeature).FeatName, "FeatName should be equal to test-1")
+	assert.Equal(suite.T(), feature1.ID, (*searchedFeature).ID, "IDs of saved and searched features should be the same")
+}
+
+func (suite *TestFeatureModelSuiteEnv) Test_FindFeatureByName_InvalidName() {
+	// Save the feature
+	feature1 := Feature{
+		FeatName: "test-1",
+	}
+	feature1.SaveNewFeature()
+
+	// Search for something different
+	searchedFeature, err := FindFeatureByName("something completely different")
+
+	assert.NotNil(suite.T(), err, "Error should not be nil")
+	assert.Zero(suite.T(), searchedFeature.ID, "Searched feature should be nil")
 }
