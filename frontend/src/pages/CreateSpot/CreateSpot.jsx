@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom"
 import { createSpot } from "../../services/spots.js"
 import { getFeatures }  from "../../services/features.js";
 import {isTokenValid} from "../../helpers/authentication.js";
+import AnimatedButton from "../../components/animation/AnimatedButton";
 import "./CreateSpotPage.css"
 
 export function CreateSpotPage() {
@@ -358,7 +359,9 @@ export function CreateSpotPage() {
                         </div>
                     </div>
 
-                    <button type="submit" className="submit-btn">Create spot!</button>
+                    <AnimatedButton 
+                        type="submit" className="submit-btn">Create spot!
+                    </AnimatedButton>
                 </form>
             </div>
         </>
