@@ -1,7 +1,7 @@
 import createFetchMock from "vitest-fetch-mock";
 import { describe, vi } from "vitest";
 
-import { login, signup } from "../../src/services/authentication";
+import { login, signup, fetchUserProfile } from "../../src/services/authentication";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -28,7 +28,7 @@ describe("authentication service", () => {
       expect(url).toEqual(`${BACKEND_URL}/tokens`);
       expect(options.method).toEqual("POST");
       expect(options.body).toEqual(
-        JSON.stringify({ email: testEmail, password: testPassword })
+        JSON.stringify({ usernameOrEmail: testEmail, password: testPassword })
       );
       expect(options.headers["Content-Type"]).toEqual("application/json");
     });
@@ -65,14 +65,15 @@ describe("authentication service", () => {
 
   describe("signup", () => {
     test("calls the backend url for a token", async () => {
+      const testUsername = "testTest"
       const testEmail = "test@testEmail.com";
       const testPassword = "12345678";
 
-      fetch.mockResponseOnce("", {
+      fetch.mockResponseOnce(JSON.stringify({"message": "OK", "token": "new-token"}), {
         status: 201,
       });
 
-      await signup(testEmail, testPassword);
+      await signup(testUsername, testEmail, testPassword);
 
       // This is an array of the arguments that were last passed to fetch
       const fetchArguments = fetch.mock.lastCall;
@@ -82,21 +83,23 @@ describe("authentication service", () => {
       expect(url).toEqual(`${BACKEND_URL}/users`);
       expect(options.method).toEqual("POST");
       expect(options.body).toEqual(
-        JSON.stringify({ email: testEmail, password: testPassword })
+        JSON.stringify({ username: testUsername, email: testEmail, password: testPassword })
       );
       expect(options.headers["Content-Type"]).toEqual("application/json");
     });
 
-    test("returns nothing if the signup request was a success", async () => {
+    test("returns new token if the signup request was a success", async () => {
+      const testUsername = "testTest"
       const testEmail = "test@testEmail.com";
       const testPassword = "12345678";
 
-      fetch.mockResponseOnce(JSON.stringify(""), {
+      fetch.mockResponseOnce(JSON.stringify({"message": "OK", "token": "new-token"}), {
         status: 201,
       });
 
-      const token = await signup(testEmail, testPassword);
-      expect(token).toEqual(undefined);
+      const responseData = await signup(testUsername, testEmail, testPassword);
+
+      expect(responseData.token).toEqual("new-token");
     });
 
     test("throws an error if the request failed", async () => {
@@ -114,9 +117,71 @@ describe("authentication service", () => {
         await signup(testEmail, testPassword);
       } catch (err) {
         expect(err.message).toEqual(
-          "Received status 400 when signing up. Expected 201"
+          "User already exists"
         );
       }
+    });
+  });
+
+  describe("fetchUserProfile", () => {
+    const testToken = "testToken123";
+
+    const mockUser = {
+      id: "1",
+      username: "testuser",
+      email: "test@example.com",
+      createdAt: "2024-01-01T00:00:00Z",
+      avatar: "",
+    };
+
+    test("calls the correct url with the correct options", async () => {
+      fetch.mockResponseOnce(
+          JSON.stringify({user: mockUser, token: "newToken"}),
+          {status: 200}
+      );
+
+      await fetchUserProfile(testToken);
+
+      const [url, options] = fetch.mock.lastCall;
+
+      expect(url).toEqual(`${BACKEND_URL}/profile`);
+      expect(options.method).toEqual("GET");
+      expect(options.headers["Content-Type"]).toEqual("application/json");
+      expect(options.headers["Authorization"]).toEqual(`Bearer ${testToken}`);
+    });
+
+    test("returns user and token on success", async () => {
+      fetch.mockResponseOnce(
+          JSON.stringify({user: mockUser, token: "newToken"}),
+          {status: 200}
+      );
+
+      const data = await fetchUserProfile(testToken);
+
+      expect(data.user).toEqual(mockUser);
+      expect(data.token).toEqual("newToken");
+    });
+
+    test("throws an unauthorised error on 401", async () => {
+      fetch.mockResponseOnce(
+          JSON.stringify({message: "Unauthorised"}),
+          {status: 401}
+      );
+
+      await expect(fetchUserProfile("badtoken")).rejects.toThrow(
+          "Unauthorised: Please log in again."
+      );
+    });
+
+    test("throws a descriptive error on other failure status", async () => {
+        fetch.mockResponseOnce(
+            JSON.stringify({message: "Server error"}),
+            {status: 500}
+        );
+
+        await expect(fetchUserProfile(testToken)).rejects.toThrow(
+            "Received status 500 when fetching profile. Expected 200"
+        );
     });
   });
 });
