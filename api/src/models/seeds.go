@@ -27,40 +27,40 @@ func SeedDemoData() {
 	// ── Users ──────────────────────────────────────────────────────────────────
 	users := []User{
 		{
-			Username:       "rachelgreen",
-			Email:          "rachel@sipstack.com",
+			Username:       "wednaguirand",
+			Email:          "wedna@sipstack.com",
 			HashedPassword: string(hashedPassword),
-			Avatar:         "https://i.pinimg.com/736x/b0/16/94/b01694f4a96d956dab50afed1977cffe.jpg",
+			Avatar:         "",
 		},
 		{
-			Username:       "monicageller",
-			Email:          "monica@sipstack.com",
+			Username:       "shakiraw",
+			Email:          "shakira@sipstack.com",
 			HashedPassword: string(hashedPassword),
-			Avatar:         "https://i.pinimg.com/1200x/03/19/ff/0319ff67612bb7c860b0b1ef143f80f1.jpg",
+			Avatar:         "",
 		},
 		{
-			Username:       "chandlerbing",
-			Email:          "chandler@sipstack.com",
+			Username:       "jackgarner",
+			Email:          "jack@sipstack.com",
 			HashedPassword: string(hashedPassword),
-			Avatar:         "https://i.pinimg.com/1200x/92/2c/43/922c43856682261a5ee42763aacf5aaa.jpg",
+			Avatar:         "",
 		},
 		{
-			Username:       "phoebebuffay",
-			Email:          "phoebe@sipstack.com",
+			Username:       "vladk",
+			Email:          "vladislav@sipstack.com",
 			HashedPassword: string(hashedPassword),
-			Avatar:         "https://i.pinimg.com/736x/69/4e/6e/694e6e4e856876aceceb8bdb8829bf10.jpg",
+			Avatar:         "",
 		},
 		{
-			Username:       "joeytribbiani",
-			Email:          "joey@sipstack.com",
+			Username:       "bobbelcher",
+			Email:          "bobby@sipstack.com",
 			HashedPassword: string(hashedPassword),
-			Avatar:         "https://i.pinimg.com/736x/2b/f6/f7/2bf6f709a5d2dfbe574106ef48f760c2.jpg",
+			Avatar:         "https://i.pinimg.com/736x/5c/5b/75/5c5b754ab2e9fe8884448ce9743a7041.jpg",
 		},
 		{
-			Username:       "rossgeller",
-			Email:          "ross@sipstack.com",
+			Username:       "dwight",
+			Email:          "dwight@sipstack.com",
 			HashedPassword: string(hashedPassword),
-			Avatar:         "https://i.pinimg.com/1200x/20/31/88/2031889549047327e17439672f1c1461.jpg",
+			Avatar:         "https://i.pinimg.com/1200x/cb/89/dd/cb89dde2bc82ee72ed23d3ba0d88a6cb.jpg",
 		},
 	}
 
@@ -529,34 +529,34 @@ func SeedDemoData() {
 
 	ratings := []ratingEntry{
 		// Five-star (15)
-		{savedUsers[1].ID, 0, 5},  // Monica rates Foundation
-		{savedUsers[2].ID, 4, 5},  // Chandler rates Takk
-		{savedUsers[3].ID, 8, 5},  // Phoebe rates Haunt
-		{savedUsers[4].ID, 15, 5}, // Joey rates Pot Kettle Black
-		{savedUsers[5].ID, 17, 5}, // Ross rates Ezra & Gil
-		{savedUsers[0].ID, 1, 5},  // Rachel rates Prufrock
-		{savedUsers[2].ID, 5, 5},  // Chandler rates Monmouth
-		{savedUsers[3].ID, 9, 5},  // Phoebe rates Origin
-		{savedUsers[4].ID, 12, 5}, // Joey rates Timberyard
-		{savedUsers[5].ID, 16, 5}, // Ross rates Hackney Coffee
-		{savedUsers[0].ID, 2, 5},  // Rachel rates Cairngorm
-		{savedUsers[1].ID, 6, 5},  // Monica rates Brew Lab
-		{savedUsers[0].ID, 3, 5},  // Rachel rates Bold Street
-		{savedUsers[1].ID, 7, 5},  // Monica rates Press Bros
-		{savedUsers[2].ID, 11, 5}, // Chandler rates Foley's
+		{savedUsers[1].ID, 0, 5},  
+		{savedUsers[2].ID, 4, 5},  
+		{savedUsers[3].ID, 8, 5},  
+		{savedUsers[4].ID, 15, 5}, 
+		{savedUsers[5].ID, 17, 5}, 
+		{savedUsers[0].ID, 1, 5},  
+		{savedUsers[2].ID, 5, 5}, 
+		{savedUsers[3].ID, 9, 5},  
+		{savedUsers[4].ID, 12, 5}, 
+		{savedUsers[5].ID, 16, 5},
+		{savedUsers[0].ID, 2, 5}, 
+		{savedUsers[1].ID, 6, 5}, 
+		{savedUsers[0].ID, 3, 5}, 
+		{savedUsers[1].ID, 7, 5}, 
+		{savedUsers[2].ID, 11, 5},
 		// Four-star (5)
-		{savedUsers[2].ID, 19, 4}, // Chandler rates Fig & Sparrow
-		{savedUsers[1].ID, 10, 4}, // Monica rates Black Sheep
-		{savedUsers[4].ID, 13, 4}, // Joey rates Fortitude
-		{savedUsers[0].ID, 14, 4}, // Rachel rates Ryde
-		{savedUsers[0].ID, 21, 4}, // Rachel rates WatchHouse
+		{savedUsers[2].ID, 19, 4}, 
+		{savedUsers[1].ID, 10, 4}, 
+		{savedUsers[4].ID, 13, 4}, 
+		{savedUsers[0].ID, 14, 4}, 
+		{savedUsers[0].ID, 21, 4}, 
 		// Three-star (3)
-		{savedUsers[2].ID, 18, 3}, // Chandler rates Black Medicine
-		{savedUsers[5].ID, 3, 3},  // Ross rates Bold Street (avg becomes 4.0)
-		{savedUsers[3].ID, 19, 3}, // Phoebe rates Fig & Sparrow (avg becomes 3.5)
+		{savedUsers[2].ID, 18, 3}, 
+		{savedUsers[5].ID, 3, 3}, 
+		{savedUsers[3].ID, 19, 3},
 		// Extra
-		{savedUsers[5].ID, 20, 5}, // Ross rates Chapter One
-		{savedUsers[3].ID, 22, 5}, // Phoebe rates FWD Coffee
+		{savedUsers[5].ID, 20, 5}, 
+		{savedUsers[3].ID, 22, 5},
 	}
 
 	for _, r := range ratings {
