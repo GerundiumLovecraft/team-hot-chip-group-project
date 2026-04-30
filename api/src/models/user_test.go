@@ -15,8 +15,8 @@ func TestUserSave(t *testing.T) {
 	defer Database.Exec("TRUNCATE TABLE users;")
 
 	user := User{
-		Username: "JohnDoe",
-		Email: "johndoe@ntlworld.com",
+		Username:       "JohnDoe",
+		Email:          "johndoe@ntlworld.com",
 		HashedPassword: "th15154t3st",
 	}
 	savedUser, err := user.Save()
@@ -35,8 +35,8 @@ func TestFindUser(t *testing.T) {
 	defer Database.Exec("TRUNCATE TABLE users;")
 
 	user := User{
-		Username: "JohnDoe",
-		Email: "johndoe@ntlworld.com",
+		Username:       "JohnDoe",
+		Email:          "johndoe@ntlworld.com",
 		HashedPassword: "th15154t3st",
 	}
 
@@ -52,7 +52,6 @@ func TestFindUser(t *testing.T) {
 	assert.Equal(t, "johndoe@ntlworld.com", foundUser.Email)
 	assert.Equal(t, "JohnDoe", foundUser.Username)
 }
-
 
 func TestFindUserByEmail(t *testing.T) {
 	env.LoadEnv("../../.test.env")
@@ -125,13 +124,13 @@ func TestDuplicateEmail(t *testing.T) {
 	defer Database.Exec("TRUNCATE TABLE users;")
 
 	user1 := User{
-		Username: "JohnDoe",
-		Email: "johndoe@ntlworld.com",
+		Username:       "JohnDoe",
+		Email:          "johndoe@ntlworld.com",
 		HashedPassword: "th15154t3st",
 	}
 	user2 := User{
-		Username: "MichaelDoe",
-		Email: "johndoe@ntlworld.com",
+		Username:       "MichaelDoe",
+		Email:          "johndoe@ntlworld.com",
 		HashedPassword: "th15164t3st",
 	}
 
