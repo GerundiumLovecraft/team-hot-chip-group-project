@@ -154,7 +154,7 @@ export default function ProfilePage() {
           </div>
         )}
       </section>
-      <SpotModal spot={selectedSpot} onClose={() => setSelectedSpot(null)} />
+      <SpotModal spot={selectedSpot} onClose={() => setSelectedSpot(null)} isProfilePage={true} />
     </main>
   );
 }
