@@ -1,6 +1,9 @@
 .profile-page {
   min-height: calc(100vh - 65px);
-  background-image: url('../../assets/pexels-roman-odintsov-8063832.jpg');
+  background-image: linear-gradient(
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.449)
+  ), url('../../assets/pexels-ekrulila-15860802.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: scroll;
@@ -129,8 +132,9 @@
 }
 
 .my-spots-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
   font-size: 25px;
+  font-style: italic;
   font-weight: 700;
   color: #ffffff;
   margin: 0 0 20px 0;
@@ -281,4 +285,4 @@
 /* background-image: linear-gradient(
     rgba(255, 255, 255, 0.5),
     rgba(255, 255, 255, 0.5)
-  ), url('../assets/your-image-name.jpg'); */
+  ), url('../../assets/pexels-roman-odintsov-8063832.jpg'); */
