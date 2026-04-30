@@ -1,8 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { User } from "lucide-react";
 import "./Navbar.css";
-import {isTokenValid} from "../../helpers/authentication.js";
+import { isTokenValid } from "../../helpers/authentication.js";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -16,16 +16,16 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-logo">
+      <NavLink to="/" className="navbar-logo">
         sipstack
-      </Link>
+      </NavLink>
 
       <div className="navbar-links">
-        <Link to="/">Browse Spots</Link>
-        <Link to="/leaderboard">Leaderboard</Link>
+        <NavLink to="/" end className="nav-btn">Browse Spots</NavLink>
+        <NavLink to="/leaderboard" className="nav-btn">Leaderboard</NavLink>
         {isAuth ? (
           <>
-            <Link to="/spots/new">Submit Spot</Link>
+            <NavLink to="/spots/new" className="nav-btn">Submit Spot</NavLink>
             <div
               className="profile-menu"
               onMouseEnter={() => setMenuOpen(true)}
@@ -34,10 +34,9 @@ const Navbar = () => {
               <button className="profile-button">
                 <User size={24} />
               </button>
-
               {menuOpen && (
                 <div className="dropdown-menu">
-                  <Link to="/profile">My Profile</Link>
+                  <NavLink to="/profile">My Profile</NavLink>
                   <button onClick={handleLogout}>Logout</button>
                 </div>
               )}
@@ -45,9 +44,9 @@ const Navbar = () => {
           </>
         ) : (
           <>
-            <Link to="/login">Submit Spot</Link>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Signup</Link>
+            <NavLink to="/login" className={() => "nav-btn"}>Submit Spot</NavLink>
+            <NavLink to="/login" className="nav-btn">Login</NavLink>
+            <NavLink to="/signup" className="nav-btn">Signup</NavLink>
           </>
         )}
       </div>
