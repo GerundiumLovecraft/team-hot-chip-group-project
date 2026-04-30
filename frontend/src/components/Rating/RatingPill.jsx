@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 import "./RatingPill.css";
 import { isTokenValid } from "../../helpers/authentication.js";
 
-const RatingPill = ({ rating, spotId, interactive = false, onRatingSubmit }) => {
+const RatingPill = ({ rating, spotId, interactive = false, onRatingSubmit, profilePage= false }) => {
     const [popupOpen, setPopupOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -32,7 +32,7 @@ const RatingPill = ({ rating, spotId, interactive = false, onRatingSubmit }) => 
         }
     };
 
-    return (
+    return !profilePage && (
         <div className="sr-wrapper">
             <div
                 className={`sr-pill ${interactive && isLoggedIn ? "sr-pill--clickable" : ""}`}
