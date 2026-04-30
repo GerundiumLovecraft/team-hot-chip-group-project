@@ -7,11 +7,10 @@ import {
   Volume2,
   Moon,
 } from "lucide-react";
-import "./spotCard.css"
+import "./spotCard.css";
 import RatingPill from "../Rating/RatingPill.jsx";
 
 const Spot = ({ spot, onClick }) => {
-
   const featureIcons = {
     wifi: Wifi,
     toilets: Toilet,
@@ -42,7 +41,13 @@ const Spot = ({ spot, onClick }) => {
 
   return (
     <div className="spot-container" onClick={onClick}>
-      <img src={spot.image} alt={spot.name} className="spot-image" />
+      <div className="spot-image-wrap">
+        <img src={spot.image} alt={spot.name} className="spot-image" />
+        <div className="spot-rating-overlay">
+          <RatingPill rating={spot.average_rating} />
+        </div>
+      </div>
+
       <h3 className="spot-name">{spot.name}</h3>
       <p className="spot-address">{spot.address}</p>
 
@@ -57,7 +62,6 @@ const Spot = ({ spot, onClick }) => {
               {renderFeature(feature)}
             </li>
           ))}
-          <li><RatingPill rating={spot.average_rating} /></li>
         </ul>
       </div>
     </div>
