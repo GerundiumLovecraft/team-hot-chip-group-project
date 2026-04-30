@@ -29,6 +29,7 @@ type TestSuiteEnv struct {
 		spotId1 uint
 		spotId2 uint
 		featId1 uint
+		featId2 uint
 	}
 }
 
@@ -96,12 +97,25 @@ func (suite *TestSuiteEnv) SetupTest() {
 	feat1 := models.Feature{
 		FeatName: "feat1",
 	}
+	feat2 := models.Feature{
+		FeatName: "feat2",
+	}
 
 	savedFeat1, _ := feat1.SaveNewFeature()
+	var spotValue int8 = 2
+	savedFeat2, _ := feat2.SaveNewFeature()
 
 	suite.ids.spotId1 = savedSpot1.ID
 	suite.ids.spotId2 = savedSpot2.ID
 	suite.ids.featId1 = savedFeat1.ID
+	suite.ids.featId2 = savedFeat2.ID
+
+	newSpotToFeat := models.SpotsToFeats{
+		SpotId: savedSpot1.ID,
+		FeatId: savedFeat2.ID,
+		Value:  &spotValue,
+	}
+	newSpotToFeat.SaveNewRelation()
 }
 
 // Running after each test
@@ -581,8 +595,8 @@ func (suite *TestSuiteEnv) Test_GetAllFeatures_ReturnsAllFeatures() {
 	json.Unmarshal(suite.res.Body.Bytes(), &response)
 
 	// Assert the results
-	assert.Equal(suite.T(), 200, suite.res.Code, "Reponse code should be 200")
-	assert.Equal(suite.T(), 1, len(response.Features), "Reponse length should be 7")
+	assert.Equal(suite.T(), 200, suite.res.Code, "Response code should be 200")
+	assert.Equal(suite.T(), 2, len(response.Features), "Response length should be 2")
 
 }
 
@@ -801,6 +815,28 @@ func (suite *TestSuiteEnv) Test_GetSpotsByFeature_Match() {
 	assert.Equal(suite.T(), 200, suite.res.Code)
 	assert.Equal(suite.T(), 2, len(postSpotsByFeatureResponse.Spots))
 	assert.Equal(suite.T(), "spot-1", postSpotsByFeatureResponse.Spots[0].Name)
+}
+
+func (suite *TestSuiteEnv) Test_GetSpotsByFeature_Match_FeatWithValue() {
+	app := suite.app
+	suite.res = httptest.NewRecorder()
+
+	var featureJson = []byte(fmt.Sprintf(`[{"feat_id": %v, "value": 2}]`, suite.ids.featId2))
+	postSpotsByFeatureRequest, _ := http.NewRequest("POST", "/spots/filter", bytes.NewBuffer(featureJson))
+	app.ServeHTTP(suite.res, postSpotsByFeatureRequest)
+
+	var postSpotsByFeatureResponse struct {
+		Spots []struct {
+			ID      uint   `json:"_id"`
+			Name    string `json:"name"`
+			Address string `json:"address"`
+		} `json:"spots"`
+	}
+	json.Unmarshal(suite.res.Body.Bytes(), &postSpotsByFeatureResponse)
+
+	assert.Equal(suite.T(), 200, suite.res.Code)
+	assert.Equal(suite.T(), 1, len(postSpotsByFeatureResponse.Spots))
+	assert.Equal(suite.T(), "spot1", postSpotsByFeatureResponse.Spots[0].Name)
 }
 
 func (suite *TestSuiteEnv) Test_GetSpotsByFeature_NoMatch() {
