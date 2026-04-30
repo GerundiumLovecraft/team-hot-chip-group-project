@@ -31,6 +31,6 @@
     width: 260px;
     flex: 0 0 260px;
     position: sticky;
-    top: 16px;
+    top: calc(65px + 16px);
     align-self: flex-start;
 }
