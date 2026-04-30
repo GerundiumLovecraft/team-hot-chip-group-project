@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"strconv"
 	"testing"
 
@@ -90,7 +89,6 @@ func TestFindUserByUsername(t *testing.T) {
 	savedUser, err := user.Save()
 	assert.Nil(t, err)
 	assert.NotZero(t, savedUser.ID)
-	fmt.Println(savedUser)
 
 	foundUser, err := FindUserByUsernameOrEmail(savedUser.Username)
 	assert.Nil(t, err)
