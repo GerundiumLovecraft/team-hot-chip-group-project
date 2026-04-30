@@ -100,14 +100,15 @@ type LeaderboardEntry struct {
 	UserID       uint   `json:"user_id"`
 	Username     string `json:"username"`
 	SpotsCreated int    `json:"spots_created" gorm:"column:spots_created"`
+	Avatar       string `json:"avatar"`
 }
 
 func FetchLeaderboard() ([]LeaderboardEntry, error) {
 	var entries []LeaderboardEntry
 	err := Database.Table("spots").
-	    Select("spots.user_id, users.username, COUNT(spots.id) as spots_created, MIN(spots.created_at) as first_spot_at").
+	    Select("spots.user_id, users.username, users.avatar, COUNT(spots.id) as spots_created, MIN(spots.created_at) as first_spot_at").
         Joins("JOIN users ON users.id = spots.user_id").
-        Group("spots.user_id, users.username").
+        Group("spots.user_id, users.username, users.avatar").
         Order("spots_created DESC, first_spot_at ASC").
         Scan(&entries).Error
 

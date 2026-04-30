@@ -40,13 +40,13 @@ export const LoginPage = () => {
         <form className="login-form" onSubmit={handleSubmit}>
         {errorMessage && <p className="error-message">{errorMessage}</p>}
           <div className="form-group-user">
-            <label>Username</label>
+            <label>Username or Email</label>
             <input
               id="usernameOrEmail"
               type="text"
               value={usernameOrEmail}
               onChange={handleUsernameOrEmailChange}
-              placeholder="Your username or email"
+              placeholder="Username or email"
               required
             />
             <User className="user-icon" />
@@ -59,7 +59,7 @@ export const LoginPage = () => {
               type="password"
               value={password}
               onChange={handlePasswordChange}
-              placeholder="Your secret password"
+              placeholder="Password"
               required
             />
             <Lock className="lock-icon" />

@@ -67,7 +67,7 @@ return (
     <div className="signup-card">
 
       <div className="signup-header">
-        <h2>Create an account</h2>
+        <h2>Sign Up Here</h2>
         <p>Enter your details below to get started</p>
       </div>
       <form className="signup-form" onSubmit={handleSubmit}>
@@ -79,7 +79,7 @@ return (
             type="text"
             value={username}
             onChange={handleUsernameChange}
-            placeholder="Your username"
+            placeholder="Username"
           />
         </div>
 
@@ -89,7 +89,7 @@ return (
             type="email"
             value={email}
             onChange={handleEmailChange}
-            placeholder="Your email address"
+            placeholder="Email address"
           />
         </div>
 
@@ -99,7 +99,7 @@ return (
             type="password"
             value={password}
             onChange={handlePasswordChange}
-            placeholder="Your secret password"
+            placeholder="Create a password"
           />
         </div>
 
@@ -109,7 +109,7 @@ return (
             type="password"
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
-            placeholder="Confirm your secret password"
+            placeholder="Confirm password"
           />
         </div>
 

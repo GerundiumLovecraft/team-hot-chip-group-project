@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 40px 24px;
     background-color: #f5f4eb;
 }
@@ -13,8 +13,8 @@
 .signup-card {
     border-radius: 16px;
     padding: 48px;
-    width: 100%;
-    max-width: 440px;
+    width: 200%;
+    max-width: 600px;
 }
 
 .signup-header {
@@ -26,13 +26,11 @@
     margin-bottom: 6px;
     font-family: var(--font-heading);
     font-size: 2.5rem;
-    font-style: italic;
 }
 
 .signup-header p {
     opacity: 0.7;
-    font-size: 15px;
-    font-style: italic;
+    font-size: 17px;
     margin-bottom: 15px;
     color: rgb(236, 74, 10)
 }
@@ -41,9 +39,8 @@
 .login-option {
     display: block;
     margin-top: 8px;
-    font-size: 14px;
+    font-size: 17px;
     opacity: 0.7;
-    font-style: italic;
     color: rgb(236, 74, 10)
 }
 

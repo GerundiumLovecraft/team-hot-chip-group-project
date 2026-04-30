@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getLeaderboard } from "../../services/leaderboards";
 import "./LeaderboardPage.css";
-import {isTokenValid} from "../../helpers/authentication.js";
+import { isTokenValid, getTokenUserId } from "../../helpers/authentication.js";
 
 const LeaderboardPage = () => {
     const [leaderboard, setLeaderboard] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const currentUserId = getTokenUserId();
 
     useEffect(() => {
         if(!isTokenValid()) {
@@ -29,6 +30,29 @@ const LeaderboardPage = () => {
             .finally(() => setLoading(false));
     }, [navigate]);
 
+    const getAvatar = (avatar, username) => {
+        if (avatar && avatar.length > 0) {
+            return <img src={avatar} alt={username} className="avatar-img" />;
+        }
+        return <img src={`https://api.dicebear.com/7.x/notionists-neutral/svg?seed=${username}&backgroundColor=f2cbb6,C1CF9B,F08456,F2E8B6,b8967d`} alt={username} className="avatar-img" />;
+    };
+
+    const isCurrentUser = (userId) => {
+        return userId === Number(currentUserId);
+    };
+
+    const renderAvatar = (entry, sizeClass) => {
+        const isOwn = isCurrentUser(entry.user_id);
+        return (
+            <div className={`avatar ${sizeClass} ${isOwn ? "own-entry" : ""}`}>
+                {isOwn
+                    ? <a href="/profile">{getAvatar(entry.avatar, entry.username)}</a>
+                    : getAvatar(entry.avatar, entry.username)
+                }
+            </div>
+        );
+    };
+
     return (
         <div className="leaderboard-page">
             <div className="leaderboard-header">
@@ -44,15 +68,15 @@ const LeaderboardPage = () => {
                     <div className="podium">
                         {leaderboard[1] && (
                             <div className="podium-entry second">
-                                <div className="avatar">{leaderboard[1].username.slice(0, 2).toUpperCase()}</div>
+                                {renderAvatar(leaderboard[1], "")}
                                 <p className="podium-medal">🥈</p>
                                 <p className="podium-username">{leaderboard[1].username}</p>
-                                <p className="podium-spots">{leaderboard[0].spots_created} {leaderboard[0].spots_created === 1 ? "spot" : "spots"}</p>
+                                <p className="podium-spots">{leaderboard[1].spots_created} {leaderboard[1].spots_created === 1 ? "spot" : "spots"}</p>
                             </div>
                         )}
                         {leaderboard[0] && (
                             <div className="podium-entry first">
-                                <div className="avatar large">{leaderboard[0].username.slice(0, 2).toUpperCase()}</div>
+                                {renderAvatar(leaderboard[0], "large")}
                                 <p className="podium-medal">🏆</p>
                                 <p className="podium-username">{leaderboard[0].username}</p>
                                 <p className="podium-spots">{leaderboard[0].spots_created} {leaderboard[0].spots_created === 1 ? "spot" : "spots"}</p>
@@ -60,10 +84,10 @@ const LeaderboardPage = () => {
                         )}
                         {leaderboard[2] && (
                             <div className="podium-entry third">
-                                <div className="avatar">{leaderboard[2].username.slice(0, 2).toUpperCase()}</div>
+                                {renderAvatar(leaderboard[2], "")}
                                 <p className="podium-medal">🥉</p>
                                 <p className="podium-username">{leaderboard[2].username}</p>
-                                <p className="podium-spots">{leaderboard[2].spots_created} {leaderboard[0].spots_created === 1 ? "spot" : "spots"}</p>
+                                <p className="podium-spots">{leaderboard[2].spots_created} {leaderboard[2].spots_created === 1 ? "spot" : "spots"}</p>
                             </div>
                         )}
                     </div>
@@ -72,9 +96,14 @@ const LeaderboardPage = () => {
                     {leaderboard.length > 3 && (
                         <div className="leaderboard-list">
                             {leaderboard.slice(3).map((entry, index) => (
-                                <div key={entry.user_id} className="leaderboard-entry">
+                                <div key={entry.user_id} className={`leaderboard-entry ${isCurrentUser(entry.user_id) ? "own-entry" : ""}`}>
                                     <span className="rank">#{index + 4}</span>
-                                    <div className="list-avatar">{entry.username.slice(0, 2).toUpperCase()}</div>
+                                    <div className="list-avatar">
+                                        {isCurrentUser(entry.user_id)
+                                            ? <a href="/profile">{getAvatar(entry.avatar, entry.username)}</a>
+                                            : getAvatar(entry.avatar, entry.username)
+                                        }
+                                    </div>
                                     <span className="username">{entry.username}</span>
                                     <span className="spots-created">{entry.spots_created} {entry.spots_created === 1 ? "spot" : "spots"} submitted</span>
                                 </div>
