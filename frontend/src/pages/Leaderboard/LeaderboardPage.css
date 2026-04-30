@@ -1,3 +1,4 @@
+/* ── Page ─────────────────────────────────────── */
 .leaderboard-page {
     padding: 40px 24px;
     min-height: calc(100vh - 65px);
@@ -6,105 +7,163 @@
     align-items: center;
 }
 
+/* ── Header ───────────────────────────────────── */
 .leaderboard-header {
     text-align: center;
     margin-bottom: 48px;
 }
 
 .leaderboard-header h1 {
-    margin-bottom: 8px;
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--color-brown);
+    margin-bottom: 6px;
 }
 
 .leaderboard-header p {
-    font-size: 16px;
-    opacity: 0.7;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--color-olive);
 }
 
-/* Podium */
+/* ── Podium ───────────────────────────────────── */
 .podium {
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    gap: 24px;
-    margin-bottom: 48px;
+    gap: 48px;
+    margin-bottom: 56px;
+    width: 100%;
+    max-width: 640px;
 }
 
 .podium-entry {
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    gap: 6px;
 }
 
-.podium-medal {
-    font-size: 50px;
-    margin: 4px 0;
-}
-
-.podium-rank {
-    font-size: 13px;
-    font-weight: 600;
-    opacity: 0.6;
-    margin: 0;
-}
-
-.podium-username {
-    font-size: 16px;
-    font-weight: 700;
-    margin: 4px 0;
-}
-
-.podium-spots {
-    font-size: 13px;
-    opacity: 0.6;
-    margin: 0;
-}
-
-.podium-entry.first .podium-username {
-    font-size: 20px;
-}
-
+/* ── Avatars ──────────────────────────────────── */
 .avatar {
-    width: 90px;
-    height: 90px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     background-color: var(--color-brown);
     color: var(--color-cream);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+    font-size: 30px;
     font-weight: 600;
-    margin-bottom: 8px;
+    overflow: hidden;
+    cursor: default;
+    box-shadow: 0 12px 32px rgba(84, 60, 43, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.avatar a {
+    cursor: pointer;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar a:hover {
+    opacity: 0.9;
+}
+
+.avatar:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(84, 60, 43, 0.28);
 }
 
 .avatar.large {
-    width: 110px;
-    height: 110px;
-    font-size: 36px;
+    width: 140px;
+    height: 140px;
+    font-size: 38px;
+    box-shadow: 0 16px 40px rgba(84, 60, 43, 0.4);
 }
 
-/* List */
+.avatar.large:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(84, 60, 43, 0.32);
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* ── Podium text ──────────────────────────────── */
+.podium-medal {
+    font-size: 50px;
+    margin-top: 4px;
+}
+
+.podium-username {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--color-brown);
+    margin: 0;
+}
+
+.podium-entry.first .podium-username {
+    font-size: 21px;
+}
+
+.podium-spots {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background-color: var(--color-cream2);
+    color: var(--color-brown);
+    margin: 0;
+}
+
+.podium-entry.first .podium-spots {
+    background-color: var(--color-yellow);
+}
+
+/* ── List ─────────────────────────────────────── */
 .leaderboard-list {
     width: 100%;
-    max-width: 500px;
+    max-width: 700px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .leaderboard-entry {
     display: flex;
     align-items: center;
-    background-color: var(--color-white);
-    border: 1px solid var(--color-yellow);
-    border-radius: 10px;
-    padding: 16px 20px;
+    gap: 14px;
+    background-color: #dbe3b6;
+    border: 1px solid #abbe82;
+    border-radius: 12px;
+    padding: 14px 20px;
+    cursor: default;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.leaderboard-entry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+}
+
+.leaderboard-entry.own-entry {
+    border: 3px solid #aab76d;
 }
 
 .list-avatar {
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     background-color: var(--color-brown);
     color: var(--color-cream);
@@ -114,19 +173,34 @@
     font-size: 14px;
     font-weight: 600;
     flex-shrink: 0;
+    overflow: hidden;
+}
+
+.list-avatar a {
+    cursor: pointer;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
 }
 
 .rank {
     font-weight: 700;
-    width: 40px;
+    font-size: 15px;
+    color: #3a3d1f;
+    width: 36px;
 }
 
 .username {
     flex: 1;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 17px;
+    color: #3a3d1f;
 }
 
 .spots-created {
-    font-size: 13px;
-    opacity: 0.6;
+    font-size: 14px;
+    color: #3a3d1f;
+    opacity: 0.7;
 }
