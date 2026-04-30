@@ -1,13 +1,11 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import ProfilePage from "./ProfilePage.jsx";
 
-import { ProfilePage } from "../../src/pages/Profile/ProfilePage";
-
-// ── Mock service modules ──
 vi.mock("../../services/authentication", () => ({
     fetchUserProfile: vi.fn(),
+    updateAvatar: vi.fn(),
 }));
 
 vi.mock("../../services/spots", () => ({
@@ -18,11 +16,19 @@ vi.mock("../../helpers/authentication.js", () => ({
     isTokenValid: vi.fn(),
 }));
 
-import { fetchUserProfile } from "../../services/authentication";
+const mockNavigate = vi.fn();
+vi.mock("react-router-dom", async () => {
+    const actual = await vi.importActual("react-router-dom");
+    return {
+        ...actual,
+        useNavigate: () => mockNavigate,
+    };
+});
+
+import { fetchUserProfile, updateAvatar } from "../../services/authentication";
 import { getSpotsByUser } from "../../services/spots";
 import { isTokenValid } from "../../helpers/authentication.js";
 
-// ── Shared test data ──
 const mockUser = {
     id: "1",
     username: "aluna",
@@ -32,8 +38,28 @@ const mockUser = {
 };
 
 const mockSpots = [
-    { _id: 1, name: "Cosy Cove", address: "cosy grove, middlewood, LS3 6AT", image: "https://example.com/cosy.jpg", features: [] },
-    { _id: 2, name: "Hot Spot", address: "127 Neo Drive, En City", image: "https://example.com/hot.jpg", features: [] },
+    { 
+        _id: 1, 
+        name: "Cosy Cove", 
+        address: "cosy grove, middlewood, LS3 6AT", 
+        image: "https://example.com/cosy.jpg", 
+        description: "A cosy spot",
+        open_from: "08:00",
+        open_to: "18:00",
+        features: [],
+        average_rating: null,
+    },
+    { 
+        _id: 2, 
+        name: "Hot Spot", 
+        address: "127 Neo Drive, En City", 
+        image: "https://example.com/hot.jpg", 
+        description: "A hot spot",
+        open_from: "09:00",
+        open_to: "20:00",
+        features: [],
+        average_rating: null,
+    },
 ];
 
 const renderProfilePage = () =>
@@ -47,28 +73,26 @@ beforeEach(() => {
     vi.clearAllMocks();
     localStorage.setItem("token", "mock-token");
     isTokenValid.mockReturnValue(true);
+    fetchUserProfile.mockResolvedValue({ user: mockUser, token: "new-token" });
+    getSpotsByUser.mockResolvedValue(mockSpots);
 });
 
-// ── Tests ──
 describe("ProfilePage", () => {
 
     describe("authentication", () => {
         it("redirects to /login if token is invalid", async () => {
             isTokenValid.mockReturnValue(false);
-            fetchUserProfile.mockResolvedValue({ user: mockUser, token: "new-token" });
-            getSpotsByUser.mockResolvedValue([]);
 
             renderProfilePage();
 
             await waitFor(() => {
-                expect(window.location.pathname).toBe("/login");
+                expect(mockNavigate).toHaveBeenCalledWith("/login");
             });
         });
     });
 
     describe("loading states", () => {
         it("shows loading text while profile is fetching", () => {
-            isTokenValid.mockReturnValue(true);
             fetchUserProfile.mockReturnValue(new Promise(() => {}));
             getSpotsByUser.mockReturnValue(new Promise(() => {}));
 
@@ -80,11 +104,6 @@ describe("ProfilePage", () => {
     });
 
     describe("profile data", () => {
-        beforeEach(() => {
-            fetchUserProfile.mockResolvedValue({ user: mockUser, token: "new-token" });
-            getSpotsByUser.mockResolvedValue(mockSpots);
-        });
-
         it("renders username and email after loading", async () => {
             renderProfilePage();
 
@@ -129,7 +148,6 @@ describe("ProfilePage", () => {
     describe("error states", () => {
         it("shows an error message if profile fetch fails", async () => {
             fetchUserProfile.mockRejectedValue(new Error("Something went wrong"));
-            getSpotsByUser.mockResolvedValue([]);
 
             renderProfilePage();
 
@@ -139,7 +157,6 @@ describe("ProfilePage", () => {
         });
 
         it("shows an error message if spots fetch fails", async () => {
-            fetchUserProfile.mockResolvedValue({ user: mockUser, token: "new-token" });
             getSpotsByUser.mockRejectedValue(new Error("Unable to fetch your submitted spots!"));
 
             renderProfilePage();
@@ -151,10 +168,6 @@ describe("ProfilePage", () => {
     });
 
     describe("submitted spots", () => {
-        beforeEach(() => {
-            fetchUserProfile.mockResolvedValue({ user: mockUser, token: "new-token" });
-        });
-
         it("shows empty state message when user has no spots", async () => {
             getSpotsByUser.mockResolvedValue([]);
 
@@ -166,8 +179,6 @@ describe("ProfilePage", () => {
         });
 
         it("renders spot cards when user has submitted spots", async () => {
-            getSpotsByUser.mockResolvedValue(mockSpots);
-
             renderProfilePage();
 
             await waitFor(() => {
@@ -177,25 +188,18 @@ describe("ProfilePage", () => {
         });
 
         it("opens the spot modal when a spot card is clicked", async () => {
-            getSpotsByUser.mockResolvedValue(mockSpots);
-
             renderProfilePage();
 
             await waitFor(() => screen.getByText("Cosy Cove"));
             fireEvent.click(screen.getByText("Cosy Cove"));
 
             await waitFor(() => {
-                expect(screen.getByText("cosy grove, middlewood, LS3 6AT")).toBeInTheDocument();
+                expect(screen.getByText("Opening Hours: 08:00 - 18:00")).toBeInTheDocument();
             });
         });
     });
 
     describe("avatar editing", () => {
-        beforeEach(() => {
-            fetchUserProfile.mockResolvedValue({ user: mockUser, token: "new-token" });
-            getSpotsByUser.mockResolvedValue([]);
-        });
-
         it("shows the avatar edit input when avatar is clicked", async () => {
             renderProfilePage();
 
@@ -218,11 +222,9 @@ describe("ProfilePage", () => {
         it("saves the avatar and updates the UI", async () => {
             const newAvatarUrl = "https://example.com/new-avatar.jpg";
 
-            global.fetch = vi.fn().mockResolvedValue({
-                json: () => Promise.resolve({
-                    user: { ...mockUser, avatar: newAvatarUrl },
-                    token: "new-token",
-                }),
+            updateAvatar.mockResolvedValue({
+                user: { ...mockUser, avatar: newAvatarUrl },
+                token: "new-token",
             });
 
             renderProfilePage();
