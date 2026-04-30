@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./SignupPage.css";
 import { signup } from "../../services/authentication";
+import AnimatedButton from "../../components/animation/AnimatedButton";
 
 export const SignupPage = () => {
   const [username, setUsername] = useState("");
@@ -66,14 +67,11 @@ return (
     <div className="signup-card">
 
       <div className="signup-header">
-        <h2>Create an account</h2>
+        <h2>Sign Up Here</h2>
         <p>Enter your details below to get started</p>
-        <Link to="/login" className="login-link">Already have an account? Log in here</Link>
       </div>
-
-      {error && <p className="errorMessage">{error}</p>}
-
       <form className="signup-form" onSubmit={handleSubmit}>
+      {error && <p className="errorMessage">{error}</p>}
 
         <div className="form-group">
           <label>Username</label>
@@ -81,6 +79,7 @@ return (
             type="text"
             value={username}
             onChange={handleUsernameChange}
+            placeholder="Username"
           />
         </div>
 
@@ -90,6 +89,7 @@ return (
             type="email"
             value={email}
             onChange={handleEmailChange}
+            placeholder="Email address"
           />
         </div>
 
@@ -99,6 +99,7 @@ return (
             type="password"
             value={password}
             onChange={handlePasswordChange}
+            placeholder="Create a password"
           />
         </div>
 
@@ -108,13 +109,17 @@ return (
             type="password"
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
+            placeholder="Confirm password"
           />
         </div>
 
-        <button type="submit" className="signup-btn">
+        <AnimatedButton type="submit" className="signup-btn">
           Sign Up
-        </button>
-
+        </AnimatedButton>
+        <p className="login-option">
+          Already have an account?{" "}
+          <Link to="/login" className="login-link">Log in here</Link>
+        </p>
       </form>
     </div>
   </div>

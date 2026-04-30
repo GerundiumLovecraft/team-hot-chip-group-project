@@ -1,90 +1,104 @@
+/* ── Page ─────────────────────────────────────── */
 .login-page {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 65px);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 40px 24px;
-  background-color: rgba(245, 240, 230, 0.7);
+  background-color: #f5f4eb;
 }
 
+/* ── Card ─────────────────────────────────────── */
 .login-card {
+  max-width: 600px;
+  padding: 48px;
   width: 100%;
-  max-width: 440px;
-  padding: 30px 40px;
-  background-color: var(--color-white);
-  border: 1px solid var(--color-cream2);
   border-radius: 16px;
-  box-sizing: border-box;
 }
 
 .login-header {
-  margin-bottom: 20px;
+  margin-bottom: 4px;
+  text-align: center;
 }
 
 .login-header h2 {
-  color: var(--color-brown);
-  font-size: 32px;
-  margin: 0;
-  padding: 20px;
+  font-family: var(--font-heading);
+  margin-bottom: 6px;
+  font-size: 2.5rem;
 }
 
-.login-header p {
-  color: var(--color-brown);
-  margin: 0;
-}
-
+/* ── Form ─────────────────────────────────────── */
 .login-form {
-  display: flex;
+  display: block;
   flex-direction: column;
+  gap: 20px;
+  background: #f9f9f1;
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid var(--color-cream2);
+  margin-top: 20px;
 }
 
 .form-group-user,
 .form-group-pass {
+  display: flex;
+  flex-direction: column;
   position: relative;
   width: 100%;
-  height: 50px;
   margin: 0 0 16px 0;
+  gap: 6px;
   color: var(--color-brown);
+}
+
+.form-group-user label,
+.form-group-pass label {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-brown);
+    opacity: 0.85;
 }
 
 .form-group-user input,
 .form-group-pass input {
-  width: 100%;
-  height: 80%;
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  outline: solid var(--color-brown);
-  outline-style: auto;
-  border-radius: 40px;
-  font-size: 16px;
+  background-color: var(--color-white);
+  border: 1.5px solid var(--color-cream2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
   font-family: var(--font-body);
+  transition: border-color 0.2s, box-shadow 0.2s;
   color: var(--color-brown);
-  padding: 20px 45px 20px 20px;
+  outline: none;
+  width: 100%;
   box-sizing: border-box;
 }
 
-.form-group-user input::placeholder,
+/* .form-group-user input::placeholder,
 .form-group-pass input::placeholder {
   transition: opacity 0.2s ease;
-}
+} */
 
-.form-group-user input:focus::placeholder,
-.form-group-pass input:focus::placeholder {
-  opacity: 0;
+.form-group-user input:focus,
+.form-group-pass input:focus {
+  border-color: var(--color-salmon);
+  box-shadow: 0 0 0 2px rgb(235, 164, 176);
 }
 
 .login-button {
-  width: 100%;
-  height: 45px;
-  border: none;
-  outline: none;
-  border-radius: 40px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  font-family: var(--font-body);
   background-color: var(--color-brown);
   color: var(--color-cream);
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  width: 100%;
 }
 
 .login-button:hover {
@@ -94,32 +108,38 @@
 .user-icon,
 .lock-icon {
   position: absolute;
-  right: 20px;
-  top: 43%;
-  transform: translateY(-50%);
+  right: 14px;
+  bottom: 8px;
+  top: 58%;
   pointer-events: none;
   color: var(--color-brown);
 }
 
+/* ── Error ─────────────────────────────────────── */
 .error-message {
   color: var(--color-error);
+  background-color:  #fdf0ed;
+  border: 1px solid #e8b4a8;
+  border-radius: 10px;
+  padding: 12px, 12px;
   font-size: 14px;
-  margin: 0 0 16px 0;
 }
 
+/* ── Sign up Link ─────────────────────────────────────── */
 .signup-option {
-  padding: 12px;
-  margin: 0;
-  text-align: center;
-  color: var(--color-brown);
+  display: block;
+  margin-top: 8px;
+  font-size: 17px;
+  opacity: 0.7;
+  color: rgb(236, 74, 10)
 }
 
 .signup-link {
-  display: inline-block;
-  color: var(--color-brown);
-  transition: transform 0.2s ease;
+  font-weight: 700;
+  color: rgb(236, 74, 10)
 }
 
+.signup-option:hover,
 .signup-link:hover {
   transform: scale(1.05);
 }
