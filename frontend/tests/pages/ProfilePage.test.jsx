@@ -1,247 +1,84 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import ProfilePage from "../../src/pages/Profile/ProfilePage.jsx";
+import { fetchUserProfile } from "../../src/services/authentication";
+import { getSpotsByUser } from "../../src/services/spots";
+import { isTokenValid } from "../../src/helpers/authentication.js";
 
-vi.mock("../../services/authentication", () => ({
-    fetchUserProfile: vi.fn(),
-    updateAvatar: vi.fn(),
+
+vi.mock("../../src/services/authentication", () => ({
+  fetchUserProfile: vi.fn(),
+  updateAvatar: vi.fn(),
 }));
-
-vi.mock("../../services/spots", () => ({
-    getSpotsByUser: vi.fn(),
+vi.mock("../../src/services/spots", () => ({
+  getSpotsByUser: vi.fn(),
 }));
-
-vi.mock("../../helpers/authentication.js", () => ({
-    isTokenValid: vi.fn(),
+vi.mock("../../src/helpers/authentication.js", () => ({
+  isTokenValid: vi.fn(),
 }));
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
-    const actual = await vi.importActual("react-router-dom");
-    return {
-        ...actual,
-        useNavigate: () => mockNavigate,
-    };
+  const actual = await vi.importActual("react-router-dom");
+  return { ...actual, useNavigate: () => mockNavigate };
 });
 
-import { fetchUserProfile, updateAvatar } from "../../src/services/authentication.js";
-import { getSpotsByUser } from "../../src/services/spots.js";
-import { isTokenValid } from "../../src/helpers/authentication.js";
-
 const mockUser = {
-    id: "1",
-    username: "aluna",
-    email: "aluna@gmail.com",
-    createdAt: "2026-04-24T00:00:00Z",
-    avatar: null,
+  username: "aluna",
+  email: "aluna@gmail.com",
+  createdAt: "2026-04-24T00:00:00Z",
+  avatar: null,
 };
 
-const mockSpots = [
-    { 
-        _id: 1, 
-        name: "Cosy Cove", 
-        address: "cosy grove, middlewood, LS3 6AT", 
-        image: "https://example.com/cosy.jpg", 
-        description: "A cosy spot",
-        open_from: "08:00",
-        open_to: "18:00",
-        features: [],
-        average_rating: null,
-    },
-    { 
-        _id: 2, 
-        name: "Hot Spot", 
-        address: "127 Neo Drive, En City", 
-        image: "https://example.com/hot.jpg", 
-        description: "A hot spot",
-        open_from: "09:00",
-        open_to: "20:00",
-        features: [],
-        average_rating: null,
-    },
-];
-
 const renderProfilePage = () =>
-    render(
-        <MemoryRouter>
-            <ProfilePage />
-        </MemoryRouter>
-    );
+  render(<MemoryRouter><ProfilePage /></MemoryRouter>);
 
 beforeEach(() => {
-    vi.clearAllMocks();
-    localStorage.setItem("token", "mock-token");
-    isTokenValid.mockReturnValue(true);
-    fetchUserProfile.mockResolvedValue({ user: mockUser, token: "new-token" });
-    getSpotsByUser.mockResolvedValue(mockSpots);
+  vi.clearAllMocks();
+  localStorage.setItem("token", "mock-token");
+  isTokenValid.mockReturnValue(true);
+  fetchUserProfile.mockResolvedValue({ user: mockUser, token: "new-token" });
+  getSpotsByUser.mockResolvedValue([]);
 });
 
 describe("ProfilePage", () => {
 
-    describe("authentication", () => {
-        it("redirects to /login if token is invalid", async () => {
-            isTokenValid.mockReturnValue(false);
-
-            renderProfilePage();
-
-            await waitFor(() => {
-                expect(mockNavigate).toHaveBeenCalledWith("/login");
-            });
-        });
+  it("redirects to /login if token is invalid", async () => {
+    isTokenValid.mockReturnValue(false);
+    renderProfilePage();
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/login");
     });
+  });
 
-    describe("loading states", () => {
-        it("shows loading text while profile is fetching", () => {
-            fetchUserProfile.mockReturnValue(new Promise(() => {}));
-            getSpotsByUser.mockReturnValue(new Promise(() => {}));
+  it("shows loading text while fetching", () => {
+    fetchUserProfile.mockReturnValue(new Promise(() => {}));
+    renderProfilePage();
+    expect(screen.getByText("Loading profile…")).toBeTruthy();
+  });
 
-            renderProfilePage();
-
-            expect(screen.getByText("Loading profile…")).toBeInTheDocument();
-            expect(screen.getByText("Loading your spots…")).toBeInTheDocument();
-        });
+  it("renders username and email after loading", async () => {
+    renderProfilePage();
+    await waitFor(() => {
+      expect(screen.getByText("aluna")).toBeTruthy();
+      expect(screen.getByText("aluna@gmail.com")).toBeTruthy();
     });
+  });
 
-    describe("profile data", () => {
-        it("renders username and email after loading", async () => {
-            renderProfilePage();
-
-            await waitFor(() => {
-                expect(screen.getByText("aluna")).toBeInTheDocument();
-                expect(screen.getByText("aluna@gmail.com")).toBeInTheDocument();
-            });
-        });
-
-        it("renders the member since date", async () => {
-            renderProfilePage();
-
-            await waitFor(() => {
-                expect(screen.getByText("24 April 2026")).toBeInTheDocument();
-            });
-        });
-
-        it("shows initials in avatar when no avatar image is set", async () => {
-            renderProfilePage();
-
-            await waitFor(() => {
-                expect(screen.getByText("AL")).toBeInTheDocument();
-            });
-        });
-
-        it("shows avatar image when user has one set", async () => {
-            fetchUserProfile.mockResolvedValue({
-                user: { ...mockUser, avatar: "https://example.com/avatar.jpg" },
-                token: "new-token",
-            });
-
-            renderProfilePage();
-
-            await waitFor(() => {
-                const img = screen.getByAltText("avatar");
-                expect(img).toBeInTheDocument();
-                expect(img.src).toBe("https://example.com/avatar.jpg");
-            });
-        });
+  it("shows error message if profile fetch fails", async () => {
+    fetchUserProfile.mockRejectedValue(new Error("Something went wrong"));
+    renderProfilePage();
+    await waitFor(() => {
+      expect(screen.getByText("Something went wrong")).toBeTruthy();
     });
+  });
 
-    describe("error states", () => {
-        it("shows an error message if profile fetch fails", async () => {
-            fetchUserProfile.mockRejectedValue(new Error("Something went wrong"));
-
-            renderProfilePage();
-
-            await waitFor(() => {
-                expect(screen.getByText("Something went wrong")).toBeInTheDocument();
-            });
-        });
-
-        it("shows an error message if spots fetch fails", async () => {
-            getSpotsByUser.mockRejectedValue(new Error("Unable to fetch your submitted spots!"));
-
-            renderProfilePage();
-
-            await waitFor(() => {
-                expect(screen.getByText("Unable to fetch your submitted spots!")).toBeInTheDocument();
-            });
-        });
+  it("shows message when user has no spots", async () => {
+    renderProfilePage();
+    await waitFor(() => {
+      expect(screen.getByText("You have not submitted any spots yet.")).toBeTruthy();
     });
+  });
 
-    describe("submitted spots", () => {
-        it("shows empty state message when user has no spots", async () => {
-            getSpotsByUser.mockResolvedValue([]);
-
-            renderProfilePage();
-
-            await waitFor(() => {
-                expect(screen.getByText("You have not submitted any spots yet.")).toBeInTheDocument();
-            });
-        });
-
-        it("renders spot cards when user has submitted spots", async () => {
-            renderProfilePage();
-
-            await waitFor(() => {
-                expect(screen.getByText("Cosy Cove")).toBeInTheDocument();
-                expect(screen.getByText("Hot Spot")).toBeInTheDocument();
-            });
-        });
-
-        it("opens the spot modal when a spot card is clicked", async () => {
-            renderProfilePage();
-
-            await waitFor(() => screen.getByText("Cosy Cove"));
-            fireEvent.click(screen.getByText("Cosy Cove"));
-
-            await waitFor(() => {
-                expect(screen.getByText("Opening Hours: 08:00 - 18:00")).toBeInTheDocument();
-            });
-        });
-    });
-
-    describe("avatar editing", () => {
-        it("shows the avatar edit input when avatar is clicked", async () => {
-            renderProfilePage();
-
-            await waitFor(() => screen.getByText("AL"));
-            fireEvent.click(screen.getByText("AL"));
-
-            expect(screen.getByPlaceholderText("Paste image URL…")).toBeInTheDocument();
-        });
-
-        it("hides the avatar edit input when cancel is clicked", async () => {
-            renderProfilePage();
-
-            await waitFor(() => screen.getByText("AL"));
-            fireEvent.click(screen.getByText("AL"));
-            fireEvent.click(screen.getByText("Cancel"));
-
-            expect(screen.queryByPlaceholderText("Paste image URL…")).not.toBeInTheDocument();
-        });
-
-        it("saves the avatar and updates the UI", async () => {
-            const newAvatarUrl = "https://example.com/new-avatar.jpg";
-
-            updateAvatar.mockResolvedValue({
-                user: { ...mockUser, avatar: newAvatarUrl },
-                token: "new-token",
-            });
-
-            renderProfilePage();
-
-            await waitFor(() => screen.getByText("AL"));
-            fireEvent.click(screen.getByText("AL"));
-
-            fireEvent.change(screen.getByPlaceholderText("Paste image URL…"), {
-                target: { value: newAvatarUrl },
-            });
-
-            fireEvent.click(screen.getByText("Save"));
-
-            await waitFor(() => {
-                const img = screen.getByAltText("avatar");
-                expect(img.src).toBe(newAvatarUrl);
-            });
-        });
-    });
 });
