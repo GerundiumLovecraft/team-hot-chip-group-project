@@ -1,4 +1,4 @@
-## Acebook Go/React Template
+## Sipstack Go/React App
 
 In this project, you are task with working on an existing application. A
 significant part of the challenge will be to familiarise yourself with the
@@ -20,10 +20,6 @@ run separately.
 It's recommended you all read the suggested docs _after making sure the whole
 setup below worked for everyone_. Then work together on a diagram describing how
 the application works.
-
-### Card wall
-
-REPLACE THIS TEXT WITH A LINK TO YOUR CARD WALL
 
 ### Quickstart
 
