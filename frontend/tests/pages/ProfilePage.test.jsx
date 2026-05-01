@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import ProfilePage from "./ProfilePage.jsx";
+import ProfilePage from "../../src/pages/Profile/ProfilePage.jsx";
 
 vi.mock("../../services/authentication", () => ({
     fetchUserProfile: vi.fn(),
@@ -25,9 +25,9 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-import { fetchUserProfile, updateAvatar } from "../../services/authentication";
-import { getSpotsByUser } from "../../services/spots";
-import { isTokenValid } from "../../helpers/authentication.js";
+import { fetchUserProfile, updateAvatar } from "../../src/services/authentication.js";
+import { getSpotsByUser } from "../../src/services/spots.js";
+import { isTokenValid } from "../../src/helpers/authentication.js";
 
 const mockUser = {
     id: "1",
