@@ -50,7 +50,7 @@ Follow the instructions here: https://go.dev/doc/install
 ### Set up your project
 
 1. Have one team member fork this repository
-2. Rename the fork to `acebook-<team name>`
+2. Rename the fork to `sipstack-<team name>`
 3. Every team member clone the fork to their local machine
 4. Install dependencies for both the `frontend` and `api` applications:
    ```
@@ -69,8 +69,8 @@ Follow the instructions here: https://go.dev/doc/install
 
 7. Create your databases:
    ```
-   createdb acebook
-   createdb acebook_test
+   createdb hot-chip
+   createdb hot-chip_test
    ```
 
 ### Setting up environment variables.
@@ -90,7 +90,7 @@ VITE_BACKEND_URL="http://localhost:8082"
 Create a file `api/.env` with the following contents:
 
 ```
-POSTGRES_URL="postgresql://localhost:5432/acebook"
+POSTGRES_URL="postgresql://localhost:5432/hot-chip"
 JWT_SECRET="secret"
 ```
 
@@ -114,11 +114,4 @@ In a new terminal session...
 ; npm run dev
 ```
 
-You should now be able to open your browser and go to the
-`http://localhost:5173/signup` to create a new user.
 
-Then, after signing up, you should be able to log in by going to
-`http://localhost:5173/login`.
-
-After logging in, you won't see much but you can create posts using PostMan and
-they should then show up in the browser if you refresh the page.
