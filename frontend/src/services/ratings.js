@@ -2,7 +2,6 @@
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export async function SubmitRating(token, spotId, value){
-    try {
         const requestOptions = {
             "method": "POST",
             "headers": {
@@ -19,7 +18,4 @@ export async function SubmitRating(token, spotId, value){
         }
 
         return;
-    } catch (e) {
-        console.log(e);
-    }
 }

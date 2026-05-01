@@ -1,7 +1,7 @@
 import "./SpotModal.css";
 import RatingPill from "../Rating/RatingPill.jsx";
 
-const SpotModal = ({ spot, onClose, onRatingSubmit }) => {
+const SpotModal = ({ spot, onClose, onRatingSubmit, isProfilePage = false }) => {
     if (!spot) return null;
 
     return (
@@ -12,7 +12,7 @@ const SpotModal = ({ spot, onClose, onRatingSubmit }) => {
                 <div className="modal-details">
                     <div className="name-rating-grid">
                         <h2>{spot.name}</h2>
-                        <RatingPill rating={spot.average_rating} spotId={spot._id} interactive={true} onRatingSubmit={onRatingSubmit} />
+                        <RatingPill rating={spot.average_rating} spotId={spot._id} interactive={true} onRatingSubmit={onRatingSubmit} profilePage={isProfilePage} />
                     </div>
                     <p className="modal-address">{spot.address}</p>
                     <p className="modal-description">{spot.description}</p>

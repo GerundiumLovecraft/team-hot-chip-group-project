@@ -17,7 +17,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <NavLink to="/" className="navbar-logo">
-        sipstack
+        <span>sip</span><span className="navbar-logo-italic">stack</span>
       </NavLink>
 
       <div className="navbar-links">
