@@ -109,6 +109,6 @@
 .name-rating-grid {
     display: grid;
     grid-template-columns: 80% 20%;
-    align-items: stretch;
+    align-items: center;
     margin-bottom: 6px;
 }
