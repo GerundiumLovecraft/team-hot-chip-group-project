@@ -84,4 +84,15 @@ describe("Signup Page", () => {
       expect(screen.getByText("Error signing up")).toBeTruthy();
     })
   });
+
+  test("store the token to localStorage when the user signup successfully", async () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {});
+    signup.mockResolvedValue({token: "secrettoken123"});
+    render(<MemoryRouter><SignupPage /></MemoryRouter>);
+    await completeSignupForm();
+
+    await waitFor(() => {
+      expect(localStorageMock.setItem).toHaveBeenCalledWith("token", "secrettoken123");
+    })
+  });
 });
