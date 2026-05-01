@@ -1,81 +1,92 @@
 .spot-container {
-  border: 1px solid var(--color-cream2);
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-  background-color: var(--color-white);
+    border: 1px solid var(--color-cream2);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: var(--color-white);
+    box-shadow: 0 4px 12px rgba(84, 60, 43, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .spot-container:hover {
-  box-shadow: 0 2px 8px rgba(84, 60, 43, 0.1);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(84, 60, 43, 0.18);
 }
 
 .spot-container h3 {
-  margin-bottom: 8px;
+    margin-bottom: 8px;
 }
 
 .spot-container p {
-  margin-bottom: 3px;
+    margin-bottom: 3px;
 }
+
 .spot-name {
-  font-size: 22px;
-  padding-left: 10px;
-  padding-top: 6px;
+    font-size: 22px;
+    padding-left: 10px;
+    padding-top: 6px;
 }
+
 .spot-address {
-  font-size: 15px;
-  padding-left: 10px;
-  padding-right: 10px;
-  line-height: 1.4;
-  margin: 0;
-
-  display: -webkit-box;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-
-  min-height: calc(1.4em * 2);
+    font-size: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: calc(1.4em * 2);
 }
+
 .spot-image {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 8px 8px 0 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+    transition: transform 0.3s ease;
+}
+
+.spot-container:hover .spot-image {
+    transform: scale(1.03);
 }
 
 .features {
-  margin-top: 12px;
-  margin-bottom: 12px;
+    margin-top: 12px;
+    margin-bottom: 12px;
 }
 
 .features ul {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 12px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .features li {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 6px 8px;
-  white-space: nowrap;
-  flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 8px;
+    white-space: nowrap;
+    flex: 0 0 auto;
 }
 
 .spot-image-wrap {
-  position: relative;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
 }
 
 .spot-rating-overlay {
-  position: absolute;
-  bottom: 12px;
-  right: 10px;
-  z-index: 2;
-  border-radius: 999px;
+    position: absolute;
+    bottom: 12px;
+    right: 10px;
+    z-index: 2;
+    border-radius: 999px;
 }
