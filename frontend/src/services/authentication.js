@@ -76,3 +76,21 @@ export const fetchUserProfile = async (token) => {
     );
   }
 };
+
+export const updateAvatar = async (token, avatarUrl) => {
+    const response = await fetch(`${BACKEND_URL}/users/avatar`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ avatar: avatarUrl }),
+    });
+
+    if (response.status !== 200) {
+        throw new Error("Unable to update avatar!");
+    }
+
+    const data = await response.json();
+    return data;
+};

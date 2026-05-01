@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchUserProfile } from "../../services/authentication";
+import { fetchUserProfile, updateAvatar } from "../../services/authentication";
 import { getSpotsByUser } from "../../services/spots";
 import SpotModal from "../../components/SpotModal/SpotModal";
 import {isTokenValid} from "../../helpers/authentication.js";
@@ -58,23 +58,15 @@ export default function ProfilePage() {
 
   const handleAvatarSave = () => {
     const token = localStorage.getItem("token");
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/users/avatar`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ avatar: avatarInput }),
-    })
-      .then((res) => res.json())
-      .then(({ user, token: newToken }) => {
+    updateAvatar(token, avatarInput)
+      .then(({ user, token: newToken}) => {
         setUser(user);
         localStorage.setItem("token", newToken);
         setEditingAvatar(false);
         setAvatarInput("");
       })
       .catch((err) => setError(err.message));
-  }
+  };
 
   return (
     <main className="profile-page">
