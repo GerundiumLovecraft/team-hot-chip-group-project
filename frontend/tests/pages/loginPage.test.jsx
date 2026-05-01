@@ -34,8 +34,8 @@ vi.mock("../../src/services/authentication", () => {
 const completeLoginForm = async () => {
   const user = userEvent.setup();
 
-  const emailOrUsernameInputEl = screen.getByPlaceholderText("Your username or email");
-  const passwordInputEl = screen.getByPlaceholderText("Your secret password");
+  const emailOrUsernameInputEl = screen.getByPlaceholderText("Username or email");
+  const passwordInputEl = screen.getByPlaceholderText("Password");
   const loginButtonEl = screen.getByRole("button", {name: /login/i});
 
   await user.type(emailOrUsernameInputEl, "test@email.com");
@@ -65,13 +65,25 @@ describe("Login Page", () => {
     })
   });
 
-  test("navigates to /login on unsuccessful login", async () => {
+  test("shows an error message when the user is unsuccessful in loging in", async () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {});
     login.mockRejectedValue(new Error("Error logging in"));
     render(<MemoryRouter><LoginPage/></MemoryRouter>);
 
     await completeLoginForm();
 
-    expect(navigateMock).toHaveBeenCalledWith("/login");
+    await waitFor(() => {
+      expect(screen.getByText("Invalid username/email or password.")).toBeTruthy();
+    })
   });
+
+  test("store the token to localStorage when the user login successfully", async () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {});
+    login.mockResolvedValue("secrettoken123");
+    render(<MemoryRouter><LoginPage/></MemoryRouter>);
+    await completeLoginForm();
+    await waitFor(() => {
+      expect(localStorageMock.setItem).toHaveBeenCalledWith("token", "secrettoken123");
+    })
+  })
 });
